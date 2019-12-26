@@ -1,24 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+import VolumeFader from './components/VolumeFader'
 
 const App: React.FC = () => {
+  const [ val, setVal ] = React.useState(70)
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div style={{width: '300px'}}>
+      <VolumeFader
+        onChange={(e, val) => {
+          console.log(val);
+          setVal(val);
+        }}
+        onChangeCommitted={(e, val) => console.log()}
+        onMouseDown={() => console.log()}
+        orientation="horizontal"
+
+        max={100}
+        min={0}
+        step={0.01}
+        value={val}
+      />
+      </div>
     </div>
   );
 }
