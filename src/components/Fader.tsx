@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useIsFocusVisible } from '../common/useIsFocusVisible';
 import useEventCallback from '../common/useEventCallback';
 import styled from 'styled-components';
@@ -89,6 +89,11 @@ type Props = {
   min: number,
   step: number,
   value: number,
+  wavePeak?: number,
+  type: 'volume' | 'pan',
+  railHeight: number,
+  knobHeight: number,
+  knobWidth: number,
 }
 
 const Slider = (props: Props) => {
@@ -100,8 +105,15 @@ const Slider = (props: Props) => {
     onMouseDown,
     orientation = 'horizontal',
     step = 0.1,
-    value: valueProp
+    value: valueProp,
+    wavePeak=null,
+    type,
+    railHeight,
+    knobHeight = 18,
+    knobWidth = 18,
   } = props;
+
+  console.log(wavePeak);
 
   const value = clamp(valueProp, min, max);
   const touchId = React.useRef();
@@ -268,72 +280,136 @@ const Slider = (props: Props) => {
     document.body.addEventListener('mouseup', handleTouchEnd);
   });
 
+  const calculateKnobPosition = useMemo(() => {
+    return () => {
+      switch (type) {
+        case 'volume': {
+          const marginTop = -((knobHeight - railHeight) / 2);
+          const marginLeft = -(knobWidth / 2);
+          return { marginTop, marginLeft };
+        }
+        case 'pan': {
+          const marginTop = -(knobHeight - railHeight);
+          const marginLeft = -(knobWidth / 2);
+          return { marginTop, marginLeft };
+        }
+      }
+  }},[type, railHeight, knobHeight, knobWidth]);
+
   const percent = valueToPercent(value, min, max);
   const style = axisProps[axis].offset(percent);
+  const Knob = type === 'volume' ? VolumeKnob : PanKnob;
 
   return (
     <Root
-      ref={sliderRef}
-      onMouseDown={handleMouseDown}
+      onMouseDown={handleMouseDown} type={type}
     >
-      <Rail />
-      <input value={value} name='volume-fader-value' type="hidden" />
-      <KnobMotionRange>
-        <Knob
-          style={style}
-          data-index={0}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onMouseOver={handleMouseOver}
-          onMouseLeave={handleMouseLeave}
-        />
-      </KnobMotionRange>
+      <Rail height={railHeight} type={type}>
+        <KnobMotionRange ref={sliderRef}>
+          {type === 'volume' ? <WavePeak value={wavePeak}/> : null}
+          <Knob
+            style={style}
+            data-index={0}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseLeave}
+            height={knobHeight}
+            width={knobWidth}
+            {...calculateKnobPosition()}
+          />
+        </KnobMotionRange>
+        {type === 'pan' ? <Center/> : null}
+      </Rail>
     </Root>
   );
 };
 
-const Root = styled.div`
-    height: 2;
-    width: 100%;
-    box-sizing: content-box;
-    padding: 30px 0;
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-    touch-action: none;
-    color: black;
-    -webkit-tap-highlight-color: transparent;
+const Root = styled.div<{type: 'volume' | 'pan'}>`
+  width: 100%;
+  box-sizing: content-box;
+  padding: 30px 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  touch-action: none;
+  color: black;
+  -webkit-tap-highlight-color: transparent;
+  ${props => {
+    return props.type === 'pan' ? `
+      &::before {
+        content: 'L';
+        margin-right: 4px;
+        font-size: 12px;
+        font-family: sans-serif;
+      }
+      &::after {
+        content: 'R';
+        margin-left: 4px;
+        font-size: 12px;
+        font-family: sans-serif;
+      }
+    ` : null
+  }}
 `
 
-const Rail = styled.span`
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 18px;
+const Rail = styled.div<{type: 'volume' | 'pan', height: number}>`
+  width: calc(100% ${props => props.type === 'pan' ? '- 25px' : null}); /* Subtract the width of pseudo-elements */
+  margin: 0 auto;
+  height: ${props => props.height + 'px'};
   border-radius: 10px;
   background-color: #666;
 `;
 
 const KnobMotionRange = styled.div`
   position: relative;
-  height: 18px;
+  height: 100%;
   margin: 0 7px;
-`
-const Knob = styled.span`
+`;
+
+const WavePeak = styled.div<{value: number | null}>`
+  background-color: #4CD964;
+  height: 100%;
+  width: ${props => props.value?.toString() + 'px'};
+`;
+
+const AbstractKnob =  styled.span<{height: number, width: number, marginTop: number, marginLeft: number}>`
   position: absolute;
-  width: 30px;
-  height: 30px;
-  margin-left: -15px;
-  margin-top: -6px;
+  top: 0;
+  margin-left: ${props => props.marginLeft + 'px'};
+  margin-top: ${props => props.marginTop + 'px'};
   box-sizing: border-box;
-  border-radius: 50%;
   outline: 0;
-  background-color: #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+const VolumeKnob = styled(AbstractKnob)`
+  width: ${props => props.width + 'px'};
+  height: ${props => props.height + 'px'};
+  background-color: #ddd;
+  border-radius: 50%;
   border: solid 1px;
   opacity: 0.7;
+`
+
+const PanKnob = styled(AbstractKnob)`
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: ${props => `${props.height + 'px'} ${(props.width / 2) + 'px'} 0 ${(props.width / 2) + 'px'}`};
+  border-color: #ddd transparent transparent transparent;
+  opacity: 0.7;
+`
+
+const Center = styled.div`
+  /* position: absolute; */
+  background-color: #999;
+  width: 2px;
+  height: 10px;
+  margin: 3px auto;
 `
 
 export default Slider;
