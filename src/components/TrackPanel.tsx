@@ -93,7 +93,7 @@ const LeftSide = styled.div`
   width: 160px;
   height: 150px;
   padding: 7px;
-  background-color: grey;
+  background-color: ${Color.Background};
   text-align: center;
 `
 
