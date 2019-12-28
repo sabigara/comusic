@@ -1,17 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 
-type Props = {
-  text: string,
-}
 
-export default ({ text }: Props) => {
+const Char: React.FC = ({ children }) => {
   return (
-    <Char>{text}</Char>
+    <StyledChar>{children}</StyledChar>
   )
 };
 
-const Char = styled.span`
+const StyledChar = styled.span`
   color: white;
   font-family: sans-serif;
   font-size: 12px;
@@ -24,3 +21,5 @@ const Char = styled.span`
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Opera and Firefox */
 `
+
+export default Char
