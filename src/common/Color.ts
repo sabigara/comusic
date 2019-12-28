@@ -1,4 +1,5 @@
 export default {
+  Background: '#8F8F8F',
   Border: '#5A5A5A',
   Button: {
     MuteOn: '#19A2A0',
