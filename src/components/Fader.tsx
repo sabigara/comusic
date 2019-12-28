@@ -92,6 +92,7 @@ type Props = {
   wavePeak?: number,
   type: 'volume' | 'pan',
   railHeight: number,
+  width?: number,
   knobHeight: number,
   knobWidth: number,
 }
@@ -106,14 +107,13 @@ const Slider = (props: Props) => {
     orientation = 'horizontal',
     step = 0.1,
     value: valueProp,
-    wavePeak=null,
+    wavePeak,
     type,
     railHeight,
+    width,
     knobHeight = 18,
     knobWidth = 18,
   } = props;
-
-  console.log(wavePeak);
 
   const value = clamp(valueProp, min, max);
   const touchId = React.useRef();
@@ -302,7 +302,9 @@ const Slider = (props: Props) => {
 
   return (
     <Root
-      onMouseDown={handleMouseDown} type={type}
+      onMouseDown={handleMouseDown}
+      type={type}
+      width={width}
     >
       <Rail height={railHeight} type={type}>
         <KnobMotionRange ref={sliderRef}>
@@ -325,10 +327,10 @@ const Slider = (props: Props) => {
   );
 };
 
-const Root = styled.div<{type: 'volume' | 'pan'}>`
-  width: 100%;
+const Root = styled.div<{type: 'volume' | 'pan', width?: number}>`
+  width: ${props => props.width ? props.width + 'px' : 'auto'};
   box-sizing: content-box;
-  padding: 30px 0;
+  margin: 10px;
   display: flex;
   align-items: center;
   position: relative;
@@ -368,7 +370,7 @@ const KnobMotionRange = styled.div`
   margin: 0 7px;
 `;
 
-const WavePeak = styled.div<{value: number | null}>`
+const WavePeak = styled.div<{value?: number}>`
   background-color: #4CD964;
   height: 100%;
   width: ${props => props.value?.toString() + 'px'};
@@ -405,10 +407,9 @@ const PanKnob = styled(AbstractKnob)`
 `
 
 const Center = styled.div`
-  /* position: absolute; */
-  background-color: #999;
+  background-color: #666;
   width: 2px;
-  height: 10px;
+  height: 6px;
   margin: 3px auto;
 `
 
