@@ -18,14 +18,14 @@ export default ({ muteOn, setMute, soloOn, setSolo }: Props) => {
           isEnabled={muteOn}
           onClick={() => setMute(!muteOn)}
         >
-          <Char text="M"/>
+          <Char >M</Char>
         </Mute>
         <Separator/>
         <Solo
           isEnabled={soloOn}
           onClick={() => setSolo(!soloOn)}
         >
-          <Char text="S"/>
+          <Char>S</Char>
         </Solo>
       </Outer>
   )
