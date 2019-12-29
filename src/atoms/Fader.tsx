@@ -357,7 +357,8 @@ const Root = styled.div<{type: 'volume' | 'pan', width?: number}>`
 `
 
 const Rail = styled.div<{type: 'volume' | 'pan', height: number}>`
-  width: calc(100% ${props => props.type === 'pan' ? '- 25px' : null}); /* Subtract the width of pseudo-elements */
+  /* Subtract the width of pseudo-elements */
+  width: calc(100% ${props => props.type === 'pan' ? '- 25px' : null});
   margin: 0 auto;
   height: ${props => props.height + 'px'};
   border-radius: 10px;

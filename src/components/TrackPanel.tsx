@@ -2,10 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
-import FlexBox from './FlexBox';
-import Fader from './Fader';
-import MuteSoloButton from './MutoSoloButton';
-import EditableLabel from './EditableLabel';
+import FlexBox from '../atoms/FlexBox';
+import Fader from '../atoms/Fader';
+import MuteSoloButton from '../atoms/MutoSoloButton';
+import EditableLabel from '../atoms/EditableLabel';
 
 export default () => {
   const [ label, setLabel ] = React.useState('Drums');
