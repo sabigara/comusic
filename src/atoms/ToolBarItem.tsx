@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
@@ -48,7 +48,7 @@ const Wrapper = styled.div<{
   align-items: center;
   border-radius: ${ ({ isLeftMost, isRightMost }) => {
     // Returns 0 if [true, true] or [false, false]
-    if (isLeftMost === isRightMost && isLeftMost === false) { return '0'}
+    if (isLeftMost === isRightMost && isLeftMost === false) { return '0' }
     if (isLeftMost) {
       return '4px 0 0 4px'
     } else if (isRightMost) {
