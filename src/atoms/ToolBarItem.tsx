@@ -6,7 +6,7 @@ import Color from '../common/Color';
 type Props = {
   isActive: boolean,
   setActive: Function,
-  onClick: Function,
+  onClick?: Function,
   isLeftMost?: boolean,
   isRightMost?: boolean,
 }
@@ -27,7 +27,7 @@ const ToolBarItem: React.FC<Props> = (props) => {
       isLeftMost={isLeftMost}
       isRightMost={isRightMost}
       onClick={() => {
-        onClick();
+        onClick && onClick();
         setActive(!isActive);
       }}
     >
@@ -42,7 +42,7 @@ const Wrapper = styled.div<{
   isRightMost?: boolean,
 }>`
   width: 50px;
-  height: 50px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
