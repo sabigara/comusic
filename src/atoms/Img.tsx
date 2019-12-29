@@ -4,15 +4,13 @@ import styled from 'styled-components';
 type Props = {
   src: string,
   alt: string,
+  width?: number,
+  height?: number,
 }
 
-const Img: React.FC<Props> = ({ src, alt }) => {
-  return (
-    <StyledImg src={src} alt={alt}/>
-  );
-};
-
-const StyledImg = styled.img`
+const StyledImg = styled.img<Props>`
+  width: ${props => props.width ? props.width + 'px' : null};
+  height: ${props => props.height? props.height + 'px' : null};
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */
@@ -22,4 +20,4 @@ const StyledImg = styled.img`
                                   supported by Chrome, Opera and Firefox */
 `
 
-export default Img;
+export default StyledImg;
