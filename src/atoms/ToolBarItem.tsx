@@ -41,7 +41,7 @@ const Wrapper = styled.div<{
   isLeftMost?: boolean,
   isRightMost?: boolean,
 }>`
-  width: 50px;
+  width: 60px;
   height: 40px;
   display: flex;
   justify-content: center;
