@@ -55,16 +55,12 @@ function roundValueToStep(value: number, step: number, min: number) {
   return Number(nearest.toFixed(getDecimalPrecision(step)));
 }
 
-function focusThumb({ sliderRef, activeIndex, setActive }) {
+function focusThumb({ sliderRef, activeIndex }) {
   if (
     !sliderRef.current.contains(document.activeElement) ||
     Number(document?.activeElement?.getAttribute('data-index')) !== activeIndex
   ) {
     sliderRef.current.querySelector(`[data-index="${activeIndex}"]`).focus();
-  }
-
-  if (setActive) {
-    setActive(activeIndex);
   }
 }
 
@@ -116,11 +112,9 @@ const Slider = (props: Props) => {
   } = props;
 
   const value = clamp(valueProp, min, max);
+  // Store local state for `onChangeCommitted` callback.
+  const [ localValue, setLocalValue ] = React.useState(value);
   const touchId = React.useRef();
-  // We can't use the :active browser pseudo-classes.
-  // - The active state isn't triggered when clicking on the rail.
-  // - The active state isn't transfered when inversing a range slider.
-  const [active, setActive] = React.useState(-1);
 
   const { isFocusVisible, onBlurVisible, ref: focusVisibleRef } = useIsFocusVisible();
   const [focusVisible, setFocusVisible] = React.useState(-1);
@@ -188,8 +182,10 @@ const Slider = (props: Props) => {
       move: true,
       source: value,
     });
+    if (localValue === newValue) { return }
+    setLocalValue(newValue);
 
-    focusThumb({ sliderRef, activeIndex, setActive });
+    focusThumb({ sliderRef, activeIndex });
     if (onChange) {
       onChange(event, newValue);
     }
@@ -203,8 +199,6 @@ const Slider = (props: Props) => {
     }
 
     const { newValue } = getFingerNewValue({ finger, source: value });
-
-    setActive(-1);
 
     if (onChangeCommitted) {
       onChangeCommitted(event, newValue);
@@ -237,7 +231,7 @@ const Slider = (props: Props) => {
     }
     const finger = trackFinger(event, touchId);
     const { newValue, activeIndex } = getFingerNewValue({ finger, source: value });
-    focusThumb({ sliderRef, activeIndex, setActive });
+    focusThumb({ sliderRef, activeIndex });
 
     if (onChange) {
       onChange(event, newValue);
@@ -269,7 +263,8 @@ const Slider = (props: Props) => {
     event.preventDefault();
     const finger = trackFinger(event, touchId);
     const { newValue, activeIndex } = getFingerNewValue({ finger, source: value });
-    focusThumb({ sliderRef, activeIndex, setActive });
+    setLocalValue(newValue);
+    focusThumb({ sliderRef, activeIndex });
 
     if (onChange) {
       onChange(event, newValue);
@@ -296,7 +291,9 @@ const Slider = (props: Props) => {
       }
   }},[type, railHeight, knobHeight, knobWidth]);
 
-  const percent = valueToPercent(value, min, max);
+  // Use localValue because value is not updated
+  // onChange but onChangeCommitted.
+  const percent = valueToPercent(localValue, min, max);
   const style = axisProps[axis].offset(percent);
   const Knob = type === 'volume' ? VolumeKnob : PanKnob;
 

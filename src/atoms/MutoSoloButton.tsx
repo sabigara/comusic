@@ -6,24 +6,24 @@ import Char from './Char'
 
 type Props = {
   muteOn: boolean,
-  setMute: Function,
+  onMuteClick: Function,
   soloOn: boolean,
-  setSolo: Function,
+  onSoloClick: Function,
 }
 
-export default ({ muteOn, setMute, soloOn, setSolo }: Props) => {
+export default ({ muteOn, soloOn, onMuteClick, onSoloClick }: Props) => {
   return (
       <Outer>
         <Mute
           isEnabled={muteOn}
-          onClick={() => setMute(!muteOn)}
+          onClick={() => onMuteClick()}
         >
           <Char >M</Char>
         </Mute>
         <Separator/>
         <Solo
           isEnabled={soloOn}
-          onClick={() => setSolo(!soloOn)}
+          onClick={() => onSoloClick()}
         >
           <Char>S</Char>
         </Solo>

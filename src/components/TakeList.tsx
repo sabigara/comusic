@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
 
+import { changeActiveTake } from '../actions/trackList';
+
 type Take = {
   id: string,
   name: string,
+  fileURL: string,
 }
 
 type Props = {
   takeList: Take[],
+  trackId: string,
+  activeTakeId: string,
 }
 
-const TakeList: React.FC<Props> = ({ takeList }) => {
-  const [ activeTakeId, setActiveTake ] = useState('1');
+const TakeList: React.FC<Props> = ({ takeList, trackId, activeTakeId }) => {
   const [ mouseOver, setMouseOver] = useState(false);
   const [ mouseHoverId, setMouseHoverId ] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   return (
     <Wrapper
@@ -34,7 +40,7 @@ const TakeList: React.FC<Props> = ({ takeList }) => {
               key={i}
               isActive={take.id === activeTakeId}
               onClick={(e) => {
-                setActiveTake(take.id);
+                dispatch(changeActiveTake(trackId, take.id));
               }}
             >
               <ButtonLabel>{take.name}</ButtonLabel>

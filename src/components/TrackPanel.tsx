@@ -1,5 +1,11 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+
+import {
+  muteOn, muteOff, soloOn, soloOff,
+  changeVolume, changePan, changeName,
+} from '../actions/trackList';
 
 import Color from '../common/Color';
 import FlexBox from '../atoms/FlexBox';
@@ -7,21 +13,26 @@ import Fader from '../atoms/Fader';
 import MuteSoloButton from '../atoms/MutoSoloButton';
 import EditableLabel from '../atoms/EditableLabel';
 
-export default () => {
-  const [ label, setLabel ] = React.useState('Drums');
-  const [ vol, setVol ] = React.useState(70);
-  const [ pan, setPan ] = React.useState(50);
+type Props = {
+  trackId: string,
+}
 
+const TrackPanel: React.FC<Props> = ({ trackId }) => {
+  const state = useSelector((state: any) => {
+    const track = state.trackList.filter((track: any) => track.id === trackId);
+    return track ? track[0] : null
+  });
+
+  const dispatch = useDispatch();
   const [ wavePeak, setWavePeak ] = React.useState(0);
-  const [ muteOn, setMute ] = React.useState(false);
-  const [ soloOn, setSolo ] = React.useState(false);
 
+  if (!state) {return <div/>}
   return (
     <Wrapper>
       <LeftSide>
         <EditableLabel
-          text={label}
-          setText={setLabel}
+          text={state.name}
+          setText={(text: string) => dispatch(changeName(state.id, text))}
           fontSize="15px"
         />
         <InstrumentIcon
@@ -31,16 +42,16 @@ export default () => {
       <RightSide>
       <Fader
         onChange={(e, vol) => {
-          setVol(vol);
+          dispatch(changeVolume(state.id, vol));
         }}
-        onChangeCommitted={(e, val) => console.log()}
-        onMouseDown={() => console.log()}
+        onChangeCommitted={(e, val) => {}}
+        onMouseDown={() => {}}
         orientation="horizontal"
 
         max={100}
         min={0}
-        step={0.01}
-        value={vol}
+        step={0.5}
+        value={state.volume}
         wavePeak={wavePeak}
         type='volume'
         railHeight={12}
@@ -51,17 +62,15 @@ export default () => {
         <PanWrapper>
           <Fader
             onChange={(e, pan) => {
-              setPan(pan);
+              dispatch(changePan(state.id, pan));
             }}
-            onChangeCommitted={(e, val) => console.log()}
-            onMouseDown={() => console.log()}
+            onChangeCommitted={(e, val) => {}}
+            onMouseDown={() => {}}
             orientation="horizontal"
-
             max={100}
             min={0}
-            step={0.01}
-            value={pan}
-
+            step={0.5}
+            value={state.pan}
             type='pan'
             railHeight={9}
             knobHeight={15}
@@ -70,10 +79,14 @@ export default () => {
         </PanWrapper>
         <MuteSoloWrapper>
           <MuteSoloButton 
-            muteOn={muteOn}
-            setMute={setMute}
-            soloOn={soloOn}
-            setSolo={setSolo}
+            muteOn={state.mute}
+            onMuteClick={() => {
+              state.mute ? dispatch(muteOff(state.id)) : dispatch(muteOn(state.id));
+            }}
+            soloOn={state.solo}
+            onSoloClick={() => {
+              state.solo ? dispatch(soloOff(state.id)) : dispatch(soloOn(state.id));
+            }}
           />
         </MuteSoloWrapper>
       </FlexBox>
@@ -115,3 +128,5 @@ const PanWrapper = styled.div`
 const MuteSoloWrapper = styled.div`
   margin-right: 10px;
 `
+
+export default TrackPanel;

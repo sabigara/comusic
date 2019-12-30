@@ -1,11 +1,15 @@
-import { combineReducers } from 'redux';
+import { combineReducers, Reducer } from 'redux';
 
-import playback from './playback';
+import playback, {} from './playback';
+import trackList from './trackList';
+
 
 const getReducers = () => {
-  return combineReducers({
+  const reducers = combineReducers({
     playback,
+    trackList,
   });
+  return reducers;
 };
 
 export default getReducers;
