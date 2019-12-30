@@ -47,6 +47,12 @@ const TakeList: React.FC<Props> = ({ takeList }) => {
           );
         })
       }
+      <label htmlFor="take_upload">
+        <UploadButton>
+         <UploadButtonLabel>+ Upload</UploadButtonLabel>
+        </UploadButton>
+      </label>
+      <input type="file" id="take_upload" accept="audio/*" style={{display: 'none'}}/>
     </Wrapper>
   );
 }
@@ -70,7 +76,7 @@ const Wrapper = styled.div<{mouseOver: boolean}>`
   }
 `
 
-const TakeButton = styled.div<{isActive: boolean}>`
+const Button = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -81,13 +87,26 @@ const TakeButton = styled.div<{isActive: boolean}>`
   height: 26px;
   margin: 7px auto;
   padding: 0 0 0 5px;
+`
+
+const TakeButton = styled(Button)<{isActive: boolean}>`
   background-color: ${props => {
     return props.isActive ? Color.Button.MuteOn : Color.Button.Disabled;
   }};
 `
 
+const UploadButton = styled(Button)`
+  background-color: #0395EB;
+  cursor: pointer;
+`
+
 const ButtonLabel = styled(Label)`
   font-size: 14px;
+`
+
+const UploadButtonLabel = styled(ButtonLabel)`
+  cursor: pointer;
+  font-size: 13px;
 `
 
 const MoreWrapper = styled.div`
