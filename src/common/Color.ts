@@ -1,6 +1,12 @@
 export default {
   Background: '#8F8F8F',
   Border: '#5A5A5A',
+  ToolBar: {
+    Background: {
+      Highest: '#EEEEEE',
+      Lowest: '#BBBBBB',
+    }
+  },
   ToolBarItem: {
     Active: '#6F6F6F',
     InActive: '#8F8F8F',
