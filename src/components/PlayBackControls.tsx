@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
+import { play, pause, stop } from '../actions/playback';
 import Img from '../atoms/Img';
 import ToolBarItem from '../atoms/ToolBarItem';
 import ToolBackItemContainer from '../atoms/ToolBarItemContainer';
@@ -10,52 +12,35 @@ import PauseIcon from '../icons/Pause.png';
 
 const noop = () => {};
 
-type Props = {
-  playing: boolean,
-  stopping: boolean,
-  pausing: boolean,
-  setPlaying: Function,
-  setStopping: Function,
-  setPausing: Function,
-}
-
-const PlayBackControls: React.FC<Props> = (props) => {
-  const {
-    playing, pausing, stopping,
-    setPlaying, setStopping, setPausing,
-  } = props;
+const PlayBackControls: React.FC = () => {
+  const playbackState = useSelector((state: any) => state.playback);
+  const dispatch = useDispatch()
 
   return (
     <ToolBackItemContainer>
       <ToolBarItem
-        isActive={stopping}
+        isActive={playbackState === 'Stopping'}
         setActive={noop}
         onClick={() => {
-          setPlaying(false);
-          setPausing(false);
-          setStopping(true);
+          dispatch(stop());
         }}
       >
         <IconImg src={StopIcon} alt="stop"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={pausing}
+        isActive={playbackState === 'Pausing'}
         setActive={noop}
         onClick={() => {
-          setPlaying(false);
-          setPausing(true);
-          setStopping(false);
+          dispatch(pause());
         }}
       >
         <IconImg src={PauseIcon} alt="pause"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={playing}
+        isActive={playbackState === 'Playing'}
         setActive={noop}
         onClick={() => {
-          setPlaying(true);
-          setPausing(false);
-          setStopping(false);
+          dispatch(play());
         }}
       >
         <IconImg src={PlayIcon} alt="play"/>

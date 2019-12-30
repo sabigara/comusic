@@ -1,29 +1,16 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 
-import VolumeFader from './components/VolumeFader'
+import initStore from './store';
+import PlayBackControls from './components/PlayBackControls';
+
+const store = initStore({})
 
 const App: React.FC = () => {
-  const [ val, setVal ] = React.useState(70)
-
   return (
-    <div className="App">
-      <div style={{width: '300px'}}>
-      <VolumeFader
-        onChange={(e, val) => {
-          console.log(val);
-          setVal(val);
-        }}
-        onChangeCommitted={(e, val) => console.log()}
-        onMouseDown={() => console.log()}
-        orientation="horizontal"
-
-        max={100}
-        min={0}
-        step={0.01}
-        value={val}
-      />
-      </div>
-    </div>
+    <Provider store={store}>
+      <PlayBackControls/>
+    </Provider>
   );
 }
 
