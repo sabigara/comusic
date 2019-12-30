@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
+import { PlaybackState } from '../common/Enums';
 import { play, pause, stop } from '../actions/playback';
 import Img from '../atoms/Img';
 import ToolBarItem from '../atoms/ToolBarItem';
@@ -12,14 +13,14 @@ import PauseIcon from '../icons/Pause.png';
 
 const noop = () => {};
 
-const PlayBackControls: React.FC = () => {
+const PlaybackControls: React.FC = () => {
   const playbackState = useSelector((state: any) => state.playback);
   const dispatch = useDispatch()
 
   return (
     <ToolBackItemContainer>
       <ToolBarItem
-        isActive={playbackState === 'Stopping'}
+        isActive={playbackState === PlaybackState.Stopping}
         setActive={noop}
         onClick={() => {
           dispatch(stop());
@@ -28,7 +29,7 @@ const PlayBackControls: React.FC = () => {
         <IconImg src={StopIcon} alt="stop"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={playbackState === 'Pausing'}
+        isActive={playbackState === PlaybackState.Pausing}
         setActive={noop}
         onClick={() => {
           dispatch(pause());
@@ -37,7 +38,7 @@ const PlayBackControls: React.FC = () => {
         <IconImg src={PauseIcon} alt="pause"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={playbackState === 'Playing'}
+        isActive={playbackState === PlaybackState.Playing}
         setActive={noop}
         onClick={() => {
           dispatch(play());
@@ -55,4 +56,4 @@ const IconImg = styled(Img)`
   height: 16px;
 `;
 
-export default PlayBackControls;
+export default PlaybackControls;
