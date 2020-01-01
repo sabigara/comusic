@@ -368,10 +368,15 @@ const KnobMotionRange = styled.div`
   margin: 0 7px;
 `;
 
-const WavePeak = styled.div<{value?: number}>`
+// Use `attrs` to prevent recomputing and creating new class
+// every time the value changes.
+const WavePeak = styled.div.attrs((props: any) => ({
+  style:{
+    width: props.value ? props.value.toString() + 'px' : 0
+  }
+}))<{value?: number}>`
   background-color: #4CD964;
   height: 100%;
-  width: ${props => props.value?.toString() + 'px'};
 `;
 
 const AbstractKnob =  styled.span<{height: number, width: number, marginTop: number, marginLeft: number}>`
