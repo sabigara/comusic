@@ -58,7 +58,12 @@ const TakeList: React.FC<Props> = ({ takeList, trackId, activeTakeId }) => {
          <UploadButtonLabel>+ Upload</UploadButtonLabel>
         </UploadButton>
       </label>
-      <input type="file" id="take_upload" accept="audio/*" style={{display: 'none'}}/>
+      <input
+        type="file"
+        id="take_upload"
+        accept="audio/*"
+        style={{display: 'none'}}
+      />
     </Wrapper>
   );
 }
