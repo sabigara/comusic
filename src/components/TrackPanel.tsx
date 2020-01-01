@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -6,7 +6,7 @@ import {
   muteOn, muteOff, soloOn, soloOff,
   changeVolume, changePan, changeName,
 } from '../actions/trackList';
-
+import useAudioAPI from '../hooks/useAudioAPI';
 import Color from '../common/Color';
 import FlexBox from '../atoms/FlexBox';
 import Fader from '../atoms/Fader';
@@ -24,7 +24,28 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
   });
 
   const dispatch = useDispatch();
+  const audioAPI = useAudioAPI();
   const [ wavePeak, setWavePeak ] = React.useState(0);
+
+  useEffect(() => {
+    console.log('track panel');
+    const track = audioAPI.trackList.filter((track: any) => track.id === trackId)[0];
+    track.setPan(state.pan);
+  }, [state.pan, audioAPI.trackList, trackId]);
+
+  useEffect(() => {
+    const track = audioAPI.trackList.filter((track: any) => track.id === trackId)[0];
+    track.setVolume(state.volume);
+  }, [state.volume, audioAPI.trackList, trackId]);
+
+  useEffect(() => {
+    const track = audioAPI.trackList.filter((track: any) => track.id === trackId)[0];
+    if (!track) { return }
+    const interval = setInterval(() => {
+      setWavePeak(track.getPeak() * 0.5);
+    }, 1);
+    return () => clearInterval(interval);
+  }, [audioAPI.trackList, trackId]);
 
   if (!state) {return <div/>}
   return (
@@ -48,9 +69,9 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
         onMouseDown={() => {}}
         orientation="horizontal"
 
-        max={100}
+        max={1}
         min={0}
-        step={0.5}
+        step={0.01}
         value={state.volume}
         wavePeak={wavePeak}
         type='volume'
@@ -67,9 +88,9 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
             onChangeCommitted={(e, val) => {}}
             onMouseDown={() => {}}
             orientation="horizontal"
-            max={100}
-            min={0}
-            step={0.5}
+            max={1}
+            min={-1}
+            step={0.01}
             value={state.pan}
             type='pan'
             railHeight={9}

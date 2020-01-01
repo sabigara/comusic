@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
+import useAudioAPI from '../hooks/useAudioAPI';
 import { PlaybackState } from '../common/Enums';
 import { play, pause, stop } from '../actions/playback';
 import Img from '../atoms/Img';
@@ -14,13 +15,27 @@ import PauseIcon from '../icons/Pause.png';
 const noop = () => {};
 
 const PlaybackControls: React.FC = () => {
-  const playbackState = useSelector((state: any) => state.playback);
-  const dispatch = useDispatch()
+  const state = useSelector((state: any) => state.playback);
+  const dispatch = useDispatch();
+  const audioAPI = useAudioAPI();
+
+  useEffect(() => {
+    switch(state) {
+      case PlaybackState.Playing:
+        audioAPI.play();
+        break;
+      case PlaybackState.Stopping:
+        audioAPI.stop();
+        break;
+      default:
+        break;
+    }
+  })
 
   return (
     <ToolBackItemContainer>
       <ToolBarItem
-        isActive={playbackState === PlaybackState.Stopping}
+        isActive={state === PlaybackState.Stopping}
         setActive={noop}
         onClick={() => {
           dispatch(stop());
@@ -29,7 +44,7 @@ const PlaybackControls: React.FC = () => {
         <IconImg src={StopIcon} alt="stop"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={playbackState === PlaybackState.Pausing}
+        isActive={state === PlaybackState.Pausing}
         setActive={noop}
         onClick={() => {
           dispatch(pause());
@@ -38,7 +53,7 @@ const PlaybackControls: React.FC = () => {
         <IconImg src={PauseIcon} alt="pause"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={playbackState === PlaybackState.Playing}
+        isActive={state === PlaybackState.Playing}
         setActive={noop}
         onClick={() => {
           dispatch(play());
