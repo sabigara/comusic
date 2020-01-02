@@ -3,9 +3,10 @@ import LoaderFactory from './loader/LoaderFactory';
 
 export class Track implements ITrack {
   ac: AudioContext;
-  _volume: number;
+  volume: number;
   gain: GainNode;
   pan: StereoPannerNode;
+  isMuted: boolean;
   analyzer: AnalyserNode;
   array:Uint8Array | null = null;
   id: string;
@@ -17,7 +18,8 @@ export class Track implements ITrack {
     this.id = id;
     this.name = name;
     this.ac = ac;
-    this._volume = 0;
+    this.volume = 0;
+    this.isMuted = false;
     this.gain = ac.createGain();
     this.pan = ac.createStereoPanner();
     this.analyzer = ac.createAnalyser();
@@ -41,8 +43,10 @@ export class Track implements ITrack {
   }
 
   setVolume(value: number) {
-    this._volume = value;
-    this.gain.gain.value = value;
+    this.volume = value;
+    if (!this.isMuted) {
+      this.gain.gain.value = value;
+    }
   }
 
   setPan(value: number) {
@@ -51,10 +55,12 @@ export class Track implements ITrack {
 
   mute() {
     this.gain.gain.value = 0;
+    this.isMuted = true;
   }
 
   unMute() {
-    this.gain.gain.value = this._volume;
+    this.gain.gain.value = this.volume;
+    this.isMuted = false;
   }
 
   getPeak() {
