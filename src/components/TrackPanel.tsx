@@ -41,12 +41,12 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
 
   useEffect(() => {
     shouldPlay ? trackAPI.unMute() : trackAPI.mute();
-  }, [shouldPlay, audioAPI, trackAPI])
+  }, [shouldPlay, trackAPI])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setWavePeak(trackAPI?.getPeak() ? trackAPI?.getPeak() * 0.5 : 0);
-    }, 1);
+      setWavePeak(trackAPI.getPeak() ? trackAPI.getPeak() * 0.5 : 0);
+    }, 50);
     return () => clearInterval(interval);
   }, [trackAPI]);
 

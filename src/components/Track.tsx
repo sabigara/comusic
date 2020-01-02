@@ -13,21 +13,21 @@ type Props = {
 const Track: React.FC<Props> = ({ trackId }) => {
   const state = useSelector((state: any) => {
     const track = state.trackList.filter((track: any) => track.id === trackId);
-    return track ? track[0] : null
-  }, (prev, current) => {
-    return prev.id === current.id
-  }
+      return track ? track[0] : null
+    }, (prev, current) => {
+      return prev.id === current.id
+    }
   );
 
   const audioAPI = useAudioAPI();
   const [ isLoading, setLoading ] = useState(true);
 
   useEffect(() => {
-      audioAPI.loadTrack({
-            name: state.name,
-            id: state.id,
-      });
-      setLoading(false);
+    audioAPI.loadTrack({
+          name: state.name,
+          id: state.id,
+    });
+    setLoading(false);
   }, [audioAPI, state.name, state.id]);
 
   if (isLoading) { return <div></div> }
