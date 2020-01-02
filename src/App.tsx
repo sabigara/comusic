@@ -27,6 +27,7 @@ const store = initStore({
         {
           id: '1',
           name: 'take1',
+          fileURL: 'sounds/Rhodes.wav'
         },
         {
           id: '2',
@@ -49,7 +50,7 @@ const store = initStore({
     },
     {
       id: '1',
-      name: 'Guitar',
+      name: 'Bass',
       volume: 0.9,
       pan: 0,
       mute: false,
@@ -60,6 +61,23 @@ const store = initStore({
           id: '0',
           name: 'take0',
           fileURL: 'sounds/Bass.wav'
+        }
+      ],
+      activeTakeId: '0',
+    },
+    {
+      id: '2',
+      name: 'Rhodes',
+      volume: 0.9,
+      pan: 0,
+      mute: false,
+      solo: false,
+      icon: InstIcon.Drums,
+      takeList: [
+        {
+          id: '0',
+          name: 'take0',
+          fileURL: 'sounds/Rhodes.wav'
         }
       ],
       activeTakeId: '0',
