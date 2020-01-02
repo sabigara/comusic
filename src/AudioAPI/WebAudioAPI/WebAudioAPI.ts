@@ -1,8 +1,8 @@
-import AudioAPI from '../interface';
-import Track from './Track';
+import IAudioAPI from '../interface';
+import { Track } from './Track';
 import LoaderFactory from './loader/LoaderFactory';
 
-export default class implements AudioAPI {
+export default class implements IAudioAPI {
   ac: AudioContext;
   trackList: Track[];
 
@@ -23,6 +23,11 @@ export default class implements AudioAPI {
       const track = new Track(trackParams.id, trackParams.name, this.ac, audioBuffer);
       this.trackList.push(track);
     });
+  }
+
+  getTrack(id: string): Track | null {
+    const track = this.trackList.filter(track => track.id === id)[0];
+    return track || null;
   }
 
   play() {

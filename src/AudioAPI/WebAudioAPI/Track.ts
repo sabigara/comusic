@@ -1,7 +1,8 @@
-import { Track } from '../interface';
+import { ITrack } from '../interface';
 
-export default class implements Track {
+export class Track implements ITrack {
   ac: AudioContext;
+  _volume: number;
   gain: GainNode;
   pan: StereoPannerNode;
   analyzer: AnalyserNode;
@@ -17,6 +18,7 @@ export default class implements Track {
 
     this.ac = ac;
     this.buffer = audioBuffer;
+    this._volume = 0;
     this.gain = ac.createGain();
     this.pan = ac.createStereoPanner();
     this.analyzer = ac.createAnalyser();
@@ -35,11 +37,20 @@ export default class implements Track {
   }
 
   setVolume(value: number) {
+    this._volume = value;
     this.gain.gain.value = value;
   }
 
   setPan(value: number) {
     this.pan.pan.value = value;
+  }
+
+  mute() {
+    this.gain.gain.value = 0;
+  }
+
+  unMute() {
+    this.gain.gain.value = this._volume;
   }
 
   getPeak() {

@@ -7,6 +7,7 @@ import {
   changeVolume, changePan, changeName,
 } from '../actions/trackList';
 import useAudioAPI from '../hooks/useAudioAPI';
+import useShouldTrackPlay from '../hooks/useShouldTrackPlay';
 import Color from '../common/Color';
 import FlexBox from '../atoms/FlexBox';
 import Fader from '../atoms/Fader';
@@ -27,27 +28,28 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
   const audioAPI = useAudioAPI();
   const [ wavePeak, setWavePeak ] = React.useState(0);
 
-  useEffect(() => {
-    console.log('track panel');
-    const track = audioAPI.trackList.filter((track: any) => track.id === trackId)[0];
-    track.setPan(state.pan);
-  }, [state.pan, audioAPI.trackList, trackId]);
+  const trackAPI = audioAPI.getTrack(state.id)!;
+  const shouldPlay = useShouldTrackPlay(state.id);
 
   useEffect(() => {
-    const track = audioAPI.trackList.filter((track: any) => track.id === trackId)[0];
-    track.setVolume(state.volume);
-  }, [state.volume, audioAPI.trackList, trackId]);
+    trackAPI.setPan(state.pan);
+  }, [state.pan, trackAPI]);
 
   useEffect(() => {
-    const track = audioAPI.trackList.filter((track: any) => track.id === trackId)[0];
-    if (!track) { return }
+    trackAPI.setVolume(state.volume);
+  }, [state.volume, trackAPI]);
+
+  useEffect(() => {
+    shouldPlay ? trackAPI.unMute() : trackAPI.mute();
+  }, [shouldPlay, audioAPI, trackAPI])
+
+  useEffect(() => {
     const interval = setInterval(() => {
-      setWavePeak(track.getPeak() * 0.5);
+      setWavePeak(trackAPI?.getPeak() ? trackAPI?.getPeak() * 0.5 : 0);
     }, 1);
     return () => clearInterval(interval);
-  }, [audioAPI.trackList, trackId]);
+  }, [trackAPI]);
 
-  if (!state) {return <div/>}
   return (
     <Wrapper>
       <LeftSide>
@@ -57,7 +59,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
           fontSize="15px"
         />
         <InstrumentIcon
-          src="https://cdn5.vectorstock.com/i/thumb-large/58/94/drum-kit-glyph-icon-music-and-instrument-vector-18445894.jpg"
+          src=""
         />
       </LeftSide>
       <RightSide>
