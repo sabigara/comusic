@@ -1,6 +1,5 @@
 import IAudioAPI from '../interface';
 import { Track } from './Track';
-import LoaderFactory from './loader/LoaderFactory';
 
 export default class implements IAudioAPI {
   ac: AudioContext;
@@ -11,18 +10,19 @@ export default class implements IAudioAPI {
     this.trackList = [];
   }
 
-  async loadTrackList(trackList: {id: string, name: string, fileURL: string}[]) {
-    const loadPromises = trackList.map((track) => {
-      const loader = LoaderFactory.createLoader(track.fileURL, this.ac);
-      return loader.load();
-    });
+  async loadTrack(track: {id: string, name: string, fileURL?: string}) {
+    let _track: Track;
+    if (this.hasTrack(track.id)) {
+      _track = this.getTrack(track.id)!
+    } else {
+      _track = new Track(track.id, track.name, this.ac);
+    }
+    track.fileURL && await _track.loadFile(track.fileURL);
+    this.trackList.push(_track);
+  }
 
-    const audioBuffers = await Promise.all(loadPromises);
-    audioBuffers.forEach((audioBuffer, i) => {
-      const trackParams = trackList[i];
-      const track = new Track(trackParams.id, trackParams.name, this.ac, audioBuffer);
-      this.trackList.push(track);
-    });
+  hasTrack(id: string) {
+    return this.trackList.map(_track => _track.id).includes(id);
   }
 
   getTrack(id: string): Track | null {

@@ -1,4 +1,5 @@
 export interface ITrack {
+  loadFile(url: string): void;
   setVolume(value: number): void;
   setPan(value: number): void;
   getPeak(): number;
@@ -8,7 +9,7 @@ export interface ITrack {
 
 export default interface IAudioAPI {
   trackList: ITrack[];
-  loadTrackList(trackList: {id: string, name: string, fileURL: string}[]): Promise<void>;
+  loadTrack(track: {id: string, name: string, fileURL?: string}): Promise<void>;
   getTrack(id: string): ITrack | null;
   play(): void;
   stop(): void;

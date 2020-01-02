@@ -1,4 +1,5 @@
 import { ITrack } from '../interface';
+import LoaderFactory from './loader/LoaderFactory';
 
 export class Track implements ITrack {
   ac: AudioContext;
@@ -9,20 +10,23 @@ export class Track implements ITrack {
   array:Uint8Array | null = null;
   id: string;
   name: string;
-  buffer: AudioBuffer;
+  buffer: AudioBuffer | null = null;
   source: AudioBufferSourceNode | null  = null;
 
-  constructor(id: string, name: string, ac: AudioContext, audioBuffer: AudioBuffer) {
+  constructor(id: string, name: string, ac: AudioContext) {
     this.id = id;
     this.name = name;
-
     this.ac = ac;
-    this.buffer = audioBuffer;
     this._volume = 0;
     this.gain = ac.createGain();
     this.pan = ac.createStereoPanner();
     this.analyzer = ac.createAnalyser();
     this.array = new Uint8Array(this.analyzer.frequencyBinCount); 
+  }
+
+  async loadFile(url: string) {
+    const loader = LoaderFactory.createLoader(url, this.ac);
+    this.buffer = await loader.load();
   }
 
   play() {

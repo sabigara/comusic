@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
-import useAudioAPI from '../hooks/useAudioAPI';
-import usePrevious from '../hooks/usePrevious';
 import styled from 'styled-components';
 import Color from '../common/Color';
-import TrackPanel from './TrackPanel';
-import TakeList from './TakeList';
+import Track from './Track';
 
 
 const hasStateChanged = (prev: any[], current: any[]) => {
@@ -30,48 +27,13 @@ const TrackList: React.FC = () => {
     }
   });
 
-  const [ isLoading, setLoading ] = useState(true);
-
-  const audioAPI = useAudioAPI();
-  const activeTakeFileURLs = state.map((track) => {
-    return {
-      fileURL: track.takeList.filter((take) => take.id === track.activeTakeId)[0].fileURL,
-      name: track.name,
-      id: track.id,
-    }
-  });
-
-  const prev = usePrevious(state, []);
-
-  useEffect(() => {
-    async function _() {
-      await audioAPI.loadTrackList(activeTakeFileURLs);
-      setLoading(false);
-    }
-    if (!hasStateChanged(prev, state)) {
-      _();
-    }
-  }, [audioAPI, activeTakeFileURLs, prev, state]);
-
-  if (isLoading) { return <div></div> }
-
   return (
     <Wrapper>
       {
         state.map((track, i) => {
           return (
             <div key={`track-${i}`}>
-              <TrackWrapper>
-                <TrackPanel trackId={track.id}/>
-                <SeparatorV/>
-                <TakeList
-                  trackId={track.id}
-                  takeList={track.takeList}
-                  activeTakeId={track.activeTakeId}
-                />
-                <Spacer/>
-                <SeparatorV/>
-              </TrackWrapper>
+              <Track trackId={track.id}/>
               <SeparatorH/>
             </div>
           )
@@ -83,15 +45,6 @@ const TrackList: React.FC = () => {
 
 const Wrapper = styled.div`
   background-color: ${Color.Background};
-`
-
-const TrackWrapper = styled.div`
-  display: flex;
-`
-
-const SeparatorV = styled.div`
-  width: 2px;
-  background-color: #777;
 `
 
 const SeparatorH = styled.div`

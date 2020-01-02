@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
+import useAudioAPI from '../hooks/useAudioAPI';
 import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
@@ -15,15 +16,28 @@ type Take = {
 }
 
 type Props = {
-  takeList: Take[],
   trackId: string,
-  activeTakeId: string,
 }
 
-const TakeList: React.FC<Props> = ({ takeList, trackId, activeTakeId }) => {
+const TakeList: React.FC<Props> = ({ trackId }) => {
+  const state = useSelector((state: any) => {
+    const track = state.trackList.filter((track: any) => track.id === trackId);
+    return track ? track[0] : null
+  },
+    (prev, current) => prev.activeTakeId === current.activeTakeId
+  );
+
   const [ mouseOver, setMouseOver] = useState(false);
   const [ mouseHoverId, setMouseHoverId ] = useState<string | null>(null);
+  
   const dispatch = useDispatch();
+  const audioAPI = useAudioAPI();
+
+  const activeTakeURL = state.takeList.filter((take) => take.id === state.activeTakeId)[0].fileURL
+
+  useEffect(() => {
+    audioAPI.getTrack(trackId)!.loadFile(activeTakeURL);
+  }, [audioAPI, trackId, activeTakeURL]);
 
   return (
     <Wrapper
@@ -32,13 +46,13 @@ const TakeList: React.FC<Props> = ({ takeList, trackId, activeTakeId }) => {
       onMouseLeave={() => setMouseOver(false)}
     >
       {
-        takeList.map((take, i) => {
+        state.takeList.map((take, i) => {
           return (
             <TakeButton
               onMouseEnter={() => setMouseHoverId(take.id)}
               onMouseLeave={() => setMouseHoverId(null)}
               key={i}
-              isActive={take.id === activeTakeId}
+              isActive={take.id === state.activeTakeId}
               onClick={(e) => {
                 dispatch(changeActiveTake(trackId, take.id));
               }}
