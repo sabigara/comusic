@@ -10,21 +10,8 @@ export default class {
     this.ac = audioContext;
   }
 
-  fileLoad(e) {
-    const audioData = e.target.response || e.target.result;
-
-    return new Promise((resolve, reject) => {
-      this.ac.decodeAudioData(
-        audioData,
-        (audioBuffer) => {
-          this.audioBuffer = audioBuffer;
-          resolve(audioBuffer);
-        },
-        (err) => {
-          reject(err);
-        },
-      );
-    });
+  async fileLoad(arrayBuffer) {
+    return await this.ac.decodeAudioData(arrayBuffer);
   }
 
 }
