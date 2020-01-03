@@ -9,35 +9,36 @@ import More from '../atoms/More';
 
 import { changeActiveTake } from '../actions/trackList';
 
-type Take = {
-  id: string,
-  name: string,
-  fileURL: string,
-}
-
 type Props = {
   trackId: string,
+  onLoadStart: Function,
+  onLoadEnd: Function,
 }
 
-const TakeList: React.FC<Props> = ({ trackId }) => {
+const TakeList: React.FC<Props> = ({ trackId, onLoadStart, onLoadEnd }) => {
   const state = useSelector((state: any) => {
     const track = state.trackList.filter((track: any) => track.id === trackId);
     return track ? track[0] : null
   },
     (prev, current) => prev.activeTakeId === current.activeTakeId
   );
+  console.log('takelist')
 
   const [ mouseOver, setMouseOver] = useState(false);
   const [ mouseHoverId, setMouseHoverId ] = useState<string | null>(null);
-  
+
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
 
-  const activeTakeURL = state.takeList.filter((take) => take.id === state.activeTakeId)[0].fileURL
+  const activeTakeURL = state.takeList.filter((take) => take.id === state.activeTakeId)[0].fileURL;
 
   useEffect(() => {
-    audioAPI.getTrack(trackId)!.loadFile(activeTakeURL);
-  }, [audioAPI, trackId, activeTakeURL]);
+    async function _() {
+      await audioAPI.getTrack(trackId)!.loadFile(activeTakeURL);
+      onLoadEnd();
+    }
+    _();
+  }, [audioAPI, trackId, activeTakeURL, onLoadStart, onLoadEnd]);
 
   return (
     <Wrapper
@@ -54,7 +55,10 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
               key={i}
               isActive={take.id === state.activeTakeId}
               onClick={(e) => {
-                dispatch(changeActiveTake(trackId, take.id));
+                if (take.id !== state.activeTakeId) {
+                  onLoadStart();
+                  dispatch(changeActiveTake(trackId, take.id));
+                }
               }}
             >
               <ButtonLabel>{take.name}</ButtonLabel>

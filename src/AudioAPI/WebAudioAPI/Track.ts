@@ -1,3 +1,5 @@
+import extractPeaks from '../../common/extractPeaks';
+
 import { ITrack } from '../interface';
 import LoaderFactory from './loader/LoaderFactory';
 
@@ -66,5 +68,9 @@ export class Track implements ITrack {
   getPeak() {
     this.analyzer.getByteFrequencyData(this.array!);
     return Math.max.apply(null, Array.from(this.array!));
+  }
+
+  getPeakList() {
+    return extractPeaks(this.buffer, 10000, true);
   }
 }
