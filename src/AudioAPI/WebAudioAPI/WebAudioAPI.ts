@@ -16,9 +16,9 @@ export default class implements IAudioAPI {
       _track = this.getTrack(track.id)!
     } else {
       _track = new Track(track.id, track.name, this.ac);
+      this.trackList.push(_track);
     }
     track.fileURL && await _track.loadFile(track.fileURL);
-    this.trackList.push(_track);
   }
 
   hasTrack(id: string) {
