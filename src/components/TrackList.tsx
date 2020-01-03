@@ -7,11 +7,11 @@ import Track from './Track';
 
 
 const hasStateChanged = (prev: any[], current: any[]) => {
-return prev.reduce(
-  (isEqual: boolean, track: any, i: number) => {
-    return isEqual || track.id === current[i].id
-  }, false
-)
+  return prev.reduce(
+    (isEqual: boolean, track: any, i: number) => {
+      return isEqual || track.id === current[i].id
+    }, false
+  );
 }
 
 const TrackList: React.FC = () => {
@@ -50,10 +50,6 @@ const Wrapper = styled.div`
 const SeparatorH = styled.div`
   height: 2px;
   background-color: #777;
-`
-
-const Spacer = styled.div`
-  width: 5px;
 `
 
 export default TrackList;
