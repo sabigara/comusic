@@ -59,7 +59,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
           fontSize="15px"
         />
         <InstrumentIcon
-          src=""
+          src="placeholder.png"
         />
       </LeftSide>
       <RightSide>
