@@ -121,15 +121,13 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
 const Wrapper = styled.div`
   display: flex;
   width: 360px;
-  height: 170px;
-  background-color: ${Color.Background};
+  background-color: ${Color.Track.Background};
 `
 
 const LeftSide = styled.div`
   width: 160px;
-  height: 150px;
   padding: 7px;
-  background-color: ${Color.Background};
+  background-color: ${Color.Track.Background};
   text-align: center;
 `
 
@@ -141,7 +139,6 @@ const InstrumentIcon = styled.img`
 
 const RightSide = styled.div`
   width: 180px;
-  height: 170px;
 `
 
 const PanWrapper = styled.div`

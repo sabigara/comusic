@@ -7,22 +7,23 @@ import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
 
-import { changeActiveTake } from '../actions/trackList';
+import {
+  changeActiveTake,
+  loadActiveTakeStart,
+  loadActiveTakeSuccess
+} from '../actions/trackList';
 
 type Props = {
   trackId: string,
-  onLoadStart: Function,
-  onLoadEnd: Function,
 }
 
-const TakeList: React.FC<Props> = ({ trackId, onLoadStart, onLoadEnd }) => {
+const TakeList: React.FC<Props> = ({ trackId }) => {
   const state = useSelector((state: any) => {
     const track = state.trackList.filter((track: any) => track.id === trackId);
     return track ? track[0] : null
   },
     (prev, current) => prev.activeTakeId === current.activeTakeId
   );
-  console.log('takelist')
 
   const [ mouseOver, setMouseOver] = useState(false);
   const [ mouseHoverId, setMouseHoverId ] = useState<string | null>(null);
@@ -34,11 +35,12 @@ const TakeList: React.FC<Props> = ({ trackId, onLoadStart, onLoadEnd }) => {
 
   useEffect(() => {
     async function _() {
+      dispatch(loadActiveTakeStart(trackId));
       await audioAPI.getTrack(trackId)!.loadFile(activeTakeURL);
-      onLoadEnd();
+      dispatch(loadActiveTakeSuccess(trackId));
     }
     _();
-  }, [audioAPI, trackId, activeTakeURL, onLoadStart, onLoadEnd]);
+  }, [audioAPI, trackId, activeTakeURL, dispatch]);
 
   return (
     <Wrapper
@@ -56,7 +58,6 @@ const TakeList: React.FC<Props> = ({ trackId, onLoadStart, onLoadEnd }) => {
               isActive={take.id === state.activeTakeId}
               onClick={(e) => {
                 if (take.id !== state.activeTakeId) {
-                  onLoadStart();
                   dispatch(changeActiveTake(trackId, take.id));
                 }
               }}
@@ -87,13 +88,12 @@ const TakeList: React.FC<Props> = ({ trackId, onLoadStart, onLoadEnd }) => {
 }
 
 const Wrapper = styled.div<{mouseOver: boolean}>`
-  background-color: ${Color.Background};
+  background-color: ${Color.Track.Background};
   width: 150px;
-  height: 170px;
   overflow-y: scroll;
 
   &::-webkit-scrollbar {
-    background-color: ${Color.Background};
+    background-color: ${Color.Track.Background};
     width: 10px;
   }
 

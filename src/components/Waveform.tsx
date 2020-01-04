@@ -22,7 +22,7 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
     const track = state.trackList.filter((track: any) => track.id === trackId);
     return track ? track[0] : null
   }, (prev, current) => {
-    return prev.id === current.id
+    return prev.isTakeLoading === current.isTakeLoading;
   });
 
   const ref = useRef<HTMLCanvasElement>(null);
@@ -64,10 +64,11 @@ const Wrapper = styled.div`
   display: flex;
   flex-grow: 1;
   height: auto;
+  
 `
 
 const Canvas = styled.canvas`
-  height: 150px;
+  height: 130px;
 `
 
 export default Waveform;

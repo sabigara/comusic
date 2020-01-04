@@ -1,6 +1,11 @@
 export default {
-  Background: '#8F8F8F',
+  Track: {
+    Background: '#8F8F8F'
+  },
   Border: '#5A5A5A',
+  Waveform: {
+    Background: '#444444',
+  },
   ToolBar: {
     Background: {
       Highest: '#EEEEEE',

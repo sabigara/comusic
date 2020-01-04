@@ -33,8 +33,10 @@ const TrackList: React.FC = () => {
         state.map((track, i) => {
           return (
             <div key={`track-${i}`}>
-              <Track trackId={track.id}/>
-              <SeparatorH/>
+              <TrackWrapper >
+                <Track trackId={track.id}/>
+              </TrackWrapper>
+              { i < state.length - 1 ? <SeparatorH/> : null }
             </div>
           )
         })
@@ -44,11 +46,15 @@ const TrackList: React.FC = () => {
 }
 
 const Wrapper = styled.div`
-  background-color: ${Color.Background};
+  background-color: ${Color.Waveform.Background};
+`
+
+const TrackWrapper = styled.div`
+  height: 169px;
 `
 
 const SeparatorH = styled.div`
-  height: 2px;
+  height: 1px;
   background-color: #777;
 `
 

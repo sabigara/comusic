@@ -28,12 +28,48 @@ export const changeName = (trackId: string, name: string) => {
   };
 };
 
+export const loadTrackStart = (trackId: string) => {
+  return {
+    type: 'LOAD_TRACK_START',
+    payload: {
+      trackId: trackId,
+    }
+  };
+};
+
+export const loadTrackSuccess = (trackId: string) => {
+  return {
+    type: 'LOAD_TRACK_SUCCESS',
+    payload: {
+      trackId: trackId,
+    }
+  };
+};
+
 export const changeActiveTake = (trackId: string, activeTakeId: string) => {
   return {
     type: 'CHANGE_ACTIVE_TAKE',
     payload: {
       trackId: trackId,
       activeTakeId: activeTakeId,
+    }
+  };
+};
+
+export const loadActiveTakeStart = (trackId: string) => {
+  return {
+    type: 'LOAD_ACTIVE_TAKE_START',
+    payload: {
+      trackId: trackId,
+    }
+  };
+};
+
+export const loadActiveTakeSuccess = (trackId: string) => {
+  return {
+    type: 'LOAD_ACTIVE_TAKE_SUCCESS',
+    payload: {
+      trackId: trackId,
     }
   };
 };

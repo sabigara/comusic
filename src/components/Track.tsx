@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
+import Color from '../common/Color';
+import { loadTrackStart, loadTrackSuccess } from '../actions/trackList';
 import useAudioAPI from '../hooks/useAudioAPI';
 import TrackPanel from './TrackPanel';
 import TakeList from './TakeList';
-import Waveform from './Waveform';
+
 
 type Props = {
   trackId: string,
@@ -16,23 +18,25 @@ const Track: React.FC<Props> = ({ trackId }) => {
     const track = state.trackList.filter((track: any) => track.id === trackId);
       return track ? track[0] : null
     }, (prev, current) => {
-      return prev.id === current.id && prev.activeTakeId === current.activeTakeId;
+      return prev.id === current.id 
+        && prev.activeTakeId === current.activeTakeId
+        && prev.isTrackLoading === current.isTrackLoading;
     }
   );
 
+  const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
-  const [ isLoading, setLoading ] = useState(true);
-  const [ isTakeLoading, setTakeLoading ] = useState(true);
 
   useEffect(() => {
+    dispatch(loadTrackStart(trackId));
     audioAPI.loadTrack({
           name: state.name,
           id: state.id,
     });
-    setLoading(false);
-  }, [audioAPI, state.name, state.id]);
+    dispatch(loadTrackSuccess(trackId));
+  }, [audioAPI, state.name, state.id, dispatch, trackId]);
 
-  if (isLoading) { return <div></div> }
+  if (state.isTrackLoading) { return <div></div> }
 
   return(
     <TrackWrapper>
@@ -40,36 +44,26 @@ const Track: React.FC<Props> = ({ trackId }) => {
       <SeparatorV/>
       <TakeList
         trackId={trackId}
-        onLoadStart={() => setTakeLoading(true)}
-        onLoadEnd={() => setTakeLoading(false)}
       />
       <Spacer/>
       <SeparatorV/>
-      <WaveformWrapper>
-        {
-          isTakeLoading ? null : <Waveform trackId={trackId}/>
-        }
-      </WaveformWrapper>
     </TrackWrapper>
   )
 }
 
 const TrackWrapper = styled.div`
+  height: 100%;
   display: flex;
 `
 
 const SeparatorV = styled.div`
-  width: 2px;
+  width: 1px;
   background-color: #777;
 `
 
 const Spacer = styled.div`
   width: 5px;
-`
-
-const WaveformWrapper = styled.div`
-  flex-grow: 1;
-  background-color: #444444;
+  background-color: ${Color.Track.Background}
 `
 
 export default Track;
