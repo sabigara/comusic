@@ -1,18 +1,15 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 import styled from 'styled-components';
 import Color from '../common/Color';
 import Waveform from './Waveform';
+import Cursor from './Cursor';
 
 const hasStateChanged = (prev: any[], current: any[]) => {
   return prev.reduce(
     (isEqual: boolean, track: any, i: number) => {
-      return isEqual || (
-          track.id === current[i].id 
-          && track.isTakeLoading === current[i].isTakeLoading
-          && track.isTrackLoading === current[i].isTrackLoading
-      )
+      return isEqual || track.id === current[i].id 
     }, false
   );
 }
@@ -22,7 +19,6 @@ const WaveformList: React.FC = () => {
     return state.trackList
   }, (prev, current) => {
     // Rerendering should happen only when track(s) is inserted or deleted,
-    // or loading state has changed.
     if (prev.length !== current.length) { 
       return false 
     } else {
@@ -30,26 +26,28 @@ const WaveformList: React.FC = () => {
     }
   });
 
+  const ref = useRef<HTMLDivElement>(null);
+
   return (
-    <Wrapper>
-      {
-        state.map((track, i) => {
-          return (
-            <WaveformWrapper key={`waveform-${i}`}>
-              {
-                (track.isTrackLoading || track.isTakeLoading) 
-                ? <div>loading...</div> 
-                : <Waveform trackId={track.id}/>
-              }
-            </WaveformWrapper>
-          )
-        })
-      }
+    <Wrapper ref={ref}>
+      <Cursor/>
+      <div id="waveform-parent">
+        {
+          state.map((track, i) => {
+            return (
+              <WaveformWrapper key={`waveform-${i}`}>
+                <Waveform trackId={track.id}/>
+              </WaveformWrapper>
+            )
+          })
+        }
+      </div>
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div`
+  position: relative;
   flex-grow: 1;
   background-color: ${Color.Waveform.Background};
   overflow-x: auto;

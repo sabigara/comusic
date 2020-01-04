@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import useAudioAPI from '../hooks/useAudioAPI';
@@ -25,17 +25,21 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
     return prev.isTakeLoading === current.isTakeLoading;
   });
 
+  const dispatch = useDispatch();
   const ref = useRef<HTMLCanvasElement>(null);
   const audioAPI = useAudioAPI();
   const trackAPI = audioAPI.getTrack(state.id)!;
-
-  const peakList = trackAPI.getPeakList();
-  const peakListData = peakList.data[0];
+  
   const offset = 0;
 
   useEffect(()=> {
+    if (state.isTakeLoading) { return }
+
+    const peakList = trackAPI.getPeakList();
+    const peakListData = peakList.data[0];
     const canvas = ref!.current!;
     canvas.width = peakListData.length / 2;
+    canvas.height = 150;
     const cc = canvas.getContext('2d')!;
     const h2 = canvas.height / 2;
     const maxValue = 2 ** (peakList.bits - 1);
@@ -48,8 +52,7 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
       const maxPeak = peakListData[((i + offset) * 2) + 1] / maxValue;
       drawFrame(cc, h2, i, minPeak, maxPeak);
     }
-
-  }, [peakListData, peakList.bits]);
+  }, [dispatch, state.isTakeLoading, trackAPI]);
 
   return (
     <Wrapper>
@@ -68,7 +71,7 @@ const Wrapper = styled.div`
 `
 
 const Canvas = styled.canvas`
-  height: 130px;
+
 `
 
 export default Waveform;

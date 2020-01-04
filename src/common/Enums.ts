@@ -1,4 +1,4 @@
-export enum PlaybackState {
+export enum PlaybackStatus {
   Playing,
   Pausing,
   Stopping,

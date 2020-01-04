@@ -71,6 +71,6 @@ export class Track implements ITrack {
   }
 
   getPeakList() {
-    return extractPeaks(this.buffer, 10000, true);
+    return extractPeaks(this.buffer, 1000, true);
   }
 }

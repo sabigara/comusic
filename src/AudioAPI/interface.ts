@@ -12,6 +12,8 @@ export interface ITrack {
 
 export default interface IAudioAPI {
   trackList: ITrack[];
+  getSampleRate(): number;
+  getSecondsElapsed(): number;
   loadTrack(track: {id: string, name: string, fileURL?: string}): Promise<void>;
   getTrack(id: string): ITrack | null;
   play(): void;

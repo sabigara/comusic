@@ -4,10 +4,20 @@ import { Track } from './Track';
 export default class implements IAudioAPI {
   ac: AudioContext;
   trackList: Track[];
+  startTime: number;
 
   constructor() {
     this.ac = new AudioContext();
     this.trackList = [];
+    this.startTime = 0;
+  }
+
+  getSampleRate() {
+    return this.ac.sampleRate;
+  }
+
+  getSecondsElapsed() {
+    return this.ac.currentTime - this.startTime;
   }
 
   async loadTrack(track: {id: string, name: string, fileURL?: string}) {
@@ -31,6 +41,7 @@ export default class implements IAudioAPI {
   }
 
   play() {
+    this.startTime = this.ac.currentTime;
     this.trackList.forEach(track => {
       track.play();
     })

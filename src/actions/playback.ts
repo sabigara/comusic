@@ -16,6 +16,15 @@ export const stop = () => {
   };
 };
 
+export const updateTime = (secondsElapsed: number) => {
+  return {
+    type: 'UPDATE_TIME',
+    payload: {
+      secondsElapsed: secondsElapsed,
+    }
+  };
+};
+
 export type Actions = (
   | ReturnType<typeof play>
   | ReturnType<typeof pause>
