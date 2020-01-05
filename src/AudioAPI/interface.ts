@@ -12,10 +12,11 @@ export interface ITrack {
 
 export default interface IAudioAPI {
   trackList: ITrack[];
-  getSampleRate(): number;
+  sampleRate: number;
+  resolution: number;
   getSecondsElapsed(): number;
   loadTrack(track: {id: string, name: string, fileURL?: string}): Promise<void>;
   getTrack(id: string): ITrack | null;
-  play(): void;
+  play(offset: number): void;
   stop(): void;
 }

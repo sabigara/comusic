@@ -15,14 +15,20 @@ import PauseIcon from '../icons/Pause.png';
 const noop = () => {};
 
 const PlaybackControls: React.FC = () => {
-  const state = useSelector((state: any) => state.playback.status);
+  const state = useSelector(
+    (state: any) => state.playback,
+    (prev, current) => prev.status === current.status
+  );
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
-    switch(state) {
+    switch(state.status) {
       case PlaybackStatus.Playing:
-        audioAPI.play();
+        audioAPI.play(state.time);
+        break;
+      case PlaybackStatus.Pausing:
+        audioAPI.stop();
         break;
       case PlaybackStatus.Stopping:
         audioAPI.stop();
@@ -33,7 +39,7 @@ const PlaybackControls: React.FC = () => {
   })
 
   useEffect(() => {
-    switch(state) {
+    switch(state.status) {
       case PlaybackStatus.Playing:
         const interval = setInterval(() => {
           dispatch(updateTime(audioAPI.getSecondsElapsed()));
@@ -50,7 +56,7 @@ const PlaybackControls: React.FC = () => {
   return (
     <ToolBackItemContainer>
       <ToolBarItem
-        isActive={state === PlaybackStatus.Stopping}
+        isActive={state.status === PlaybackStatus.Stopping}
         setActive={noop}
         onClick={() => {
           dispatch(stop());
@@ -59,7 +65,7 @@ const PlaybackControls: React.FC = () => {
         <IconImg src={StopIcon} alt="stop"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={state === PlaybackStatus.Pausing}
+        isActive={state.status === PlaybackStatus.Pausing}
         setActive={noop}
         onClick={() => {
           dispatch(pause());
@@ -68,7 +74,7 @@ const PlaybackControls: React.FC = () => {
         <IconImg src={PauseIcon} alt="pause"/>
       </ToolBarItem>
       <ToolBarItem
-        isActive={state === PlaybackStatus.Playing}
+        isActive={state.status === PlaybackStatus.Playing}
         setActive={noop}
         onClick={() => {
           dispatch(play());

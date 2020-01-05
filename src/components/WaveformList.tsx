@@ -1,6 +1,9 @@
 import React, { useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
+import { updateTime } from '../actions/playback';
+import useAudioAPI from '../hooks/useAudioAPI';
+import { pixelsToSeconds } from '../common/conversions';
 import styled from 'styled-components';
 import Color from '../common/Color';
 import Waveform from './Waveform';
@@ -26,12 +29,22 @@ const WaveformList: React.FC = () => {
     }
   });
 
+  const dispatch = useDispatch();
+  const audioAPI = useAudioAPI();
   const ref = useRef<HTMLDivElement>(null);
 
+  const onSomewhereClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const left = e.clientX - ref.current!.getBoundingClientRect().left;
+    dispatch(updateTime(pixelsToSeconds(left, audioAPI.resolution, audioAPI.sampleRate)));
+  }
+
   return (
-    <Wrapper ref={ref}>
+    <Wrapper onClick={onSomewhereClick}>
       <Cursor/>
-      <div id="waveform-parent">
+      <div 
+        id="waveform-parent"
+        ref={ref}
+      >
         {
           state.map((track, i) => {
             return (

@@ -8,7 +8,7 @@ import useAudioAPI from '../hooks/useAudioAPI';
 const Cursor: React.FC = () => {
   const state = useSelector((state: any) => state.playback.time);
   const audioAPI = useAudioAPI();
-  const left = secondsToPixels(state, 1000, audioAPI.getSampleRate());
+  const left = secondsToPixels(state, 1000, audioAPI.sampleRate);
 
   return (
     <Wrapper style={{left: left.toString() + 'px'}}></Wrapper>

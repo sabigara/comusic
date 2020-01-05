@@ -33,11 +33,11 @@ export class Track implements ITrack {
     this.buffer = await loader.load();
   }
 
-  play() {
+  play(offset: number) {
     this.source = this.ac.createBufferSource()
     this.source.buffer = this.buffer;
     this.source.connect(this.gain).connect(this.pan).connect(this.analyzer).connect(this.ac.destination);
-    this.source.start(this.ac.currentTime);
+    this.source.start(this.ac.currentTime, offset);
   }
 
   stop() {
