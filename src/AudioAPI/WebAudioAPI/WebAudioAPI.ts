@@ -45,9 +45,7 @@ export default class implements IAudioAPI {
   play(offset: number) {
     this.startTime = this.ac.currentTime;
     this.offset = offset;
-    this.trackList.forEach(track => {
-      track.play(offset);
-    })
+    return Promise.all(this.trackList.map(track => track.play(offset)));
   }
 
   stop() {

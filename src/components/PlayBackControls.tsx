@@ -23,19 +23,23 @@ const PlaybackControls: React.FC = () => {
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
-    switch(state.status) {
-      case PlaybackStatus.Playing:
-        audioAPI.play(state.time);
-        break;
-      case PlaybackStatus.Pausing:
-        audioAPI.stop();
-        break;
-      case PlaybackStatus.Stopping:
-        audioAPI.stop();
-        break;
-      default:
-        break;
+    async function _() {
+      switch(state.status) {
+        case PlaybackStatus.Playing:
+          await audioAPI.play(state.time);
+          dispatch(stop());
+          break;
+        case PlaybackStatus.Pausing:
+          audioAPI.stop();
+          break;
+        case PlaybackStatus.Stopping:
+          audioAPI.stop();
+          break;
+        default:
+          break;
+      }    
     }
+    _();
   })
 
   useEffect(() => {

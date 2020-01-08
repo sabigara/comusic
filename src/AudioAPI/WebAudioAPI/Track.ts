@@ -4,73 +4,121 @@ import { ITrack } from '../interface';
 import LoaderFactory from './loader/LoaderFactory';
 
 export class Track implements ITrack {
-  ac: AudioContext;
-  volume: number;
-  gain: GainNode;
-  pan: StereoPannerNode;
-  isMuted: boolean;
-  analyzer: AnalyserNode;
-  array:Uint8Array | null = null;
-  id: string;
-  name: string;
-  buffer: AudioBuffer | null = null;
-  source: AudioBufferSourceNode | null  = null;
-
+  public id: string;
+  public name: string;
+  private ac: AudioContext;
+  private isMuted: boolean;
+  private gain: GainNode | null;
+  private gainValue: number;
+  private pan: StereoPannerNode | null;
+  private panValue: number;
+  private analyzer: AnalyserNode | null;
+  private tmpArray: Uint8Array | null = null;
+  private buffer: AudioBuffer | null = null;
+  private source: AudioBufferSourceNode | null  = null;
+  
   constructor(id: string, name: string, ac: AudioContext) {
     this.id = id;
     this.name = name;
     this.ac = ac;
-    this.volume = 0;
     this.isMuted = false;
-    this.gain = ac.createGain();
-    this.pan = ac.createStereoPanner();
-    this.analyzer = ac.createAnalyser();
-    this.array = new Uint8Array(this.analyzer.frequencyBinCount); 
+    this.gain = null;
+    this.gainValue = 0;
+    this.pan = null;
+    this.panValue = 0;
+    this.analyzer = null;
+    this.tmpArray = null;
   }
 
-  async loadFile(url: string) {
+  public async loadFile(url: string) {
     const loader = LoaderFactory.createLoader(url, this.ac);
     this.buffer = await loader.load();
   }
 
-  play(offset: number) {
-    this.source = this.ac.createBufferSource()
+  public play(offset: number): Promise<void> {
+    this.source = this.ac.createBufferSource();
+    this.gain = this.ac.createGain();
+    this.pan = this.ac.createStereoPanner();
+    this.analyzer = this.ac.createAnalyser();
+    this.setNodeValues();
+    this.tmpArray = new Uint8Array(this.analyzer.frequencyBinCount);
     this.source.buffer = this.buffer;
     this.source.connect(this.gain).connect(this.pan).connect(this.analyzer).connect(this.ac.destination);
     this.source.start(this.ac.currentTime, offset);
+
+    return new Promise((resolve, reject) => {
+      if (!this.source) { reject(); }
+
+      this.source!.onended = () => {
+        this.releaseResources();
+        resolve();
+      };
+    });
   }
 
-  stop() {
+  private setNodeValues() {
+    if (this.gain) {
+      const value = this.isMuted ? 0 : this.gainValue;
+      this.gain.gain.value = value;
+    }
+    if (this.pan) {
+      this.pan.pan.value = this.panValue;
+    }
+  }
+
+  private releaseResources() {
+    this.source?.disconnect();
+    this.gain?.disconnect();
+    this.pan?.disconnect();
+    this.analyzer?.disconnect();
+    this.source = null;
+    this.gain = null;
+    this.pan = null;
+    this.analyzer = null;
+  }
+
+  public stop() {
     this.source?.stop();
   }
 
-  setVolume(value: number) {
-    this.volume = value;
-    if (!this.isMuted) {
+  public setVolume(value: number) {
+    this.gainValue = value;
+    if (this.gain) {
       this.gain.gain.value = value;
     }
   }
 
-  setPan(value: number) {
-    this.pan.pan.value = value;
+  public setPan(value: number) {
+    this.panValue = value;
+    if (this.pan) {
+      this.pan.pan.value = value;
+    }
   }
 
-  mute() {
-    this.gain.gain.value = 0;
+  public mute() {
     this.isMuted = true;
+    if (this.gain) {
+      this.gain.gain.value = 0;
+    }
   }
 
-  unMute() {
-    this.gain.gain.value = this.volume;
+  public unMute() {
     this.isMuted = false;
+    if (this.gain) {
+      this.gain.gain.value = this.gainValue;
+    }
   }
 
-  getPeak() {
-    this.analyzer.getByteFrequencyData(this.array!);
-    return Math.max.apply(null, Array.from(this.array!));
+  public getPeak() {
+    if (this.analyzer && this.tmpArray) {
+      this.analyzer.getByteFrequencyData(this.tmpArray);
+      return Math.max.apply(null, Array.from(this.tmpArray));
+    } else {
+      return null;
+    }
   }
 
-  getPeakList() {
+  public getPeakList() {
     return extractPeaks(this.buffer, 1000, true);
   }
 }
