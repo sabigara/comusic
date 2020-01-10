@@ -45,7 +45,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const peak = trackAPI.getPeak();
+      const peak = trackAPI.peak;
       setWavePeak(peak ? peak * 0.5 : 0);
     }, 50);
     return () => clearInterval(interval);

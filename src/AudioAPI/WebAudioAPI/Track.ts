@@ -112,7 +112,7 @@ export class Track implements ITrack {
     }
   }
 
-  public getPeak() {
+  public get peak() {
     if (this.analyzer && this.tmpArray) {
       this.analyzer.getByteFrequencyData(this.tmpArray);
       return Math.max.apply(null, Array.from(this.tmpArray));

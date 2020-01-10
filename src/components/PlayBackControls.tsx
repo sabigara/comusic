@@ -46,7 +46,7 @@ const PlaybackControls: React.FC = () => {
     switch(state.status) {
       case PlaybackStatus.Playing:
         const interval = setInterval(() => {
-          dispatch(updateTime(audioAPI.getSecondsElapsed()));
+          dispatch(updateTime(audioAPI.secondsElapsed));
         }, 20);
         return () => clearInterval(interval);
       case PlaybackStatus.Stopping:

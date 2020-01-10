@@ -18,7 +18,7 @@ export default class implements IAudioAPI {
     this.offset = 0;
   }
 
-  getSecondsElapsed() {
+  public get secondsElapsed() {
     return this.ac.currentTime - this.startTime + this.offset;
   }
 
