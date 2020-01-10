@@ -7,6 +7,7 @@ import { pixelsToSeconds } from '../common/conversions';
 import styled from 'styled-components';
 import Color from '../common/Color';
 import Waveform from './Waveform';
+import Locator from './Locator';
 import Cursor from './Cursor';
 
 const hasStateChanged = (prev: any[], current: any[]) => {
@@ -40,7 +41,7 @@ const WaveformList: React.FC = () => {
 
   return (
     <Wrapper onClick={onSomewhereClick}>
-      <Cursor/>
+      <Locator/>
       <div 
         id="waveform-parent"
         ref={ref}
