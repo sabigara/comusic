@@ -6,6 +6,7 @@ import LoaderFactory from './loader/LoaderFactory';
 export class Track implements ITrack {
   public id: string;
   public name: string;
+  public duration: number;
   private ac: AudioContext;
   private isMuted: boolean;
   private gain: GainNode | null;
@@ -20,6 +21,7 @@ export class Track implements ITrack {
   constructor(id: string, name: string, ac: AudioContext) {
     this.id = id;
     this.name = name;
+    this.duration = 0;
     this.ac = ac;
     this.isMuted = false;
     this.gain = null;
@@ -33,6 +35,7 @@ export class Track implements ITrack {
   public async loadFile(url: string) {
     const loader = LoaderFactory.createLoader(url, this.ac);
     this.buffer = await loader.load();
+    this.duration = this.buffer!.duration;
   }
 
   public play(offset: number): Promise<void> {

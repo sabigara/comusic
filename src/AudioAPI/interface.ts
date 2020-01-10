@@ -1,5 +1,6 @@
 export interface ITrack {
-  loadFile(url: string): void;
+  duration: number;
+  loadFile(url: string): Promise<void>;
   setVolume(value: number): void;
   setPan(value: number): void;
   // Dynamically get real-time peak.
