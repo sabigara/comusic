@@ -222,10 +222,8 @@ const App: React.FC = () => {
     <Provider store={store}>
       <ToolBar/>
       <FixedHeightContainer>
-        <TrackWaveformWrapper style={{display: 'flex'}}>
           <TrackList/>
           <WaveformList/>
-        </TrackWaveformWrapper>
       </FixedHeightContainer>
     </Provider>
   );
@@ -234,9 +232,6 @@ const App: React.FC = () => {
 const FixedHeightContainer = styled.div`
   height: calc(100vh - 70px);
   overflow-y: scroll;
-`
-
-const TrackWaveformWrapper = styled.div`
   display: flex;
 `
 
