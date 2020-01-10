@@ -5,13 +5,16 @@ export const STATE_FINISHED = 3;
 
 
 export default class {
-  constructor(src, audioContext) {
-    this.src = src;
+  ac: AudioContext;
+  src: string;
+
+  constructor(src: string, audioContext: AudioContext) {
     this.ac = audioContext;
+    this.src = src;
   }
 
-  async fileLoad(arrayBuffer) {
-    return await this.ac.decodeAudioData(arrayBuffer);
+  fileLoad(arrayBuffer: ArrayBuffer) {
+    return this.ac.decodeAudioData(arrayBuffer);
   }
 
 }
