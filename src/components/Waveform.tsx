@@ -21,7 +21,7 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
   const state = useSelector((state: any) => {
     const track = state.trackList.filter((track: any) => track.id === trackId);
     return track ? track[0] : null
-  }, (prev, current) => {
+  }, (current, prev) => {
     return prev.isTakeLoading === current.isTakeLoading;
   });
 
@@ -29,7 +29,6 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const audioAPI = useAudioAPI();
   const trackAPI = audioAPI.getTrack(state.id)!;
-  
   const offset = 0;
 
   useEffect(()=> {
