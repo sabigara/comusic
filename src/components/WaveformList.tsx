@@ -18,6 +18,8 @@ const hasStateChanged = (prev: any[], current: any[]) => {
   );
 }
 
+const PADDING_LEFT = 20;
+
 const WaveformList: React.FC = () => {
   const state = useSelector((state: any) => {
     return state.trackList
@@ -35,13 +37,19 @@ const WaveformList: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
 
   const onSomewhereClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const left = e.clientX - ref.current!.getBoundingClientRect().left;
-    dispatch(updateTime(pixelsToSeconds(left, audioAPI.resolution, audioAPI.sampleRate)));
+    let left = e.clientX - ref.current!.getBoundingClientRect().left;
+    if (left < 0) { 
+      left = 0;
+    }
+    dispatch(updateTime(
+      pixelsToSeconds(left, audioAPI.resolution, audioAPI.sampleRate)
+    ));
   }
 
   return (
     <Wrapper onClick={onSomewhereClick}>
       <Locator/>
+      <Cursor offset={PADDING_LEFT}/>
       <div 
         id="waveform-parent"
         ref={ref}
@@ -65,6 +73,8 @@ const Wrapper = styled.div`
   flex-grow: 1;
   background-color: ${Color.Waveform.Background};
   overflow-x: auto;
+  overflow-y: visible;
+  padding-left: ${PADDING_LEFT.toString() + 'px'};
   &::-webkit-scrollbar {
     background-color: ${Color.Waveform.Background};
     height: 10px;
