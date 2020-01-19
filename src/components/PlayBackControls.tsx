@@ -19,6 +19,7 @@ const PlaybackControls: React.FC = () => {
     (state: any) => state.playback,
     (prev, current) => prev.status === current.status
   );
+
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
 
@@ -26,8 +27,7 @@ const PlaybackControls: React.FC = () => {
     async function _() {
       switch(state.status) {
         case PlaybackStatus.Playing:
-          await audioAPI.play(state.time);
-          dispatch(stop());
+          audioAPI.play(state.time);
           break;
         case PlaybackStatus.Pausing:
           audioAPI.stop();
@@ -37,7 +37,7 @@ const PlaybackControls: React.FC = () => {
           break;
         default:
           break;
-      }    
+      }
     }
     _();
   })
