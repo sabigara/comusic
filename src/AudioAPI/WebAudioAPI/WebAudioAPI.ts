@@ -2,15 +2,21 @@ import IAudioAPI from '../interface';
 import { Track } from './Track';
 
 export default class implements IAudioAPI {
-  ac: AudioContext;
-  trackList: Track[];
-  resolution: number;
-  sampleRate: number;
-  startTime: number;
-  offset: number;
+  public readonly trackList: Track[];
+  public readonly sampleRate: number;
+  public readonly resolution: number;
+  public startTime: number;
+  private ac: AudioContext;
+  private masterGain: GainNode;
+  private masterAnalyzer: AnalyserNode;
+  private masterTmpArray: Uint8Array;
+  private offset: number;
 
   constructor() {
     this.ac = new AudioContext();
+    this.masterGain = this.ac.createGain();
+    this.masterAnalyzer = this.ac.createAnalyser();
+    this.masterTmpArray = new Uint8Array(this.masterAnalyzer!.frequencyBinCount);
     this.trackList = [];
     this.resolution = 1000;
     this.sampleRate = this.ac.sampleRate;
@@ -27,7 +33,13 @@ export default class implements IAudioAPI {
     if (this.hasTrack(track.id)) {
       _track = this.getTrack(track.id)!
     } else {
-      _track = new Track(track.id, track.name, this.ac);
+      _track = new Track(
+        track.id,
+        track.name,
+        this.ac,
+        this.masterGain,
+        this.masterAnalyzer
+      );
       this.trackList.push(_track);
     }
     track.fileURL && await _track.loadFile(track.fileURL);
@@ -52,5 +64,15 @@ export default class implements IAudioAPI {
     this.trackList.forEach(track => {
       track.stop();
     })
+  }
+
+  setMasterVolume(value: number) {
+    this.masterGain.gain.value = value;
+  }
+
+  public get masterPeak(): number {
+  this.masterAnalyzer.getByteFrequencyData(this.masterTmpArray);
+    return Math.max.apply(null, Array.from(this.masterTmpArray));
+
   }
 }

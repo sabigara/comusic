@@ -25,6 +25,16 @@ export const updateTime = (secondsElapsed: number) => {
   };
 };
 
+
+export const changeMasterVolume = (masterVolume: number) => {
+  return {
+    type: 'CHANGE_MASTER_VOLUME',
+    payload: {
+      masterVolume: masterVolume,
+    }
+  };
+};
+
 export type Actions = (
   | ReturnType<typeof play>
   | ReturnType<typeof pause>

@@ -20,6 +20,8 @@ const playback: Reducer = (
       return { ...state, status: PlaybackStatus.Stopping };
     case 'UPDATE_TIME':
       return { ...state, time: action.payload.secondsElapsed };
+    case 'CHANGE_MASTER_VOLUME':
+      return { ...state, masterVolume: action.payload.masterVolume };
     default:
       return state;
   }

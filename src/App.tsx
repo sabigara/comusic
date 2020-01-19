@@ -13,6 +13,7 @@ const store = initStore({
   playback: {
     status: 2,
     time: 0,
+    masterVolume: 1,
   },
   trackList: [
     {

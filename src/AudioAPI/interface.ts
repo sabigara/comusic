@@ -16,9 +16,11 @@ export default interface IAudioAPI {
   readonly sampleRate: number;
   readonly resolution: number;
   readonly secondsElapsed: number;
+  readonly masterPeak: number;
   loadTrack(track: {id: string, name: string, fileURL?: string}): Promise<void>;
   getTrack(id: string): ITrack | null;
   // Return Promise that indicates all tracks has ended.
   play(offset: number): Promise<void[]>;
   stop(): void;
+  setMasterVolume(value: number): void;
 }

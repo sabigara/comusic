@@ -4,8 +4,10 @@ import styled from 'styled-components';
 import Color from '../common/Color';
 import PlaybackControls from './PlaybackControls';
 import Clock from './Clock';
+import MasterVolFader from './MasterVolFader';
 
 const ToolBar: React.FC = () => {
+
   return (
     <Wrapper>
       <ClockWrapper>
@@ -14,6 +16,9 @@ const ToolBar: React.FC = () => {
       <PlaybackWrapper>
        <PlaybackControls/>
       </PlaybackWrapper>
+      <MasterVolFaderWrapper>
+        <MasterVolFader/>
+      </MasterVolFaderWrapper>
     </Wrapper>
   )
 };
@@ -39,6 +44,10 @@ const PlaybackWrapper = styled.div`
   position: absolute;
   left: 50%;
   transform: translate(calc(-50% - 40px - 150px));
+`
+
+const MasterVolFaderWrapper = styled.div`
+  width: 150px;
 `
 
 export default ToolBar;

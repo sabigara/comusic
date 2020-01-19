@@ -9,6 +9,8 @@ export class Track implements ITrack {
   public duration: number;
   private ac: AudioContext;
   private isMuted: boolean;
+  private masterGain: GainNode;
+  private masterAnalyzer: AnalyserNode;
   private gain: GainNode | null;
   private gainValue: number;
   private pan: StereoPannerNode | null;
@@ -18,12 +20,20 @@ export class Track implements ITrack {
   private buffer: AudioBuffer | null = null;
   private source: AudioBufferSourceNode | null  = null;
   
-  constructor(id: string, name: string, ac: AudioContext) {
+  constructor(
+    id: string,
+    name: string,
+    ac: AudioContext,
+    masterGain: GainNode,
+    masterAnalyzer: AnalyserNode
+  ) {
     this.id = id;
     this.name = name;
     this.duration = 0;
     this.ac = ac;
     this.isMuted = false;
+    this.masterGain = masterGain;
+    this.masterAnalyzer = masterAnalyzer;
     this.gain = null;
     this.gainValue = 0;
     this.pan = null;
@@ -39,15 +49,12 @@ export class Track implements ITrack {
   }
 
   public play(offset: number): Promise<void> {
-    this.source = this.ac.createBufferSource();
-    this.gain = this.ac.createGain();
-    this.pan = this.ac.createStereoPanner();
-    this.analyzer = this.ac.createAnalyser();
+    this.createNodes();
     this.setNodeValues();
-    this.tmpArray = new Uint8Array(this.analyzer.frequencyBinCount);
-    this.source.buffer = this.buffer;
-    this.source.connect(this.gain).connect(this.pan).connect(this.analyzer).connect(this.ac.destination);
-    this.source.start(this.ac.currentTime, offset);
+    this.connectNodes();
+    this.tmpArray = new Uint8Array(this.analyzer!.frequencyBinCount);
+    this.source!.buffer = this.buffer;
+    this.source!.start(this.ac.currentTime, offset);
 
     return new Promise((resolve, reject) => {
       if (!this.source) { reject(); }
@@ -57,6 +64,13 @@ export class Track implements ITrack {
         resolve();
       };
     });
+  }
+
+  private createNodes() {
+    this.source = this.ac.createBufferSource();
+    this.gain = this.ac.createGain();
+    this.pan = this.ac.createStereoPanner();
+    this.analyzer = this.ac.createAnalyser();
   }
 
   private setNodeValues() {
@@ -69,11 +83,25 @@ export class Track implements ITrack {
     }
   }
 
+  private connectNodes() {
+    this.source!
+      .connect(this.gain!)
+      .connect(this.pan!)
+      .connect(this.analyzer!)
+      .connect(this.masterGain)
+      .connect(this.masterAnalyzer)
+      .connect(this.ac.destination);
+  }
+
   private releaseResources() {
     this.source?.disconnect();
     this.gain?.disconnect();
     this.pan?.disconnect();
     this.analyzer?.disconnect();
+    this.masterGain.disconnect();
+    this.masterAnalyzer.disconnect();
+    this.ac.destination.disconnect();
+
     this.source = null;
     this.gain = null;
     this.pan = null;
