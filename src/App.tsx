@@ -52,14 +52,14 @@ const store = initStore({
           name: 'take5',
         },
       ],
-      activeTakeId: '0_1',
+      activeTakeId: '0_0',
       isTrackLoading: true,
       isTakeLoading: true,
     },
     {
       id: '1',
       name: 'Bass',
-      volume: 0.9,
+      volume: 0.7,
       pan: 0,
       mute: false,
       solo: false,
@@ -78,9 +78,9 @@ const store = initStore({
     {
       id: '2',
       name: 'Rhodes',
-      volume: 0.9,
+      volume: 0.7,
       pan: 0,
-      mute: true,
+      mute: false,
       solo: false,
       icon: InstIcon.Drums,
       takeList: [

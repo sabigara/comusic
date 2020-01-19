@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
-import PlaybackControls from './PlaybackControls';
+import PlaybackControls from './PlayBackControls';
 import Clock from './Clock';
 import MasterVolFader from './MasterVolFader';
 
