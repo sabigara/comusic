@@ -1,4 +1,4 @@
-import { combineReducers, Reducer } from 'redux';
+import { combineReducers } from 'redux';
 
 import playback, {} from './playback';
 import trackList from './trackList';
