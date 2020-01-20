@@ -45,7 +45,6 @@ export class Track implements ITrack {
   }
 
   public async loadFile(url: string) {
-    this.stop();
     const loader = LoaderFactory.createLoader(url, this.ac);
     this.buffer = await loader.load();
     this.duration = this.buffer!.duration;
@@ -65,7 +64,7 @@ export class Track implements ITrack {
         reject();
       }
 
-      this.source!.onended = () => {
+      this.source!.onended = (e) => {
         this.isPlaying = false;
         resolve();
       };

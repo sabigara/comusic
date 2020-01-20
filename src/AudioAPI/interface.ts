@@ -3,6 +3,7 @@ export interface ITrack {
   readonly isPlaying: boolean;
   loadFile(url: string): Promise<void>;
   play(offset: number): Promise<void>;
+  stop(): void;
   setVolume(value: number): void;
   setPan(value: number): void;
   // Dynamically get real-time peak.

@@ -42,7 +42,6 @@ const Track: React.FC<Props> = ({ trackId }) => {
 
   useEffect(() => {
     const trackAPI = audioAPI.loadTrack(track.id, track.name);
-    
     return () => {
       trackAPI.release();
     }
@@ -56,9 +55,10 @@ const Track: React.FC<Props> = ({ trackId }) => {
   }, [audioAPI, track.id, track.name, track.pan, track.volume]);
 
   useEffect(() => {
+    const trackAPI = audioAPI.tracks[trackId];
+    trackAPI.stop();
     if (loadingTake) return;
     if (playback.status === PlaybackStatus.Playing) {
-      const trackAPI = audioAPI.tracks[trackId];
       if (!trackAPI.isPlaying) {
         trackAPI.play(playback.time);
       }
