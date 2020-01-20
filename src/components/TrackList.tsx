@@ -16,7 +16,7 @@ const hasStateChanged = (prev: any[], current: any[]) => {
 
 const TrackList: React.FC = () => {
   const state = useSelector((state: any) => {
-    return state.trackList
+    return state.tracks.allIds.map((id: string) => state.tracks.byId[id]);
   }, (prev, current) => {
     // Rerendering should happen only when track(s) is inserted or deleted.
     // (Not when volume of a track changed, for example.)

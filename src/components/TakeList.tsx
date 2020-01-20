@@ -1,46 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import useAudioAPI from '../hooks/useAudioAPI';
 import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
 
-import {
-  changeActiveTake,
-  loadActiveTakeStart,
-  loadActiveTakeSuccess
-} from '../actions/trackList';
+import { changeActiveTake } from '../actions/tracks';
 
 type Props = {
   trackId: string,
 }
 
 const TakeList: React.FC<Props> = ({ trackId }) => {
-  const state = useSelector((state: any) => {
-    const track = state.trackList.filter((track: any) => track.id === trackId);
-    return track ? track[0] : null
-  },
-    (prev, current) => prev.activeTakeId === current.activeTakeId
-  );
-
-  const [ mouseOver, setMouseOver] = useState(false);
-  const [ mouseHoverId, setMouseHoverId ] = useState<string | null>(null);
+  const takes = useSelector((state: any) => {
+    return state.takes.allIds
+      .map(id => state.takes.byId[id])
+      .filter(take => take.track === trackId);
+  });
+  const activeTake = useSelector((state: any) => {
+    const activeTakeId = state.tracks.byId[trackId].activeTake;
+    return state.takes.byId[activeTakeId];
+  });
 
   const dispatch = useDispatch();
-  const audioAPI = useAudioAPI();
-
-  const activeTakeURL = state.takeList.filter((take) => take.id === state.activeTakeId)[0].fileURL;
-
-  useEffect(() => {
-    async function _() {
-      dispatch(loadActiveTakeStart(trackId));
-      await audioAPI.getTrack(trackId)!.loadFile(activeTakeURL);
-      dispatch(loadActiveTakeSuccess(trackId));
-    }
-    _();
-  }, [audioAPI, trackId, activeTakeURL, dispatch]);
+  const [ mouseOver, setMouseOver] = useState(false);
+  const [ mouseHoverId, setMouseHoverId ] = useState<string | null>(null);
 
   return (
     <Wrapper
@@ -49,15 +34,15 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       onMouseLeave={() => setMouseOver(false)}
     >
       {
-        state.takeList.map((take, i) => {
+        takes.map((take, i) => {
           return (
             <TakeButton
               onMouseEnter={() => setMouseHoverId(take.id)}
               onMouseLeave={() => setMouseHoverId(null)}
               key={i}
-              isActive={take.id === state.activeTakeId}
+              isActive={take.id === activeTake.id}
               onClick={(e) => {
-                if (take.id !== state.activeTakeId) {
+                if (take.id !== activeTake.id) {
                   dispatch(changeActiveTake(trackId, take.id));
                 }
               }}

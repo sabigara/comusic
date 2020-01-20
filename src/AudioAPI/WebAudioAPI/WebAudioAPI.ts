@@ -1,8 +1,12 @@
 import IAudioAPI from '../interface';
 import { Track } from './Track';
 
+type TrackMap = {
+  [key: string]: Track
+}
+
 export default class implements IAudioAPI {
-  public readonly trackList: Track[];
+  public readonly tracks: TrackMap;
   public readonly sampleRate: number;
   public readonly resolution: number;
   public startTime: number;
@@ -17,7 +21,7 @@ export default class implements IAudioAPI {
     this.masterGain = this.ac.createGain();
     this.masterAnalyzer = this.ac.createAnalyser();
     this.masterTmpArray = new Uint8Array(this.masterAnalyzer!.frequencyBinCount);
-    this.trackList = [];
+    this.tracks = {};
     this.resolution = 1000;
     this.sampleRate = this.ac.sampleRate;
     this.startTime = 0;
@@ -28,40 +32,36 @@ export default class implements IAudioAPI {
     return this.ac.currentTime - this.startTime + this.offset;
   }
 
-  async loadTrack(track: {id: string, name: string, fileURL?: string}) {
-    let _track: Track;
-    if (this.hasTrack(track.id)) {
-      _track = this.getTrack(track.id)!
-    } else {
-      _track = new Track(
-        track.id,
-        track.name,
-        this.ac,
-        this.masterGain,
-        this.masterAnalyzer
-      );
-      this.trackList.push(_track);
-    }
-    track.fileURL && await _track.loadFile(track.fileURL);
+  loadTrack(id: string, name: string) {
+    const track = new Track(
+      id,
+      name,
+      this.ac,
+      this.masterGain,
+      this.masterAnalyzer
+    );
+    this.tracks[id] = track;
+    return track;
   }
 
   hasTrack(id: string) {
-    return this.trackList.map(_track => _track.id).includes(id);
+    return id in this.tracks;
   }
 
   getTrack(id: string): Track | null {
-    const track = this.trackList.filter(track => track.id === id)[0];
-    return track || null;
+    return this.tracks[id] || null;
   }
 
   play(offset: number) {
     this.startTime = this.ac.currentTime;
     this.offset = offset;
-    return Promise.all(this.trackList.map(track => track.play(offset)));
+    return Promise.all(
+      Object.values(this.tracks).map(track => track.play(offset))
+    );
   }
 
   stop() {
-    this.trackList.forEach(track => {
+    Object.values(this.tracks).forEach(track => {
       track.stop();
     })
   }
@@ -71,8 +71,7 @@ export default class implements IAudioAPI {
   }
 
   public get masterPeak(): number {
-  this.masterAnalyzer.getByteFrequencyData(this.masterTmpArray);
+    this.masterAnalyzer.getByteFrequencyData(this.masterTmpArray);
     return Math.max.apply(null, Array.from(this.masterTmpArray));
-
   }
 }

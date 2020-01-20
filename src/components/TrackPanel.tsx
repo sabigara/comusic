@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import {
   muteOn, muteOff, soloOn, soloOff,
   changeVolume, changePan, changeName,
-} from '../actions/trackList';
+} from '../actions/tracks';
 import useAudioAPI from '../hooks/useAudioAPI';
 import useShouldTrackPlay from '../hooks/useShouldTrackPlay';
 import Color from '../common/Color';
@@ -19,44 +19,43 @@ type Props = {
 }
 
 const TrackPanel: React.FC<Props> = ({ trackId }) => {
-  const state = useSelector((state: any) => {
-    const track = state.trackList.filter((track: any) => track.id === trackId);
-    return track ? track[0] : null
+  const track = useSelector((state: any) => {
+    return state.tracks.byId[trackId];
   });
 
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
   const [ wavePeak, setWavePeak ] = React.useState(0);
-
-  const trackAPI = audioAPI.getTrack(state.id)!;
-  const shouldPlay = useShouldTrackPlay(state.id);
+  const shouldPlay = useShouldTrackPlay(track.id);
 
   useEffect(() => {
-    trackAPI.setPan(state.pan);
-  }, [state.pan, trackAPI]);
+    audioAPI.getTrack(track.id)?.setPan(track.pan);
+  }, [audioAPI, track.id, track.pan]);
 
   useEffect(() => {
-    trackAPI.setVolume(state.volume);
-  }, [state.volume, trackAPI]);
+    audioAPI.getTrack(track.id)?.setVolume(track.volume);
+  }, [audioAPI, track.id, track.volume]);
 
   useEffect(() => {
+    const trackAPI = audioAPI.tracks[track.id];
+    if (!trackAPI) return;
     shouldPlay ? trackAPI.unMute() : trackAPI.mute();
-  }, [shouldPlay, trackAPI])
+  }, [audioAPI, shouldPlay, track.id])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const peak = trackAPI.peak;
+      const peak = audioAPI.getTrack(track.id)?.peak;
       setWavePeak(peak ? peak * 0.5 : 0);
     }, 50);
     return () => clearInterval(interval);
-  }, [trackAPI]);
+  }, [audioAPI, track.id]);
 
   return (
     <Wrapper>
       <LeftSide>
         <EditableLabel
-          text={state.name}
-          setText={(text: string) => dispatch(changeName(state.id, text))}
+          text={track.name}
+          setText={(text: string) => dispatch(changeName(track.id, text))}
           fontSize="15px"
         />
         <InstrumentIcon
@@ -66,7 +65,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
       <RightSide>
       <Fader
         onChange={(e, vol) => {
-          dispatch(changeVolume(state.id, vol));
+          dispatch(changeVolume(track.id, vol));
         }}
         onChangeCommitted={(e, val) => {}}
         onMouseDown={() => {}}
@@ -75,7 +74,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
         max={1}
         min={0}
         step={0.01}
-        value={state.volume}
+        value={track.volume}
         wavePeak={wavePeak}
         type='volume'
         railHeight={12}
@@ -86,7 +85,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
         <PanWrapper>
           <Fader
             onChange={(e, pan) => {
-              dispatch(changePan(state.id, pan));
+              dispatch(changePan(track.id, pan));
             }}
             onChangeCommitted={(e, val) => {}}
             onMouseDown={() => {}}
@@ -94,7 +93,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
             max={1}
             min={-1}
             step={0.01}
-            value={state.pan}
+            value={track.pan}
             type='pan'
             railHeight={9}
             knobHeight={15}
@@ -103,13 +102,13 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
         </PanWrapper>
         <MuteSoloWrapper>
           <MuteSoloButton 
-            muteOn={state.mute}
+            muteOn={track.mute}
             onMuteClick={() => {
-              state.mute ? dispatch(muteOff(state.id)) : dispatch(muteOn(state.id));
+              track.mute ? dispatch(muteOff(track.id)) : dispatch(muteOn(track.id));
             }}
-            soloOn={state.solo}
+            soloOn={track.solo}
             onSoloClick={() => {
-              state.solo ? dispatch(soloOff(state.id)) : dispatch(soloOn(state.id));
+              track.solo ? dispatch(soloOff(track.id)) : dispatch(soloOn(track.id));
             }}
           />
         </MuteSoloWrapper>

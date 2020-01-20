@@ -1,21 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
 
+import useLoading from '../hooks/useLoading';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { secondsToPixels } from '../common/conversions';
 import styled from 'styled-components';
 
 const Locator: React.FC = () => {
-  const state = useSelector(
-    (state: any) => state.trackList.map(track => track.isTakeLoading),
-    shallowEqual
-  );
-
+  const loadingTake = useLoading('LOAD_ACTIVE_TAKE');
   const audioAPI = useAudioAPI();
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(()=> {
-    const maxLength = Math.max(...audioAPI.trackList.map(track => track.duration));
+    if (loadingTake) return;
+
+    const maxLength = Math.max(...Object.values(audioAPI.tracks).map(track => track.duration));
     const canvas = ref!.current!;
     canvas.width = secondsToPixels(maxLength, audioAPI.resolution, audioAPI.sampleRate) + 100;
     canvas.height = 20;
@@ -28,7 +26,7 @@ const Locator: React.FC = () => {
       cc.fillRect(px, 10, 1, 10);
     }
 
-  }, [audioAPI.resolution, audioAPI.sampleRate, audioAPI.trackList, state]);
+  }, [audioAPI.resolution, audioAPI.sampleRate, audioAPI.tracks, loadingTake]);
 
   return (
     <Wrapper>

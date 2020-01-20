@@ -106,7 +106,14 @@ function makeMono(channelPeaks, bits) {
 * @param {Number} cueIn - index in channel to start peak calculations from.
 * @param {Number} cueOut - index in channel to end peak calculations from (non-inclusive).
 */
-export default function(source, samplesPerPixel, isMono, cueIn?, cueOut?, bits?) {
+export default function(
+    source: AudioBuffer,
+    samplesPerPixel: number,
+    isMono: boolean,
+    cueIn?: number,
+    cueOut?: number,
+    bits?: number
+) {
     samplesPerPixel = samplesPerPixel || 10000;
     bits = bits || 8;
     
@@ -119,21 +126,14 @@ export default function(source, samplesPerPixel, isMono, cueIn?, cueOut?, bits?)
     }
 
     const numChan = source.numberOfChannels;
-    let peaks: any[] = [];
+    let peaks: number[][] = [];
 
-    if (typeof source.subarray === "undefined") {
-        for (let c = 0; c < numChan; c++) {
-            const channel = source.getChannelData(c);
-            cueIn = cueIn || 0;
-            cueOut = cueOut || channel.length;
-            const slice = channel.subarray(cueIn, cueOut);
-            peaks.push(extractPeaks(slice, samplesPerPixel, bits));
-        }
-    }
-    else {
+    for (let c = 0; c < numChan; c++) {
+        const channel = source.getChannelData(c);
         cueIn = cueIn || 0;
-        cueOut = cueOut || source.length;
-        peaks.push(extractPeaks(source.subarray(cueIn, cueOut), samplesPerPixel, bits));
+        cueOut = cueOut || channel.length;
+        const slice = channel.subarray(cueIn, cueOut);
+        peaks.push(extractPeaks(slice, samplesPerPixel, bits));
     }
 
     if (isMono && peaks.length > 1) {

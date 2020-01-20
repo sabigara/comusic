@@ -6,18 +6,19 @@ export interface ITrack {
   // Dynamically get real-time peak.
   readonly peak: number | null;
   // Statically get every peaks of whole audio buffer.
-  getPeakList(): { length: any; data: any[]; bits: any; };
+  getPeakList(): { length: number, data: number[][], bits: number } | null;
   mute(): void;
   unMute(): void;
+  release(): void;
 }
 
 export default interface IAudioAPI {
-  readonly trackList: ITrack[];
+  readonly tracks: {[key: string]: ITrack};
   readonly sampleRate: number;
   readonly resolution: number;
   readonly secondsElapsed: number;
   readonly masterPeak: number;
-  loadTrack(track: {id: string, name: string, fileURL?: string}): Promise<void>;
+  loadTrack(id: string, name: string): ITrack;
   getTrack(id: string): ITrack | null;
   // Return Promise that indicates all tracks has ended.
   play(offset: number): Promise<void[]>;

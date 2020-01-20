@@ -1,50 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
-import { loadTrackStart, loadTrackSuccess } from '../actions/trackList';
+import { 
+  loadActiveTakeRequest,
+  loadActiveTakeSuccess,
+} from '../actions/tracks';
 import useAudioAPI from '../hooks/useAudioAPI';
 import TrackPanel from './TrackPanel';
 import TakeList from './TakeList';
-
 
 type Props = {
   trackId: string,
 }
 
 const Track: React.FC<Props> = ({ trackId }) => {
-  const state = useSelector((state: any) => {
-    const track = state.trackList.filter((track: any) => track.id === trackId);
-      return track ? track[0] : null
+  const track = useSelector((state: any) => {
+      return state.tracks.byId[trackId];
     }, (prev, current) => {
-      return prev.id === current.id 
-        && prev.activeTakeId === current.activeTakeId
-        && prev.isTrackLoading === current.isTrackLoading;
+      return prev.activeTake === current.activeTake;
     }
   );
+  const activeTake = useSelector((state: any) => {
+    const activeTakeId = state.tracks.byId[trackId].activeTake;
+    return state.takes.byId[activeTakeId];
+  });
+  const file = useSelector((state: any) => {
+    return state.files.byId[activeTake.file];
+  });
 
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
-    dispatch(loadTrackStart(trackId));
-    audioAPI.loadTrack({
-          name: state.name,
-          id: state.id,
-    });
-    dispatch(loadTrackSuccess(trackId));
-  }, [audioAPI, state.name, state.id, dispatch, trackId]);
+    const trackAPI = audioAPI.loadTrack(track.id, track.name);
+    trackAPI.setVolume(track.volume);
+    trackAPI.setPan(track.pan);
+    // shouldPlay ? trackAPI.unMute() : trackAPI.mute();
+    
+    return () => {
+      trackAPI.release();
+    }
+  });
 
-  if (state.isTrackLoading) { return <div></div> }
+  useEffect(() => {
+    async function _() {
+      dispatch(loadActiveTakeRequest(track.id));
+      await audioAPI.tracks[track.id]!.loadFile(file.uri);
+      dispatch(loadActiveTakeSuccess(track.id));
+    }
+    _();
+  }, [dispatch, audioAPI.tracks, file.uri, track.id]);
 
   return(
     <TrackWrapper>
       <TrackPanel trackId={trackId}/>
       <SeparatorV/>
-      <TakeList
-        trackId={trackId}
-      />
+      <TakeList trackId={trackId}/>
       <Spacer/>
       <SeparatorV/>
     </TrackWrapper>

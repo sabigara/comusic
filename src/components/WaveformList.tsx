@@ -22,7 +22,7 @@ const PADDING_LEFT = 20;
 
 const WaveformList: React.FC = () => {
   const state = useSelector((state: any) => {
-    return state.trackList
+    return state.tracks.allIds.map(id => state.tracks.byId[id]);
   }, (prev, current) => {
     // Rerendering should happen only when track(s) is inserted or deleted,
     if (prev.length !== current.length) { 

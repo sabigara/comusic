@@ -1,13 +1,19 @@
 import { combineReducers } from 'redux';
 
+import loading from './loading';
 import playback, {} from './playback';
-import trackList from './trackList';
+import tracks from './tracks';
+import takes from './takes';
+import files from './files';
 
 
 const getReducers = () => {
   const reducers = combineReducers({
+    loading,
     playback,
-    trackList,
+    tracks,
+    takes,
+    files,
   });
   return reducers;
 };
