@@ -7,6 +7,7 @@ export class Track implements ITrack {
   public id: string;
   public name: string;
   public duration: number;
+  public isPlaying: boolean;
   private ac: AudioContext;
   private isMuted: boolean;
   private masterGain: GainNode;
@@ -30,6 +31,7 @@ export class Track implements ITrack {
     this.id = id;
     this.name = name;
     this.duration = 0;
+    this.isPlaying = false;
     this.ac = ac;
     this.gain = this.ac.createGain();
     this.pan = this.ac.createStereoPanner();
@@ -43,6 +45,7 @@ export class Track implements ITrack {
   }
 
   public async loadFile(url: string) {
+    this.stop();
     const loader = LoaderFactory.createLoader(url, this.ac);
     this.buffer = await loader.load();
     this.duration = this.buffer!.duration;
@@ -54,12 +57,17 @@ export class Track implements ITrack {
     this.connectNodes();
     this.source.buffer = this.buffer;
     this.source.start(this.ac.currentTime, offset);
+    this.isPlaying = true;
 
     return new Promise((resolve, reject) => {
-      if (!this.source) { reject(); }
+      if (!this.source) {
+        this.isPlaying = false;
+        reject();
+      }
 
       this.source!.onended = () => {
         this.source = null;
+        this.isPlaying = false;
         resolve();
       };
     });
@@ -97,35 +105,30 @@ export class Track implements ITrack {
   }
 
   public stop() {
-    this.source?.stop();
+    if (this.source) {
+      this.source.stop();
+      this.isPlaying = false;
+    }
   }
 
   public setVolume(value: number) {
     this.gainValue = value;
-    if (this.gain) {
-      this.gain.gain.value = value;
-    }
+    this.gain.gain.value = value;
   }
 
   public setPan(value: number) {
     this.panValue = value;
-    if (this.pan) {
-      this.pan.pan.value = value;
-    }
+    this.pan.pan.value = value;
   }
 
   public mute() {
     this.isMuted = true;
-    if (this.gain) {
-      this.gain.gain.value = 0;
-    }
+    this.gain.gain.value = 0;
   }
 
   public unMute() {
     this.isMuted = false;
-    if (this.gain) {
-      this.gain.gain.value = this.gainValue;
-    }
+    this.gain.gain.value = this.gainValue;
   }
 
   public get peak() {

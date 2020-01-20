@@ -2,11 +2,13 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
+import { PlaybackStatus } from '../common/Enums';
 import Color from '../common/Color';
 import { 
   loadActiveTakeRequest,
   loadActiveTakeSuccess,
 } from '../actions/tracks';
+import useLoading from '../hooks/useLoading';
 import useAudioAPI from '../hooks/useAudioAPI';
 import TrackPanel from './TrackPanel';
 import TakeList from './TakeList';
@@ -29,20 +31,39 @@ const Track: React.FC<Props> = ({ trackId }) => {
   const file = useSelector((state: any) => {
     return state.files.byId[activeTake.file];
   });
-
+  const playback = useSelector((state: any) => {
+    return state.playback;
+  }, (prev, current) => {
+    return prev.status === current.status;
+  });
+  const loadingTake = useLoading('LOAD_ACTIVE_TAKE', trackId);
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
     const trackAPI = audioAPI.loadTrack(track.id, track.name);
-    trackAPI.setVolume(track.volume);
-    trackAPI.setPan(track.pan);
-    // shouldPlay ? trackAPI.unMute() : trackAPI.mute();
     
     return () => {
       trackAPI.release();
     }
-  });
+  }, [audioAPI, track.id, track.name]);
+
+  useEffect(() => {
+    const trackAPI = audioAPI.tracks[track.id]
+    trackAPI.setVolume(track.volume);
+    trackAPI.setPan(track.pan);
+    // shouldPlay ? trackAPI.unMute() : trackAPI.mute();
+  }, [audioAPI, track.id, track.name, track.pan, track.volume]);
+
+  useEffect(() => {
+    if (loadingTake) return;
+    if (playback.status === PlaybackStatus.Playing) {
+      const trackAPI = audioAPI.tracks[trackId];
+      if (!trackAPI.isPlaying) {
+        trackAPI.play(playback.time);
+      }
+    }
+  }, [audioAPI.tracks, loadingTake, playback.status, playback.time, trackId])
 
   useEffect(() => {
     async function _() {

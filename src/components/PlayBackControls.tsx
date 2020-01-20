@@ -40,7 +40,7 @@ const PlaybackControls: React.FC = () => {
       }
     }
     _();
-  })
+  }, [audioAPI, state.status, state.time])
 
   useEffect(() => {
     switch(state.status) {
