@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { PlaybackStatus } from '../common/Enums';
 import { updateTime } from '../actions/playback';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { pixelsToSeconds } from '../common/conversions';
@@ -31,6 +32,9 @@ const WaveformList: React.FC = () => {
       return hasStateChanged(prev, current);
     }
   });
+  const playbackStatus = useSelector(
+    (state: any) => state.playback.status
+  );
 
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
@@ -41,9 +45,12 @@ const WaveformList: React.FC = () => {
     if (left < 0) { 
       left = 0;
     }
-    dispatch(updateTime(
-      pixelsToSeconds(left, audioAPI.resolution, audioAPI.sampleRate)
-    ));
+    const time = pixelsToSeconds(left, audioAPI.resolution, audioAPI.sampleRate);
+    dispatch(updateTime(time));
+    if (playbackStatus === PlaybackStatus.Playing) {
+      audioAPI.stop();
+      audioAPI.play(time);
+    }
   }
 
   return (

@@ -66,17 +66,18 @@ export class Track implements ITrack {
       }
 
       this.source!.onended = () => {
-        this.source = null;
         this.isPlaying = false;
         resolve();
       };
     });
   }
 
-  private setNodeValues() {
-    const value = this.isMuted ? 0 : this.gainValue;
-    this.gain.gain.value = value;
-    this.pan.pan.value = this.panValue;
+  public stop() {
+    if (this.source) {
+      this.source.stop();
+      this.source = null;
+      this.isPlaying = false;
+    }
   }
 
   private connectNodes() {
@@ -102,13 +103,6 @@ export class Track implements ITrack {
     delete this.gain;
     delete this.pan;
     delete this.analyzer;
-  }
-
-  public stop() {
-    if (this.source) {
-      this.source.stop();
-      this.isPlaying = false;
-    }
   }
 
   public setVolume(value: number) {
