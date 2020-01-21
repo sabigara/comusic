@@ -20,22 +20,16 @@ export default {
         email: 'giles@gmail.com',
         belongsTo: [
           // Studio Rubik
-          'bc1575c9-dba2-48d8-8137-2f0164464617'
-        ],
-        adminOf: [
           'bc1575c9-dba2-48d8-8137-2f0164464617',
         ],
-        ownerOf: [
-          'bc1575c9-dba2-48d8-8137-2f0164464617',
-        ],
+        adminOf: ['bc1575c9-dba2-48d8-8137-2f0164464617'],
+        ownerOf: ['bc1575c9-dba2-48d8-8137-2f0164464617'],
       },
       'b1b20d65-9495-4188-84f9-84993f75f2cd': {
         id: 'b1b20d65-9495-4188-84f9-84993f75f2cd',
         name: 'Camila Schiller',
         email: 'camila@gmail.com',
-        belongsTo: [
-          'bc1575c9-dba2-48d8-8137-2f0164464617',
-        ],
+        belongsTo: ['bc1575c9-dba2-48d8-8137-2f0164464617'],
         adminOf: [
           // Co-admin with Giles
           'bc1575c9-dba2-48d8-8137-2f0164464617',
@@ -46,9 +40,7 @@ export default {
         id: '808a40cd-e2ab-4930-bc54-4fababa2cb46',
         name: 'Avis Keebler',
         email: 'avis@gmail.com',
-        belongsTo: [
-          'bc1575c9-dba2-48d8-8137-2f0164464617',
-        ],
+        belongsTo: ['bc1575c9-dba2-48d8-8137-2f0164464617'],
         adminOf: [],
         ownerOf: [],
       },
@@ -69,21 +61,21 @@ export default {
       'b1b20d65-9495-4188-84f9-84993f75f2cd',
       '808a40cd-e2ab-4930-bc54-4fababa2cb46',
       '38241809-f3c1-4606-a54c-e37b632b388e',
-    ]
+    ],
   },
   songs: {
     byId: {
       '0e5e3ab1-3bbc-4345-a365-6f6326c3f2c3': {
         id: '0e5e3ab1-3bbc-4345-a365-6f6326c3f2c3',
         name: 'Foxy Girl',
-        studio: 'bc1575c9-dba2-48d8-8137-2f0164464617'
+        studio: 'bc1575c9-dba2-48d8-8137-2f0164464617',
       },
       '6001b758-86ab-4db0-bbe9-ba2a6c257a6c': {
         id: '6001b758-86ab-4db0-bbe9-ba2a6c257a6c',
         name: 'White Bird',
         studio: 'bc1575c9-dba2-48d8-8137-2f0164464617',
       },
-    } ,
+    },
     allIds: [
       '6001b758-86ab-4db0-bbe9-ba2a6c257a6c',
       '0e5e3ab1-3bbc-4345-a365-6f6326c3f2c3',
@@ -95,19 +87,19 @@ export default {
         id: 'd5f46684-aee7-46f2-b5c3-e64e4b449fbb',
         name: 'ver. 1',
         // Foxy Girl
-        song: '0e5e3ab1-3bbc-4345-a365-6f6326c3f2c3'
+        song: '0e5e3ab1-3bbc-4345-a365-6f6326c3f2c3',
       },
       'ff6bb9d1-2eee-47c1-a65d-4d7f7f2446d2': {
         id: 'ff6bb9d1-2eee-47c1-a65d-4d7f7f2446d2',
         name: 'ver. 2',
         // Foxy Girl
-        song: '0e5e3ab1-3bbc-4345-a365-6f6326c3f2c3'
+        song: '0e5e3ab1-3bbc-4345-a365-6f6326c3f2c3',
       },
       '178d8c04-8330-4efb-a141-5a07dce54da5': {
         id: '178d8c04-8330-4efb-a141-5a07dce54da5',
         name: 'ver. 1',
         // White Bird
-        song: '6001b758-86ab-4db0-bbe9-ba2a6c257a6c'
+        song: '6001b758-86ab-4db0-bbe9-ba2a6c257a6c',
       },
     },
     allIds: [
@@ -132,7 +124,7 @@ export default {
         version: 'd5f46684-aee7-46f2-b5c3-e64e4b449fbb',
         // Giles
         player: '903238a7-000b-4bd3-a247-75806cda0286',
-        activeTake: '4c92e8b3-9456-4d8b-aec4-2d23b9bbaaff'
+        activeTake: '4c92e8b3-9456-4d8b-aec4-2d23b9bbaaff',
       },
       '1c1052f9-eabf-4000-99d8-8d5bfa8ce407': {
         id: '1c1052f9-eabf-4000-99d8-8d5bfa8ce407',
@@ -182,7 +174,7 @@ export default {
       '1c1052f9-eabf-4000-99d8-8d5bfa8ce407',
       '441de958-51d8-4bf0-8949-296ca134771c',
       'ca169a55-0f6b-489b-9cce-a3bfd6cc7113',
-    ]
+    ],
   },
   takes: {
     byId: {
@@ -251,7 +243,7 @@ export default {
       '21c64940-fbca-470d-9b5d-99db5c98efee': {
         id: '21c64940-fbca-470d-9b5d-99db5c98efee',
         uri: 'sounds/Guitar.wav',
-      }
+      },
     },
     allIds: [
       '16229d8b-e4e3-41e6-85e3-5ce847ae7fa4',
@@ -262,4 +254,4 @@ export default {
   },
   fetching: [],
   loading: [],
-}
+};

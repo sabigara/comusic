@@ -1,24 +1,31 @@
 import { combineReducers } from 'redux';
 
-type File = {
-  id: string,
-  uri: string,
-}
+import { ActionUnionType, ActionTypeName } from '../actions/files';
 
-const initialState = {}
+const initialState = {
+  id: '',
+  name: '',
+  uri: '',
+};
 
-function file(state: File, action) {
+export type FileState = typeof initialState;
+
+function file(state: FileState, action: ActionUnionType): FileState {
   switch (action.type) {
+    case ActionTypeName.RENAME_FILE:
+      return { ...state, name: action.payload.name };
     default:
       return state;
-  }}
+  }
+}
 
-function byId(
-  state: typeof initialState = initialState,
-  action: any
-) {
+type ByIdState = {
+  [id: string]: FileState;
+};
+
+function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
   switch (action.type) {
-    case '':
+    case ActionTypeName.RENAME_FILE:
       return {
         ...state,
         [action.id]: file(state[action.id], action),
@@ -28,17 +35,17 @@ function byId(
   }
 }
 
-function allIds(
-  state: string[] = [],
-  action: any
-) {
+function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
-    case 'ADD_FILE':
-      return [ ...state, action.id ]
     default:
       return state;
-    };
+  }
 }
+
+export type FileCombinedState = {
+  byId: ByIdState;
+  allIds: string[];
+};
 
 export default combineReducers({
   byId,

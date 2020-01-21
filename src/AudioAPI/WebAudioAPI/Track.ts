@@ -12,21 +12,21 @@ export class Track implements ITrack {
   private isMuted: boolean;
   private masterGain: GainNode;
   private masterAnalyzer: AnalyserNode;
-  private gain: GainNode
+  private gain: GainNode;
   private gainValue: number;
-  private pan: StereoPannerNode
+  private pan: StereoPannerNode;
   private panValue: number;
-  private analyzer: AnalyserNode
+  private analyzer: AnalyserNode;
   private tmpArray: Uint8Array | null = null;
   private buffer: AudioBuffer | null = null;
   private source: AudioBufferSourceNode | null = null;
-  
+
   constructor(
     id: string,
     name: string,
     ac: AudioContext,
     masterGain: GainNode,
-    masterAnalyzer: AnalyserNode
+    masterAnalyzer: AnalyserNode,
   ) {
     this.id = id;
     this.name = name;
@@ -44,10 +44,10 @@ export class Track implements ITrack {
     this.tmpArray = null;
   }
 
-  public async loadFile(url: string) {
+  public async loadFile(url: string): Promise<void> {
     const loader = LoaderFactory.createLoader(url, this.ac);
     this.buffer = await loader.load();
-    this.duration = this.buffer!.duration;
+    this.duration = this.buffer ? this.buffer.duration : 0;
   }
 
   public play(offset: number): Promise<void> {
@@ -62,16 +62,17 @@ export class Track implements ITrack {
       if (!this.source) {
         this.isPlaying = false;
         reject();
+        return;
       }
 
-      this.source!.onended = (e) => {
+      this.source.onended = (): void => {
         this.isPlaying = false;
         resolve();
       };
     });
   }
 
-  public stop() {
+  public stop(): void {
     if (this.source) {
       this.source.stop();
       this.source = null;
@@ -79,8 +80,9 @@ export class Track implements ITrack {
     }
   }
 
-  private connectNodes() {
-    this.source?.connect(this.gain)
+  private connectNodes(): void {
+    this.source
+      ?.connect(this.gain)
       .connect(this.pan)
       .connect(this.analyzer)
       .connect(this.masterGain)
@@ -88,7 +90,7 @@ export class Track implements ITrack {
       .connect(this.ac.destination);
   }
 
-  public release() {
+  public release(): void {
     this.source?.disconnect();
     this.gain.disconnect();
     this.pan.disconnect();
@@ -104,27 +106,27 @@ export class Track implements ITrack {
     delete this.analyzer;
   }
 
-  public setVolume(value: number) {
+  public setVolume(value: number): void {
     this.gainValue = value;
     this.gain.gain.value = value;
   }
 
-  public setPan(value: number) {
+  public setPan(value: number): void {
     this.panValue = value;
     this.pan.pan.value = value;
   }
 
-  public mute() {
+  public mute(): void {
     this.isMuted = true;
     this.gain.gain.value = 0;
   }
 
-  public unMute() {
+  public unMute(): void {
     this.isMuted = false;
     this.gain.gain.value = this.gainValue;
   }
 
-  public get peak() {
+  public get peak(): number | null {
     if (this.analyzer && this.tmpArray) {
       this.analyzer.getByteFrequencyData(this.tmpArray);
       return Math.max.apply(null, Array.from(this.tmpArray));
@@ -133,9 +135,11 @@ export class Track implements ITrack {
     }
   }
 
-  public getPeakList() {
-      return this.buffer 
-      ? extractPeaks(this.buffer, 1000, true)
-      : null;
+  public getPeakList(): {
+    length: number;
+    data: number[][];
+    bits: number;
+  } | null {
+    return this.buffer ? extractPeaks(this.buffer, 1000, true) : null;
   }
 }

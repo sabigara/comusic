@@ -89,7 +89,11 @@ function prepare(ownerDocument) {
   ownerDocument.addEventListener('mousedown', handlePointerDown, true);
   ownerDocument.addEventListener('pointerdown', handlePointerDown, true);
   ownerDocument.addEventListener('touchstart', handlePointerDown, true);
-  ownerDocument.addEventListener('visibilitychange', handleVisibilityChange, true);
+  ownerDocument.addEventListener(
+    'visibilitychange',
+    handleVisibilityChange,
+    true,
+  );
 }
 
 export function teardown(ownerDocument) {
@@ -97,7 +101,11 @@ export function teardown(ownerDocument) {
   ownerDocument.removeEventListener('mousedown', handlePointerDown, true);
   ownerDocument.removeEventListener('pointerdown', handlePointerDown, true);
   ownerDocument.removeEventListener('touchstart', handlePointerDown, true);
-  ownerDocument.removeEventListener('visibilitychange', handleVisibilityChange, true);
+  ownerDocument.removeEventListener(
+    'visibilitychange',
+    handleVisibilityChange,
+    true,
+  );
 }
 
 function isFocusVisible(event) {
@@ -132,7 +140,7 @@ function handleBlurVisible() {
 }
 
 export function useIsFocusVisible() {
-  const ref = React.useCallback(instance => {
+  const ref = React.useCallback((instance) => {
     const node = ReactDOM.findDOMNode(instance);
     if (node != null) {
       prepare(node.ownerDocument);

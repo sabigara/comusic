@@ -1,13 +1,20 @@
-import { combineReducers } from 'redux';
+import { combineReducers, Reducer } from 'redux';
 
-import loading from './loading';
-import playback, {} from './playback';
-import tracks from './tracks';
-import takes from './takes';
-import files from './files';
+import loading, { LoadingState } from './loading';
+import playback, { PlaybackState } from './playback';
+import tracks, { TrackCombinedState } from './tracks';
+import takes, { TakeCombinedState } from './takes';
+import files, { FileCombinedState } from './files';
 
+export type RootState = {
+  loading: LoadingState;
+  playback: PlaybackState;
+  tracks: TrackCombinedState;
+  takes: TakeCombinedState;
+  files: FileCombinedState;
+};
 
-const getReducers = () => {
+const getReducers = (): Reducer => {
   const reducers = combineReducers({
     loading,
     playback,

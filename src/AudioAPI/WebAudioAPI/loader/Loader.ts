@@ -3,7 +3,6 @@ export const STATE_LOADING = 1;
 export const STATE_DECODING = 2;
 export const STATE_FINISHED = 3;
 
-
 export default class {
   ac: AudioContext;
   src: string;
@@ -16,5 +15,4 @@ export default class {
   fileLoad(arrayBuffer: ArrayBuffer) {
     return this.ac.decodeAudioData(arrayBuffer);
   }
-
 }

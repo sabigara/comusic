@@ -1,21 +1,22 @@
 import { useMemo } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 
+import { RootState } from '../reducers';
 
-export default (trackId: string) => {
-  const soloedTracks = useSelector((state: any) => {
+export default (trackId: string): boolean => {
+  const soloedTracks = useSelector((state: RootState) => {
     return state.tracks.allIds
-      .map(id => state.tracks.byId[id])
-      .filter(track => track.solo === true)
-      .map(track => track.id);
+      .map((id) => state.tracks.byId[id])
+      .filter((track) => track.solo === true)
+      .map((track) => track.id);
   }, shallowEqual);
-  const mutedTracks = useSelector((state: any) => {
+  const mutedTracks = useSelector((state: RootState) => {
     return state.tracks.allIds
-      .map(id => state.tracks.byId[id])
-      .filter(track => track.mute === true)
-      .map(track => track.id);
+      .map((id) => state.tracks.byId[id])
+      .filter((track) => track.mute === true)
+      .map((track) => track.id);
   }, shallowEqual);
-  
+
   const shouldPlay = useMemo(() => {
     let _shouldPlay: boolean;
     // if there are solo tracks, only they should play.
@@ -32,6 +33,6 @@ export default (trackId: string) => {
       }
     }
     return _shouldPlay;
-  }, [trackId, soloedTracks, mutedTracks])
+  }, [trackId, soloedTracks, mutedTracks]);
   return shouldPlay;
 };

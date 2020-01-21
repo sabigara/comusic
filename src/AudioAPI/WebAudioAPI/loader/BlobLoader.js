@@ -1,15 +1,16 @@
 import Loader from './Loader';
 
 export default class extends Loader {
-
   /*
-  * Loads an audio file via a FileReader
-  */
+   * Loads an audio file via a FileReader
+   */
   load() {
     return new Promise((resolve, reject) => {
-      if (this.src.type.match(/audio.*/) ||
+      if (
+        this.src.type.match(/audio.*/) ||
         // added for problems with Firefox mime types + ogg.
-        this.src.type.match(/video\/ogg/)) {
+        this.src.type.match(/video\/ogg/)
+      ) {
         const fr = new FileReader();
 
         fr.readAsArrayBuffer(this.src);

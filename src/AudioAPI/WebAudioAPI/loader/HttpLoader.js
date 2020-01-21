@@ -1,7 +1,6 @@
 import Loader from './Loader';
 
 export default class extends Loader {
-
   /**
    * Loads an audio file via XHR.
    */

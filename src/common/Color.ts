@@ -1,6 +1,6 @@
 export default {
   Track: {
-    Background: '#8F8F8F'
+    Background: '#8F8F8F',
   },
   Border: '#5A5A5A',
   Waveform: {
@@ -10,7 +10,7 @@ export default {
     Background: {
       Highest: '#EEEEEE',
       Lowest: '#BBBBBB',
-    }
+    },
   },
   ToolBarItem: {
     Active: '#6F6F6F',
@@ -20,5 +20,5 @@ export default {
     MuteOn: '#19A2A0',
     SoloOn: '#9C7E08',
     Disabled: '#6F6F6F',
-  }
-}
+  },
+};

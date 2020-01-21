@@ -2,21 +2,16 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
 type Props = {
-  text: string,
-  setText: Function,
-  textColor?: string,
-  fontSize?: string,
+  text: string;
+  setText: Function;
+  textColor?: string;
+  fontSize?: string;
 };
 
 const EditableLabel: React.FC<Props> = (props) => {
-  const {
-    text,
-    setText,
-    textColor,
-    fontSize,
-  } = props;
-  
-  const [ showsInput, setShowsInput ] = useState(false);
+  const { text, setText, textColor, fontSize } = props;
+
+  const [showsInput, setShowsInput] = useState(false);
   const inputRef: any = useRef(null);
 
   return (
@@ -39,11 +34,11 @@ const EditableLabel: React.FC<Props> = (props) => {
         type="text"
         isShown={showsInput}
         placeholder={text}
-        onBlur={e => {
+        onBlur={(e) => {
           e.currentTarget.value = '';
           setShowsInput(false);
         }}
-        onKeyDown={e => {
+        onKeyDown={(e) => {
           if (e.keyCode === 13) {
             setText(e.currentTarget.value);
             setShowsInput(false);
@@ -51,23 +46,23 @@ const EditableLabel: React.FC<Props> = (props) => {
         }}
       />
     </div>
-  )
+  );
 };
 
 const StyledLabel = styled.span<{
-  isShown: boolean,
-  color?: string,
-  fontSize?: string,
+  isShown: boolean;
+  color?: string;
+  fontSize?: string;
 }>`
-  display: ${props => props.isShown ? 'inline' : 'none'};
-  color: ${props => props.color || 'white'};
+  display: ${(props) => (props.isShown ? 'inline' : 'none')};
+  color: ${(props) => props.color || 'white'};
   font-family: sans-serif;
-  font-size: ${props => props.fontSize || '14px'};
+  font-size: ${(props) => props.fontSize || '14px'};
   cursor: text;
-`
+`;
 
-const StyledInput = styled.input<{isShown: boolean}>`
-  display: ${props => props.isShown ? 'inline' : 'none'};
-`
+const StyledInput = styled.input<{ isShown: boolean }>`
+  display: ${(props) => (props.isShown ? 'inline' : 'none')};
+`;
 
 export default EditableLabel;

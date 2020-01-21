@@ -1,1 +1,1 @@
-export { default as WebAudioAPI} from './WebAudioAPI/WebAudioAPI';
+export { default as WebAudioAPI } from './WebAudioAPI/WebAudioAPI';

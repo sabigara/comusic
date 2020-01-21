@@ -2,8 +2,8 @@ import IAudioAPI from '../interface';
 import { Track } from './Track';
 
 type TrackMap = {
-  [key: string]: Track
-}
+  [key: string]: Track;
+};
 
 export default class implements IAudioAPI {
   public readonly tracks: TrackMap;
@@ -20,7 +20,9 @@ export default class implements IAudioAPI {
     this.ac = new AudioContext();
     this.masterGain = this.ac.createGain();
     this.masterAnalyzer = this.ac.createAnalyser();
-    this.masterTmpArray = new Uint8Array(this.masterAnalyzer!.frequencyBinCount);
+    this.masterTmpArray = new Uint8Array(
+      this.masterAnalyzer!.frequencyBinCount,
+    );
     this.tracks = {};
     this.resolution = 1000;
     this.sampleRate = this.ac.sampleRate;
@@ -38,7 +40,7 @@ export default class implements IAudioAPI {
       name,
       this.ac,
       this.masterGain,
-      this.masterAnalyzer
+      this.masterAnalyzer,
     );
     this.tracks[id] = track;
     return track;
@@ -56,14 +58,14 @@ export default class implements IAudioAPI {
     this.startTime = this.ac.currentTime;
     this.offset = offset;
     return Promise.all(
-      Object.values(this.tracks).map(track => track.play(offset))
+      Object.values(this.tracks).map((track) => track.play(offset)),
     );
   }
 
   stop() {
-    Object.values(this.tracks).forEach(track => {
+    Object.values(this.tracks).forEach((track) => {
       track.stop();
-    })
+    });
   }
 
   setMasterVolume(value: number) {

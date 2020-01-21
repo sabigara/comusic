@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
+import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { PlaybackStatus } from '../common/Enums';
 import { play, pause, stop, updateTime } from '../actions/playback';
@@ -12,20 +13,18 @@ import PlayIcon from '../icons/Play.png';
 import StopIcon from '../icons/Stop.png';
 import PauseIcon from '../icons/Pause.png';
 
-const noop = () => {};
-
 const PlaybackControls: React.FC = () => {
   const state = useSelector(
-    (state: any) => state.playback,
-    (prev, current) => prev.status === current.status
+    (state: RootState) => state.playback,
+    (prev, current) => prev.status === current.status,
   );
 
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
-    async function _() {
-      switch(state.status) {
+    async function _(): Promise<void> {
+      switch (state.status) {
         case PlaybackStatus.Playing:
           audioAPI.play(state.time);
           break;
@@ -40,10 +39,10 @@ const PlaybackControls: React.FC = () => {
       }
     }
     _();
-  }, [audioAPI, state.status, state.time])
+  }, [audioAPI, state.status, state.time]);
 
   useEffect(() => {
-    switch(state.status) {
+    switch (state.status) {
       case PlaybackStatus.Playing:
         const interval = setInterval(() => {
           dispatch(updateTime(audioAPI.secondsElapsed));
@@ -61,34 +60,30 @@ const PlaybackControls: React.FC = () => {
     <ToolBackItemContainer>
       <ToolBarItem
         isActive={state.status === PlaybackStatus.Stopping}
-        setActive={noop}
         onClick={() => {
           dispatch(stop());
         }}
       >
-        <IconImg src={StopIcon} alt="stop"/>
+        <IconImg src={StopIcon} alt="stop" />
       </ToolBarItem>
       <ToolBarItem
         isActive={state.status === PlaybackStatus.Pausing}
-        setActive={noop}
         onClick={() => {
           dispatch(pause());
         }}
       >
-        <IconImg src={PauseIcon} alt="pause"/>
+        <IconImg src={PauseIcon} alt="pause" />
       </ToolBarItem>
       <ToolBarItem
         isActive={state.status === PlaybackStatus.Playing}
-        setActive={noop}
         onClick={() => {
           dispatch(play());
         }}
       >
-        <IconImg src={PlayIcon} alt="play"/>
+        <IconImg src={PlayIcon} alt="play" />
       </ToolBarItem>
-
     </ToolBackItemContainer>
-  )
+  );
 };
 
 const IconImg = styled(Img)`

@@ -9,14 +9,14 @@ export interface ITrack {
   // Dynamically get real-time peak.
   readonly peak: number | null;
   // Statically get every peaks of whole audio buffer.
-  getPeakList(): { length: number, data: number[][], bits: number } | null;
+  getPeakList(): { length: number; data: number[][]; bits: number } | null;
   mute(): void;
   unMute(): void;
   release(): void;
 }
 
 export default interface IAudioAPI {
-  readonly tracks: {[key: string]: ITrack};
+  readonly tracks: { [key: string]: ITrack };
   readonly sampleRate: number;
   readonly resolution: number;
   readonly secondsElapsed: number;

@@ -1,26 +1,30 @@
 import { combineReducers } from 'redux';
 
-type Take = {
-  id: string,
-  name: string,
-  track: string,
-  file: string,
-}
+import { ActionUnionType, ActionTypeName } from '../actions/takes';
 
-const initialState = {}
+const initialState = {
+  id: '',
+  name: '',
+  track: '',
+  file: '',
+};
 
-function take(state: Take, action) {
+export type TakeState = typeof initialState;
+
+function take(state: TakeState, action: ActionUnionType): TakeState {
   switch (action.type) {
     default:
       return state;
-  }}
+  }
+}
 
-function byId(
-  state: typeof initialState = initialState,
-  action: any
-) {
+type ByIdState = {
+  [id: string]: TakeState;
+};
+
+function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
   switch (action.type) {
-    case '':
+    case ActionTypeName.RENAME_TAKE:
       return {
         ...state,
         [action.id]: take(state[action.id], action),
@@ -30,17 +34,17 @@ function byId(
   }
 }
 
-function allIds(
-  state: string[] = [],
-  action: any
-) {
+function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
-    case 'ADD_TAKE':
-      return [ ...state, action.id ]
     default:
       return state;
-    };
+  }
 }
+
+export type TakeCombinedState = {
+  byId: ByIdState;
+  allIds: string[];
+};
 
 export default combineReducers({
   byId,

@@ -7,20 +7,19 @@ import Clock from './Clock';
 import MasterVolFader from './MasterVolFader';
 
 const ToolBar: React.FC = () => {
-
   return (
     <Wrapper>
       <ClockWrapper>
-        <Clock/>
+        <Clock />
       </ClockWrapper>
       <PlaybackWrapper>
-       <PlaybackControls/>
+        <PlaybackControls />
       </PlaybackWrapper>
       <MasterVolFaderWrapper>
-        <MasterVolFader/>
+        <MasterVolFader />
       </MasterVolFaderWrapper>
     </Wrapper>
-  )
+  );
 };
 
 const Wrapper = styled.div`
@@ -38,16 +37,16 @@ const ClockWrapper = styled.div`
   position: absolute;
   left: 50%;
   transform: translate(-50%);
-`
+`;
 
 const PlaybackWrapper = styled.div`
   position: absolute;
   left: 50%;
   transform: translate(calc(-50% - 40px - 150px));
-`
+`;
 
 const MasterVolFaderWrapper = styled.div`
   width: 150px;
-`
+`;
 
 export default ToolBar;

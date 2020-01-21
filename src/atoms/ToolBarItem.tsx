@@ -4,12 +4,12 @@ import styled from 'styled-components';
 import Color from '../common/Color';
 
 type Props = {
-  isActive: boolean,
-  setActive: Function,
-  onClick?: Function,
-  isLeftMost?: boolean,
-  isRightMost?: boolean,
-}
+  isActive: boolean;
+  setActive?: Function;
+  onClick?: Function;
+  isLeftMost?: boolean;
+  isRightMost?: boolean;
+};
 
 const ToolBarItem: React.FC<Props> = (props) => {
   const {
@@ -28,38 +28,40 @@ const ToolBarItem: React.FC<Props> = (props) => {
       isRightMost={isRightMost}
       onClick={() => {
         onClick && onClick();
-        setActive(!isActive);
+        setActive && setActive(!isActive);
       }}
     >
       {children}
     </Wrapper>
-  )
-}
+  );
+};
 
 const Wrapper = styled.div<{
-  isActive: boolean,
-  isLeftMost?: boolean,
-  isRightMost?: boolean,
+  isActive: boolean;
+  isLeftMost?: boolean;
+  isRightMost?: boolean;
 }>`
   width: 60px;
   height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: ${ ({ isLeftMost, isRightMost }) => {
+  border-radius: ${({ isLeftMost, isRightMost }) => {
     // Returns 0 if [true, true] or [false, false]
-    if (isLeftMost === isRightMost && isLeftMost === false) { return '0' }
+    if (isLeftMost === isRightMost && isLeftMost === false) {
+      return '0';
+    }
     if (isLeftMost) {
-      return '4px 0 0 4px'
+      return '4px 0 0 4px';
     } else if (isRightMost) {
-      return '0 4px 4px 0'
+      return '0 4px 4px 0';
     }
   }};
-  background-color: ${props => {
-      return props.isActive 
-        ? Color.ToolBarItem.Active
-        : Color.ToolBarItem.InActive
-    }};
-`
+  background-color: ${(props) => {
+    return props.isActive
+      ? Color.ToolBarItem.Active
+      : Color.ToolBarItem.InActive;
+  }};
+`;
 
 export default ToolBarItem;

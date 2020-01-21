@@ -1,30 +1,33 @@
 import { Reducer } from 'redux';
-import { Actions } from '../actions/playback';
+import { ActionUnionType, ActionTypeName } from '../actions/playback';
 import { PlaybackStatus } from '../common/Enums';
 
 const initialState = {
   status: PlaybackStatus.Stopping,
   time: 0,
-}
+  masterVolume: 0,
+};
+
+export type PlaybackState = typeof initialState;
 
 const playback: Reducer = (
-  state: typeof initialState = initialState,
-  action: any
-) => {
+  state: PlaybackState = initialState,
+  action: ActionUnionType,
+): PlaybackState => {
   switch (action.type) {
-    case 'PLAY':
+    case ActionTypeName.PLAY:
       return { ...state, status: PlaybackStatus.Playing };
-    case 'PAUSE':
+    case ActionTypeName.PAUSE:
       return { ...state, status: PlaybackStatus.Pausing };
-    case 'STOP':
+    case ActionTypeName.STOP:
       return { ...state, status: PlaybackStatus.Stopping };
-    case 'UPDATE_TIME':
+    case ActionTypeName.UPDATE_TIME:
       return { ...state, time: action.payload.secondsElapsed };
-    case 'CHANGE_MASTER_VOLUME':
+    case ActionTypeName.CHANGE_MASTER_VOLUME:
       return { ...state, masterVolume: action.payload.masterVolume };
     default:
       return state;
   }
-}
+};
 
 export default playback;

@@ -7,25 +7,26 @@ import Label from '../atoms/Label';
 import More from '../atoms/More';
 
 import { changeActiveTake } from '../actions/tracks';
+import { RootState } from '../reducers';
 
 type Props = {
-  trackId: string,
-}
+  trackId: string;
+};
 
 const TakeList: React.FC<Props> = ({ trackId }) => {
-  const takes = useSelector((state: any) => {
+  const takes = useSelector((state: RootState) => {
     return state.takes.allIds
-      .map(id => state.takes.byId[id])
-      .filter(take => take.track === trackId);
+      .map((id) => state.takes.byId[id])
+      .filter((take) => take.track === trackId);
   });
-  const activeTake = useSelector((state: any) => {
+  const activeTake = useSelector((state: RootState) => {
     const activeTakeId = state.tracks.byId[trackId].activeTake;
     return state.takes.byId[activeTakeId];
   });
 
   const dispatch = useDispatch();
-  const [ mouseOver, setMouseOver] = useState(false);
-  const [ mouseHoverId, setMouseHoverId ] = useState<string | null>(null);
+  const [mouseOver, setMouseOver] = useState(false);
+  const [mouseHoverId, setMouseHoverId] = useState<string | null>(null);
 
   return (
     <Wrapper
@@ -33,46 +34,44 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       onMouseEnter={() => setMouseOver(true)}
       onMouseLeave={() => setMouseOver(false)}
     >
-      {
-        takes.map((take, i) => {
-          return (
-            <TakeButton
-              onMouseEnter={() => setMouseHoverId(take.id)}
-              onMouseLeave={() => setMouseHoverId(null)}
-              key={i}
-              isActive={take.id === activeTake.id}
-              onClick={(e) => {
-                if (take.id !== activeTake.id) {
-                  dispatch(changeActiveTake(trackId, take.id));
-                }
-              }}
-            >
-              <ButtonLabel>{take.name}</ButtonLabel>
-              {
-                mouseHoverId === take.id
-                ? <MoreWrapper onClick={(e) => e.stopPropagation()}><More/></MoreWrapper>
-                : null
+      {takes.map((take, i) => {
+        return (
+          <TakeButton
+            onMouseEnter={() => setMouseHoverId(take.id)}
+            onMouseLeave={() => setMouseHoverId(null)}
+            key={i}
+            isActive={take.id === activeTake.id}
+            onClick={() => {
+              if (take.id !== activeTake.id) {
+                dispatch(changeActiveTake(trackId, take.id));
               }
-            </TakeButton>
-          );
-        })
-      }
+            }}
+          >
+            <ButtonLabel>{take.name}</ButtonLabel>
+            {mouseHoverId === take.id ? (
+              <MoreWrapper onClick={(e) => e.stopPropagation()}>
+                <More />
+              </MoreWrapper>
+            ) : null}
+          </TakeButton>
+        );
+      })}
       <label htmlFor="take_upload">
         <UploadButton>
-         <UploadButtonLabel>+ Upload</UploadButtonLabel>
+          <UploadButtonLabel>+ Upload</UploadButtonLabel>
         </UploadButton>
       </label>
       <input
         type="file"
         id="take_upload"
         accept="audio/*"
-        style={{display: 'none'}}
+        style={{ display: 'none' }}
       />
     </Wrapper>
   );
-}
+};
 
-const Wrapper = styled.div<{mouseOver: boolean}>`
+const Wrapper = styled.div<{ mouseOver: boolean }>`
   background-color: ${Color.Track.Background};
   width: 150px;
   overflow-y: scroll;
@@ -86,9 +85,9 @@ const Wrapper = styled.div<{mouseOver: boolean}>`
     background: #ccc;
     border-radius: 4px;
     width: 4px;
-    display: ${props => props.mouseOver ? null : 'none'};
+    display: ${(props) => (props.mouseOver ? null : 'none')};
   }
-`
+`;
 
 const Button = styled.div`
   display: flex;
@@ -101,33 +100,33 @@ const Button = styled.div`
   height: 26px;
   margin: 7px auto;
   padding: 0 0 0 5px;
-`
+`;
 
-const TakeButton = styled(Button)<{isActive: boolean}>`
-  background-color: ${props => {
+const TakeButton = styled(Button)<{ isActive: boolean }>`
+  background-color: ${(props) => {
     return props.isActive ? Color.Button.MuteOn : Color.Button.Disabled;
   }};
-`
+`;
 
 const UploadButton = styled(Button)`
-  background-color: #0395EB;
+  background-color: #0395eb;
   cursor: pointer;
-`
+`;
 
 const ButtonLabel = styled(Label)`
   font-size: 14px;
-`
+`;
 
 const UploadButtonLabel = styled(ButtonLabel)`
   cursor: pointer;
   font-size: 13px;
-`
+`;
 
 const MoreWrapper = styled.div`
   display: flex;
   justify-content: center;
   width: 14px;
   cursor: pointer;
-`
+`;
 
 export default TakeList;

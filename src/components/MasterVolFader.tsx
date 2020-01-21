@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
+import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { changeMasterVolume } from '../actions/playback';
 import Fader from '../atoms/Fader';
 
 const MasterVolume: React.FC = () => {
-  const state = useSelector((state: any) => state.playback.masterVolume);
+  const state = useSelector((state: RootState) => state.playback.masterVolume);
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
-  const [ wavePeak, setWavePeak ] = React.useState(0);
+  const [wavePeak, setWavePeak] = React.useState(0);
 
   useEffect(() => {
     audioAPI.setMasterVolume(state);
@@ -26,25 +26,21 @@ const MasterVolume: React.FC = () => {
 
   return (
     <Fader
-      onChange={(e, vol) => {
+      onChange={(_, vol) => {
         dispatch(changeMasterVolume(vol));
       }}
-      onChangeCommitted={(e, val) => {}}
-      onMouseDown={() => {}}
       orientation="horizontal"
-
       max={1}
       min={0}
       step={0.01}
       value={state}
       wavePeak={wavePeak}
-      type='volume'
+      type="volume"
       railHeight={12}
       knobHeight={23}
       knobWidth={23}
     />
   );
-}
-
+};
 
 export default MasterVolume;
