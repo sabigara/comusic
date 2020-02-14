@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -25,7 +25,6 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
     const activeTakeId = state.tracks.byId[trackId].activeTake;
     return state.takes.byId[activeTakeId];
   });
-  console.log(trackId);
   const dispatch = useDispatch();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseHoverId, setMouseHoverId] = useState<string | null>(null);
