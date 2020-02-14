@@ -20,7 +20,7 @@ const TrackList: React.FC = () => {
       return state.tracks.allIds.map((id: string) => state.tracks.byId[id]);
     },
     (prev, current) => {
-      // Rerendering should happen only when track(s) is inserted or deleted.
+      // Re-rendering should happen only when track(s) is inserted or deleted.
       // (Not when volume of a track changed, for example.)
       if (prev.length !== current.length) {
         return false;
