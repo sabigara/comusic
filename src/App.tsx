@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { WebAudioAPI } from './AudioAPI';
 import initStore from './store';
+import KeyBindings from './components/KeyBindings';
 import ToolBar from './components/ToolBar';
 import TrackList from './components/TrackList';
 import WaveformList from './components/WaveformList';
@@ -15,6 +16,7 @@ export const webAudioAPI = createContext(new WebAudioAPI());
 const App: React.FC = () => {
   return (
     <Provider store={store}>
+      <KeyBindings />
       <ToolBar />
       <FixedHeightContainer>
         <TrackList />
