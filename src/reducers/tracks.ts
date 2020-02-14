@@ -2,10 +2,6 @@ import { combineReducers } from 'redux';
 
 import { InstIcon } from '../common/Enums';
 import { ActionUnionType, ActionTypeName } from '../actions/tracks';
-import {
-  uploadTakeFileSuccess,
-  UPLOAD_TAKE_FILE_SUCCESS,
-} from '../actions/takes';
 
 const initialState = {
   id: '',
@@ -44,7 +40,7 @@ function track(
       return { ...state, isSoloed: true };
     case ActionTypeName.SOLO_OFF:
       return { ...state, isSoloed: false };
-    case UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
       return { ...state, activeTake: action.payload.take.id };
     default:
       return state;
@@ -57,7 +53,7 @@ export type TrackByIdState = {
 
 function byId(
   state: TrackByIdState = {},
-  action: ActionUnionType | ReturnType<typeof uploadTakeFileSuccess>,
+  action: ActionUnionType,
 ): TrackByIdState {
   switch (action.type) {
     case ActionTypeName.CHANGE_VOLUME:
@@ -68,7 +64,7 @@ function byId(
     case ActionTypeName.MUTE_OFF:
     case ActionTypeName.SOLO_ON:
     case ActionTypeName.SOLO_OFF:
-    case UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
       return {
         ...state,
         [action.id]: track(state[action.id], action),
