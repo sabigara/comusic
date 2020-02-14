@@ -101,15 +101,15 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
           </PanWrapper>
           <MuteSoloWrapper>
             <MuteSoloButton
-              muteOn={track.mute}
+              muteOn={track.isMuted}
               onMuteClick={() => {
-                track.mute
+                track.isMuted
                   ? dispatch(muteOff(track.id))
                   : dispatch(muteOn(track.id));
               }}
-              soloOn={track.solo}
+              soloOn={track.isSoloed}
               onSoloClick={() => {
-                track.solo
+                track.isSoloed
                   ? dispatch(soloOff(track.id))
                   : dispatch(soloOn(track.id));
               }}

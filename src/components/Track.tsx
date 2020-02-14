@@ -32,7 +32,10 @@ const Track: React.FC<Props> = ({ trackId }) => {
     return state.takes.byId[activeTakeId];
   });
   const file = useSelector((state: RootState) => {
-    return state.files.byId[activeTake.file];
+    if (!activeTake) {
+      return;
+    }
+    return state.files.byId[activeTake.fileId];
   });
   const playback = useSelector(
     (state: RootState) => {
@@ -73,12 +76,15 @@ const Track: React.FC<Props> = ({ trackId }) => {
 
   useEffect(() => {
     async function _() {
+      if (!file) {
+        return;
+      }
       dispatch(loadActiveTakeRequest(track.id));
-      await audioAPI.tracks[track.id].loadFile(file.uri);
+      await audioAPI.tracks[track.id].loadFile(file.url);
       dispatch(loadActiveTakeSuccess(track.id));
     }
     _();
-  }, [dispatch, audioAPI.tracks, file.uri, track.id]);
+  }, [dispatch, audioAPI.tracks, file, track.id]);
 
   return (
     <TrackWrapper>

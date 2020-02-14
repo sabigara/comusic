@@ -7,13 +7,13 @@ export default (trackId: string): boolean => {
   const soloedTracks = useSelector((state: RootState) => {
     return state.tracks.allIds
       .map((id) => state.tracks.byId[id])
-      .filter((track) => track.solo === true)
+      .filter((track) => track.isSoloed === true)
       .map((track) => track.id);
   }, shallowEqual);
   const mutedTracks = useSelector((state: RootState) => {
     return state.tracks.allIds
       .map((id) => state.tracks.byId[id])
-      .filter((track) => track.mute === true)
+      .filter((track) => track.isMuted === true)
       .map((track) => track.id);
   }, shallowEqual);
 

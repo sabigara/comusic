@@ -226,23 +226,23 @@ export default {
     byId: {
       '16229d8b-e4e3-41e6-85e3-5ce847ae7fa4': {
         id: '16229d8b-e4e3-41e6-85e3-5ce847ae7fa4',
-        uri: 'sounds/Drums.wav',
+        url: 'http://localhost:1323/uploads/Drums.wav',
       },
       '2cc03f8d-fe09-41ad-8fc1-e3e1847e9111': {
         id: '2cc03f8d-fe09-41ad-8fc1-e3e1847e9111',
-        uri: 'sounds/Bass.wav',
+        url: 'http://localhost:1323/uploads/Bass.wav',
       },
       '8e49cb39-7414-45d7-897c-4edd47b3f91d': {
         id: '8e49cb39-7414-45d7-897c-4edd47b3f91d',
-        uri: 'sounds/Rhodes.wav',
+        url: 'http://localhost:1323/uploads/Rhodes.wav',
       },
       'b9c76f66-c284-4a30-a7e9-876880541ba6': {
         id: 'b9c76f66-c284-4a30-a7e9-876880541ba6',
-        uri: 'sounds/LeadVocal.wav',
+        url: 'http://localhost:1323/uploads/LeadVocal.wav',
       },
       '21c64940-fbca-470d-9b5d-99db5c98efee': {
         id: '21c64940-fbca-470d-9b5d-99db5c98efee',
-        uri: 'sounds/Guitar.wav',
+        url: 'http://localhost:1323/uploads/Guitar.wav',
       },
     },
     allIds: [

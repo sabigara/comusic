@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -7,6 +7,8 @@ import Label from '../atoms/Label';
 import More from '../atoms/More';
 
 import { changeActiveTake } from '../actions/tracks';
+import { uploadTakeFile } from '../actions/takes';
+
 import { RootState } from '../reducers';
 
 type Props = {
@@ -17,16 +19,30 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
   const takes = useSelector((state: RootState) => {
     return state.takes.allIds
       .map((id) => state.takes.byId[id])
-      .filter((take) => take.track === trackId);
+      .filter((take) => take.trackId === trackId);
   });
   const activeTake = useSelector((state: RootState) => {
     const activeTakeId = state.tracks.byId[trackId].activeTake;
     return state.takes.byId[activeTakeId];
   });
-
+  console.log(trackId);
   const dispatch = useDispatch();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseHoverId, setMouseHoverId] = useState<string | null>(null);
+
+  const onFileSelected = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files) {
+        return;
+      }
+      const file = e.target.files[0];
+      const body = new FormData();
+      body.append('name', file.name);
+      body.append('file', file);
+      dispatch(uploadTakeFile(trackId, body));
+    },
+    [],
+  );
 
   return (
     <Wrapper
@@ -40,9 +56,9 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
             onMouseEnter={() => setMouseHoverId(take.id)}
             onMouseLeave={() => setMouseHoverId(null)}
             key={i}
-            isActive={take.id === activeTake.id}
+            isActive={activeTake && take.id === activeTake.id}
             onClick={() => {
-              if (take.id !== activeTake.id) {
+              if (activeTake && take.id !== activeTake.id) {
                 dispatch(changeActiveTake(trackId, take.id));
               }
             }}
@@ -56,14 +72,15 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
           </TakeButton>
         );
       })}
-      <label htmlFor="take_upload">
+      <label htmlFor={`take-upload-${trackId}`}>
         <UploadButton>
           <UploadButtonLabel>+ Upload</UploadButtonLabel>
         </UploadButton>
       </label>
       <input
+        onChange={onFileSelected}
         type="file"
-        id="take_upload"
+        id={`take-upload-${trackId}`}
         accept="audio/*"
         style={{ display: 'none' }}
       />

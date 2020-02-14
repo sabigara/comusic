@@ -7,9 +7,8 @@ import initStore from './store';
 import ToolBar from './components/ToolBar';
 import TrackList from './components/TrackList';
 import WaveformList from './components/WaveformList';
-import mockState from './mockState';
 
-const store = initStore(mockState);
+const store = initStore();
 
 export const webAudioAPI = createContext(new WebAudioAPI());
 

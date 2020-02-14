@@ -5,7 +5,7 @@ import { PlaybackStatus } from '../common/Enums';
 const initialState = {
   status: PlaybackStatus.Stopping,
   time: 0,
-  masterVolume: 0,
+  masterVolume: 0.7,
 };
 
 export type PlaybackState = typeof initialState;

@@ -2,18 +2,22 @@ import { combineReducers } from 'redux';
 
 import { InstIcon } from '../common/Enums';
 import { ActionUnionType, ActionTypeName } from '../actions/tracks';
+import {
+  uploadTakeFileSuccess,
+  UPLOAD_TAKE_FILE_SUCCESS,
+} from '../actions/takes';
 
 const initialState = {
   id: '',
   name: '',
   volume: 0,
   pan: 0,
-  mute: false,
-  solo: false,
+  isMuted: false,
+  isSoloed: false,
   icon: InstIcon.Drums,
   activeTake: '',
   song: '',
-  version: '',
+  versionId: '',
   player: '',
 };
 
@@ -33,23 +37,28 @@ function track(
     case ActionTypeName.CHANGE_ACTIVE_TAKE:
       return { ...state, activeTake: action.payload.activeTakeId };
     case ActionTypeName.MUTE_ON:
-      return { ...state, mute: true };
+      return { ...state, isMuted: true };
     case ActionTypeName.MUTE_OFF:
-      return { ...state, mute: false };
+      return { ...state, isMuted: false };
     case ActionTypeName.SOLO_ON:
-      return { ...state, solo: true };
+      return { ...state, isSoloed: true };
     case ActionTypeName.SOLO_OFF:
-      return { ...state, solo: false };
+      return { ...state, isSoloed: false };
+    case UPLOAD_TAKE_FILE_SUCCESS:
+      return { ...state, activeTake: action.payload.take.id };
     default:
       return state;
   }
 }
 
-type ByIdState = {
+export type TrackByIdState = {
   [id: string]: TrackState;
 };
 
-function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
+function byId(
+  state: TrackByIdState = {},
+  action: ActionUnionType | ReturnType<typeof uploadTakeFileSuccess>,
+): TrackByIdState {
   switch (action.type) {
     case ActionTypeName.CHANGE_VOLUME:
     case ActionTypeName.CHANGE_PAN:
@@ -59,9 +68,20 @@ function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
     case ActionTypeName.MUTE_OFF:
     case ActionTypeName.SOLO_ON:
     case ActionTypeName.SOLO_OFF:
+    case UPLOAD_TAKE_FILE_SUCCESS:
       return {
         ...state,
         [action.id]: track(state[action.id], action),
+      };
+    case ActionTypeName.ADD_TRACKS:
+      return {
+        ...state,
+        ...action.payload.byId,
+      };
+    case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
+      return {
+        ...state,
+        ...action.payload.tracks.byId,
       };
     default:
       return state;
@@ -70,13 +90,17 @@ function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
 
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
+    case ActionTypeName.ADD_TRACKS:
+      return state.concat(action.payload.allIds);
+    case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
+      return state.concat(action.payload.tracks.allIds);
     default:
       return state;
   }
 }
 
 export type TrackCombinedState = {
-  byId: ByIdState;
+  byId: TrackByIdState;
   allIds: string[];
 };
 

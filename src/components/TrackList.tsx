@@ -1,8 +1,9 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
+import { fetchVerContents } from '../actions/versions';
 import { RootState } from '../reducers';
 import { TrackState } from '../reducers/tracks';
 import Track from './Track';
@@ -28,6 +29,10 @@ const TrackList: React.FC = () => {
       }
     },
   );
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchVerContents('6f3291f3-ec12-409d-a3ba-09e813bd96ba'));
+  }, [dispatch]);
 
   return (
     <Wrapper>
