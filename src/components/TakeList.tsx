@@ -8,8 +8,8 @@ import More from '../atoms/More';
 
 import { changeActiveTake } from '../actions/tracks';
 import { uploadTakeFile } from '../actions/takes';
-
 import { RootState } from '../reducers';
+import TakeCtxMenu from './TakeCtxMenu';
 
 type Props = {
   trackId: string;
@@ -64,9 +64,11 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
           >
             <ButtonLabel>{take.name}</ButtonLabel>
             {mouseHoverId === take.id ? (
-              <MoreWrapper onClick={(e) => e.stopPropagation()}>
-                <More />
-              </MoreWrapper>
+              <TakeCtxMenu takeId={take.id}>
+                <MoreWrapper onClick={(e) => e.stopPropagation()}>
+                  <More />
+                </MoreWrapper>
+              </TakeCtxMenu>
             ) : null}
           </TakeButton>
         );

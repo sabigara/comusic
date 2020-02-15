@@ -58,6 +58,11 @@ function byId(
         ...state,
         [action.payload.take.id]: action.payload.take,
       };
+    case ActionTypeName.DELETE_TAKE_SUCCESS:
+      const { [action.id]: _, ...rest } = state;
+      return {
+        ...rest,
+      };
     default:
       return state;
   }
@@ -71,6 +76,8 @@ function allIds(state: string[] = [], action: ActionUnionType): string[] {
       return state.concat(action.payload.takes.allIds);
     case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
       return state.concat(action.payload.take.id);
+    case ActionTypeName.DELETE_TAKE_SUCCESS:
+      return state.filter((id) => id !== action.id);
     default:
       return state;
   }

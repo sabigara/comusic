@@ -11,6 +11,9 @@ const RENAME_TAKE = 'RENAME_TAKE' as const;
 const UPLOAD_TAKE_FILE_REQUEST = 'UPLOAD_TAKE_FILE_REQUEST' as const;
 export const UPLOAD_TAKE_FILE_SUCCESS = 'UPLOAD_TAKE_FILE_SUCCESS' as const;
 const UPLOAD_TAKE_FILE_FAILURE = 'UPLOAD_TAKE_FILE_FAILURE' as const;
+const DELETE_TAKE_REQUEST = 'DELETE_TAKE_REQUEST' as const;
+const DELETE_TAKE_SUCCESS = 'DELETE_TAKE_SUCCESS' as const;
+const DELETE_TAKE_FAILURE = 'DELETE_TAKE_FAILURE' as const;
 
 export const ActionTypeName = {
   ADD_TAKE,
@@ -21,6 +24,9 @@ export const ActionTypeName = {
   UPLOAD_TAKE_FILE_FAILURE,
   // From outer modules.
   FETCH_VER_CONTENTS_SUCCESS,
+  DELETE_TAKE_REQUEST,
+  DELETE_TAKE_SUCCESS,
+  DELETE_TAKE_FAILURE,
 };
 
 export const addTake = (
@@ -102,9 +108,48 @@ export const uploadTakeFile = (trackId: string, formData: FormData) => {
   };
 };
 
+export const deleteTakeRequest = (id: string) => {
+  return {
+    type: DELETE_TAKE_REQUEST,
+    id: id,
+  };
+};
+
+export const deleteTakeSuccess = (id: string) => {
+  return {
+    type: DELETE_TAKE_SUCCESS,
+    id: id,
+  };
+};
+
+export const deleteTakeFailure = (id: string) => {
+  return {
+    type: DELETE_TAKE_FAILURE,
+    id: id,
+  };
+};
+
+export const deleteTake = (takeId: string) => {
+  return async (dispatch: any) => {
+    dispatch(deleteTakeRequest(takeId));
+    try {
+      const resp = await fetch('http://localhost:1323/takes/' + takeId, {
+        method: 'DELETE',
+      });
+      if (resp.status !== 204) {
+        dispatch(deleteTakeFailure(takeId));
+      }
+      dispatch(deleteTakeSuccess(takeId));
+    } catch {
+      dispatch(deleteTakeFailure(takeId));
+    }
+  };
+};
+
 export type ActionUnionType =
   | ReturnType<typeof addTake>
   | ReturnType<typeof renameTake>
   | ReturnType<typeof uploadTakeFileSuccess>
+  | ReturnType<typeof deleteTakeSuccess>
   // From outer modules.
   | ReturnType<typeof fetchVerContentsSuccess>;
