@@ -87,10 +87,17 @@ function byId(
         ...state,
         ...tracks,
       };
-    case ActionTypeName.ADD_TRACKS:
+    case ActionTypeName.ADD_TRACK_SUCCESS:
       return {
         ...state,
-        ...action.payload.byId,
+        [action.payload.track.id]: action.payload.track,
+      };
+    case ActionTypeName.DELETE_TRACK_SUCCESS:
+      // Extract rest of the state except given take ID.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [action.id]: _, ...rest } = state;
+      return {
+        ...rest,
       };
     case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
       return {
@@ -104,10 +111,12 @@ function byId(
 
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
-    case ActionTypeName.ADD_TRACKS:
-      return state.concat(action.payload.allIds);
+    case ActionTypeName.ADD_TRACK_SUCCESS:
+      return state.concat(action.payload.track.id);
     case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
       return state.concat(action.payload.tracks.allIds);
+    case ActionTypeName.DELETE_TRACK_SUCCESS:
+      return state.filter((id) => id !== action.id);
     default:
       return state;
   }

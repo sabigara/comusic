@@ -1,4 +1,5 @@
-import { TrackByIdState } from '../reducers/tracks';
+import { createAction } from './index';
+import { TrackState } from '../reducers/tracks';
 import {
   uploadTakeFileSuccess,
   UPLOAD_TAKE_FILE_SUCCESS,
@@ -10,7 +11,12 @@ import {
   FETCH_VER_CONTENTS_SUCCESS,
 } from './versions';
 
-const ADD_TRACKS = 'ADD_TRACKS' as const;
+const ADD_TRACK_REQUEST = 'ADD_TRACK_REQUEST' as const;
+const ADD_TRACK_SUCCESS = 'ADD_TRACK_SUCCESS' as const;
+const ADD_TRACK_FAILURE = 'ADD_TRACK_FAILURE' as const;
+const DELETE_TRACK_REQUEST = 'DELETE_TRACK_REQUEST' as const;
+const DELETE_TRACK_SUCCESS = 'DELETE_TRACK_SUCCESS' as const;
+const DELETE_TRACK_FAILURE = 'DELETE_TRACK_FAILURE' as const;
 const CHANGE_VOLUME = 'CHANGE_VOLUME' as const;
 const CHANGE_PAN = 'CHANGE_PAN' as const;
 const CHANGE_NAME = 'CHANGE_NAME' as const;
@@ -25,7 +31,6 @@ const LOAD_ACTIVE_TAKE_REQUEST = 'LOAD_ACTIVE_TAKE_REQUEST' as const;
 const LOAD_ACTIVE_TAKE_SUCCESS = 'LOAD_ACTIVE_TAKE_SUCCESS' as const;
 
 export const ActionTypeName = {
-  ADD_TRACKS,
   CHANGE_VOLUME,
   CHANGE_PAN,
   CHANGE_NAME,
@@ -38,20 +43,12 @@ export const ActionTypeName = {
   LOAD_TRACK_SUCCESS,
   LOAD_ACTIVE_TAKE_REQUEST,
   LOAD_ACTIVE_TAKE_SUCCESS,
+  ADD_TRACK_SUCCESS,
+  DELETE_TRACK_SUCCESS,
   UPLOAD_TAKE_FILE_SUCCESS,
   // From outer modules.
   FETCH_VER_CONTENTS_SUCCESS,
   DELETE_TAKE_SUCCESS,
-};
-
-export const addTracks = (byId: TrackByIdState, allIds: string[]) => {
-  return {
-    type: ADD_TRACKS,
-    payload: {
-      byId: byId,
-      allIds: allIds,
-    },
-  };
 };
 
 export const changeVolume = (trackId: string, volume: number) => {
@@ -150,8 +147,67 @@ export const soloOff = (trackId: string) => {
   };
 };
 
+const addTrackSuccess = (verId: string, track: TrackState) => {
+  return {
+    type: ADD_TRACK_SUCCESS,
+    id: verId,
+    payload: {
+      track: track,
+    },
+  };
+};
+
+export const addTrack = (verId: string) => {
+  return async (dispatch: any) => {
+    dispatch(createAction(ADD_TRACK_REQUEST, verId));
+    try {
+      const resp = await fetch(
+        'http://localhost:1323/tracks?version_id=' + verId,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: '' }),
+        },
+      );
+      if (resp.status != 201) {
+        dispatch(createAction(ADD_TRACK_FAILURE, verId));
+      }
+      const json = await resp.json();
+      dispatch(addTrackSuccess(verId, json));
+    } catch {
+      dispatch(createAction(ADD_TRACK_FAILURE, verId));
+    }
+  };
+};
+
+const deleteTrackSuccess = (trackId: string) => {
+  return {
+    type: DELETE_TRACK_SUCCESS,
+    id: trackId,
+  };
+};
+
+export const deleteTrack = (trackId: string) => {
+  return async (dispatch: any) => {
+    dispatch(createAction(DELETE_TRACK_REQUEST, trackId));
+    try {
+      const resp = await fetch('http://localhost:1323/tracks/' + trackId, {
+        method: 'DELETE',
+      });
+      if (resp.status != 204) {
+        dispatch(createAction(DELETE_TRACK_FAILURE, trackId));
+        return;
+      }
+      dispatch(deleteTrackSuccess(trackId));
+    } catch {
+      dispatch(createAction(DELETE_TRACK_FAILURE, trackId));
+    }
+  };
+};
+
 export type ActionUnionType =
-  | ReturnType<typeof addTracks>
   | ReturnType<typeof changeVolume>
   | ReturnType<typeof changePan>
   | ReturnType<typeof changeName>
@@ -165,6 +221,8 @@ export type ActionUnionType =
   | ReturnType<typeof soloOn>
   | ReturnType<typeof soloOff>
   | ReturnType<typeof uploadTakeFileSuccess>
+  | ReturnType<typeof addTrackSuccess>
+  | ReturnType<typeof deleteTrackSuccess>
   // From outer modules.
   | ReturnType<typeof fetchVerContentsSuccess>
   | ReturnType<typeof deleteTakeSuccess>;

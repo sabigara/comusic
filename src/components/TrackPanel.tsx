@@ -19,6 +19,7 @@ import FlexBox from '../atoms/FlexBox';
 import Fader from '../atoms/Fader';
 import MuteSoloButton from '../atoms/MutoSoloButton';
 import EditableLabel from '../atoms/EditableLabel';
+import TrackCtxMenu from './TrackCtxMenu';
 
 type Props = {
   trackId: string;
@@ -57,7 +58,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
   }, [audioAPI, track.id]);
 
   return (
-    <Wrapper>
+    <TrackCtxMenu trackId={trackId}>
       <LeftSide>
         <EditableLabel
           text={track.name}
@@ -117,15 +118,9 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
           </MuteSoloWrapper>
         </FlexBox>
       </RightSide>
-    </Wrapper>
+    </TrackCtxMenu>
   );
 };
-
-const Wrapper = styled.div`
-  display: flex;
-  width: 360px;
-  background-color: ${Color.Track.Background};
-`;
 
 const LeftSide = styled.div`
   width: 160px;
