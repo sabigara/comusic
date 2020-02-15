@@ -171,7 +171,7 @@ export const addTrack = (verId: string) => {
           body: JSON.stringify({ name: '' }),
         },
       );
-      if (resp.status != 201) {
+      if (resp.status !== 201) {
         dispatch(createAction(ADD_TRACK_FAILURE, verId));
       }
       const json = await resp.json();
@@ -196,7 +196,7 @@ export const deleteTrack = (trackId: string) => {
       const resp = await fetch('http://localhost:1323/tracks/' + trackId, {
         method: 'DELETE',
       });
-      if (resp.status != 204) {
+      if (resp.status !== 204) {
         dispatch(createAction(DELETE_TRACK_FAILURE, trackId));
         return;
       }
