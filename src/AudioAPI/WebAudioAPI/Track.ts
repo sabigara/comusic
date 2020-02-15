@@ -56,7 +56,22 @@ export class Track implements ITrack {
     this.duration = 0;
   }
 
+  private isReady(): boolean {
+    return (
+      this.ac !== undefined &&
+      this.gain !== undefined &&
+      this.pan !== undefined &&
+      this.analyzer !== undefined &&
+      this.masterGain !== undefined &&
+      this.masterAnalyzer !== undefined &&
+      this.buffer !== null
+    );
+  }
+
   public play(offset: number): Promise<void> {
+    if (!this.isReady()) {
+      return new Promise((resolve) => resolve());
+    }
     this.tmpArray = new Uint8Array(this.analyzer.frequencyBinCount);
     this.source = this.ac.createBufferSource();
     this.connectNodes();
@@ -113,21 +128,25 @@ export class Track implements ITrack {
   }
 
   public setVolume(value: number): void {
+    if (!this.gain) return;
     this.gainValue = value;
     this.gain.gain.value = value;
   }
 
   public setPan(value: number): void {
+    if (!this.pan) return;
     this.panValue = value;
     this.pan.pan.value = value;
   }
 
   public mute(): void {
+    if (!this.gain) return;
     this.isMuted = true;
     this.gain.gain.value = 0;
   }
 
   public unMute(): void {
+    if (!this.gain) return;
     this.isMuted = false;
     this.gain.gain.value = this.gainValue;
   }
