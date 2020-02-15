@@ -40,7 +40,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       body.append('file', file);
       dispatch(uploadTakeFile(trackId, body));
     },
-    [],
+    [trackId],
   );
 
   return (
