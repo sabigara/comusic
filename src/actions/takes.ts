@@ -100,6 +100,9 @@ export const uploadTakeFile = (trackId: string, formData: FormData) => {
           body: formData,
         },
       );
+      if (resp.status !== 201) {
+        dispatch(uploadTakeFileFailure(trackId));
+      }
       const json = await resp.json();
       dispatch(uploadTakeFileSuccess(trackId, json.take, json.file));
     } catch {
