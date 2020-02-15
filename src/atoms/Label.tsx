@@ -5,6 +5,9 @@ const Label = styled.span`
   font-family: sans-serif;
   font-size: 14px;
   cursor: default;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  display: block;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */
