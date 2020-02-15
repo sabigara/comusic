@@ -76,6 +76,7 @@ function byId(
         [action.id]: track(state[action.id], action),
       };
     case ActionTypeName.DELETE_TAKE_SUCCESS:
+      // Zeroize activeTake attribute of all tracks that have deleted activeTake ID.
       const tracks = filterByActiveTake(state, action.id).reduce((prev, tr) => {
         return {
           ...prev,

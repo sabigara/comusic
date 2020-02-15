@@ -59,6 +59,8 @@ function byId(
         [action.payload.take.id]: action.payload.take,
       };
     case ActionTypeName.DELETE_TAKE_SUCCESS:
+      // Extract rest of the state except given take ID.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [action.id]: _, ...rest } = state;
       return {
         ...rest,
