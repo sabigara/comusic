@@ -2,6 +2,7 @@ export interface ITrack {
   readonly duration: number;
   readonly isPlaying: boolean;
   loadFile(url: string): Promise<void>;
+  clearBuffer(): void;
   play(offset: number): Promise<void>;
   stop(): void;
   setVolume(value: number): void;

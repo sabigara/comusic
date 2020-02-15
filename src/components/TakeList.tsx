@@ -21,9 +21,8 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       .map((id) => state.takes.byId[id])
       .filter((take) => take.trackId === trackId);
   });
-  const activeTake = useSelector((state: RootState) => {
-    const activeTakeId = state.tracks.byId[trackId].activeTake;
-    return state.takes.byId[activeTakeId];
+  const activeTakeId = useSelector((state: RootState) => {
+    return state.tracks.byId[trackId].activeTake;
   });
   const dispatch = useDispatch();
   const [mouseOver, setMouseOver] = useState(false);
@@ -35,6 +34,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
         return;
       }
       const file = e.target.files[0];
+      if (!file) return;
       const body = new FormData();
       body.append('name', file.name);
       body.append('file', file);
@@ -55,9 +55,9 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
             onMouseEnter={() => setMouseHoverId(take.id)}
             onMouseLeave={() => setMouseHoverId(null)}
             key={i}
-            isActive={activeTake && take.id === activeTake.id}
+            isActive={take.id === activeTakeId}
             onClick={() => {
-              if (activeTake && take.id !== activeTake.id) {
+              if (take.id !== activeTakeId) {
                 dispatch(changeActiveTake(trackId, take.id));
               }
             }}

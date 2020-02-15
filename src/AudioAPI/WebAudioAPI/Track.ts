@@ -50,6 +50,12 @@ export class Track implements ITrack {
     this.duration = this.buffer ? this.buffer.duration : 0;
   }
 
+  public clearBuffer() {
+    this.buffer = null;
+    this.source = null;
+    this.duration = 0;
+  }
+
   public play(offset: number): Promise<void> {
     this.tmpArray = new Uint8Array(this.analyzer.frequencyBinCount);
     this.source = this.ac.createBufferSource();

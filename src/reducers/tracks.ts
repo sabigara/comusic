@@ -42,6 +42,8 @@ function track(
       return { ...state, isSoloed: false };
     case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
       return { ...state, activeTake: action.payload.take.id };
+    case ActionTypeName.DELETE_TAKE_SUCCESS:
+      return { ...state, activeTake: '' };
     default:
       return state;
   }
@@ -50,6 +52,10 @@ function track(
 export type TrackByIdState = {
   [id: string]: TrackState;
 };
+
+function filterByActiveTake(state: TrackByIdState, activeTakeId: string) {
+  return Object.values(state).filter((tr) => tr.activeTake === activeTakeId);
+}
 
 function byId(
   state: TrackByIdState = {},
@@ -68,6 +74,17 @@ function byId(
       return {
         ...state,
         [action.id]: track(state[action.id], action),
+      };
+    case ActionTypeName.DELETE_TAKE_SUCCESS:
+      const tracks = filterByActiveTake(state, action.id).reduce((prev, tr) => {
+        return {
+          ...prev,
+          [tr.id]: track(tr, action),
+        };
+      }, {});
+      return {
+        ...state,
+        ...tracks,
       };
     case ActionTypeName.ADD_TRACKS:
       return {

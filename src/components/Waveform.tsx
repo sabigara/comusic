@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import useLoading from '../hooks/useLoading';
 import useAudioAPI from '../hooks/useAudioAPI';
+import { RootState } from '../reducers';
 
 type Props = {
   trackId: string;
@@ -26,6 +27,10 @@ const drawFrame = (
 
 const Waveform: React.FC<Props> = ({ trackId }) => {
   const loadingTake = useLoading('LOAD_ACTIVE_TAKE', trackId);
+  const activeTake = useSelector((state: RootState) => {
+    const activeTakeId = state.tracks.byId[trackId].activeTake;
+    return state.takes.byId[activeTakeId];
+  });
   const dispatch = useDispatch();
   const ref = useRef<HTMLCanvasElement>(null);
   const audioAPI = useAudioAPI();
@@ -37,6 +42,9 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
     const canvas = ref.current;
     const cc = canvas.getContext('2d');
     if (!cc) return;
+    if (!activeTake) {
+      cc.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
     const trackAPI = audioAPI.tracks[trackId];
     const peakList = trackAPI.getPeakList();
@@ -56,7 +64,7 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
       const maxPeak = peakListData[(i + offset) * 2 + 1] / maxValue;
       drawFrame(cc, h2, i, minPeak, maxPeak);
     }
-  }, [audioAPI, dispatch, loadingTake, trackId]);
+  }, [audioAPI, dispatch, loadingTake, trackId, activeTake]);
 
   return (
     <Wrapper>

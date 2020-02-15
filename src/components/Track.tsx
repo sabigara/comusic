@@ -76,11 +76,13 @@ const Track: React.FC<Props> = ({ trackId }) => {
 
   useEffect(() => {
     async function _() {
+      const tr = audioAPI.tracks[track.id];
       if (!file) {
+        tr.clearBuffer();
         return;
       }
       dispatch(loadActiveTakeRequest(track.id));
-      await audioAPI.tracks[track.id].loadFile(file.url);
+      await tr.loadFile(file.url);
       dispatch(loadActiveTakeSuccess(track.id));
     }
     _();

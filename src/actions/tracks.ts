@@ -1,5 +1,10 @@
 import { TrackByIdState } from '../reducers/tracks';
-import { uploadTakeFileSuccess, UPLOAD_TAKE_FILE_SUCCESS } from './takes';
+import {
+  uploadTakeFileSuccess,
+  UPLOAD_TAKE_FILE_SUCCESS,
+  deleteTakeSuccess,
+  DELETE_TAKE_SUCCESS,
+} from './takes';
 import {
   fetchVerContentsSuccess,
   FETCH_VER_CONTENTS_SUCCESS,
@@ -36,6 +41,7 @@ export const ActionTypeName = {
   UPLOAD_TAKE_FILE_SUCCESS,
   // From outer modules.
   FETCH_VER_CONTENTS_SUCCESS,
+  DELETE_TAKE_SUCCESS,
 };
 
 export const addTracks = (byId: TrackByIdState, allIds: string[]) => {
@@ -160,4 +166,5 @@ export type ActionUnionType =
   | ReturnType<typeof soloOff>
   | ReturnType<typeof uploadTakeFileSuccess>
   // From outer modules.
-  | ReturnType<typeof fetchVerContentsSuccess>;
+  | ReturnType<typeof fetchVerContentsSuccess>
+  | ReturnType<typeof deleteTakeSuccess>;
