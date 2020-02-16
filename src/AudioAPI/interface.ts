@@ -22,7 +22,7 @@ export default interface IAudioAPI {
   readonly resolution: number;
   readonly secondsElapsed: number;
   readonly masterPeak: number;
-  loadTrack(id: string, name: string): ITrack;
+  loadTrack(id: string): ITrack;
   getTrack(id: string): ITrack | null;
   // Return Promise that indicates all tracks has ended.
   play(offset: number): Promise<void[]>;

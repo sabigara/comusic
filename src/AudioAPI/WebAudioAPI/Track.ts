@@ -5,7 +5,6 @@ import LoaderFactory from './loader/LoaderFactory';
 
 export class Track implements ITrack {
   public id: string;
-  public name: string;
   public duration: number;
   public isPlaying: boolean;
   private ac: AudioContext;
@@ -23,13 +22,11 @@ export class Track implements ITrack {
 
   constructor(
     id: string,
-    name: string,
     ac: AudioContext,
     masterGain: GainNode,
     masterAnalyzer: AnalyserNode,
   ) {
     this.id = id;
-    this.name = name;
     this.duration = 0;
     this.isPlaying = false;
     this.ac = ac;

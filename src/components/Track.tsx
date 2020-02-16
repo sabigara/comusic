@@ -50,11 +50,11 @@ const Track: React.FC<Props> = ({ trackId }) => {
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
-    const trackAPI = audioAPI.loadTrack(track.id, track.name);
+    const trackAPI = audioAPI.loadTrack(track.id);
     return () => {
       trackAPI.release();
     };
-  }, [audioAPI, track.id, track.name]);
+  }, [audioAPI, track.id]);
 
   useEffect(() => {
     const trackAPI = audioAPI.tracks[track.id];

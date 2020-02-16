@@ -34,14 +34,8 @@ export default class implements IAudioAPI {
     return this.ac.currentTime - this.startTime + this.offset;
   }
 
-  loadTrack(id: string, name: string) {
-    const track = new Track(
-      id,
-      name,
-      this.ac,
-      this.masterGain,
-      this.masterAnalyzer,
-    );
+  loadTrack(id: string,) {
+    const track = new Track(id, this.ac, this.masterGain, this.masterAnalyzer);
     this.tracks[id] = track;
     return track;
   }
