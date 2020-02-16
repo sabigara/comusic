@@ -3,7 +3,7 @@ import {
   fetchVerContentsSuccess,
   FETCH_VER_CONTENTS_SUCCESS,
 } from './versions';
-import { uploadTakeFileSuccess, UPLOAD_TAKE_FILE_SUCCESS } from './takes';
+import { addTakeSuccess, ADD_TAKE_SUCCESS } from './takes';
 
 const ADD_FILE = 'ADD_FILE' as const;
 const ADD_FILES = 'ADD_FILES' as const;
@@ -15,7 +15,7 @@ export const ActionTypeName = {
   RENAME_FILE,
   // From outer modules.
   FETCH_VER_CONTENTS_SUCCESS,
-  UPLOAD_TAKE_FILE_SUCCESS,
+  ADD_TAKE_SUCCESS,
 };
 
 export const addFile = (
@@ -61,4 +61,4 @@ export type ActionUnionType =
   | ReturnType<typeof renameFile>
   // From outer modules.
   | ReturnType<typeof fetchVerContentsSuccess>
-  | ReturnType<typeof uploadTakeFileSuccess>;
+  | ReturnType<typeof addTakeSuccess>;

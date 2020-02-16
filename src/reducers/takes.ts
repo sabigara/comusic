@@ -15,15 +15,6 @@ export type TakeState = typeof initialState;
 
 function take(state: TakeState, action: ActionUnionType): TakeState {
   switch (action.type) {
-    case ActionTypeName.ADD_TAKE:
-      return {
-        id: action.id,
-        trackId: action.payload.trackId,
-        fileId: action.payload.fileId,
-        createdAt: action.payload.createdAt,
-        updatedAt: action.payload.updatedAt,
-        name: 'new take',
-      };
     default:
       return state;
   }
@@ -43,17 +34,12 @@ function byId(
         ...state,
         [action.id]: take(state[action.id], action),
       };
-    case ActionTypeName.ADD_TAKE:
-      return {
-        ...state,
-        [action.id]: take(state[action.id], action),
-      };
     case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
       return {
         ...state,
         ...action.payload.takes.byId,
       };
-    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.ADD_TAKE_SUCCESS:
       return {
         ...state,
         [action.payload.take.id]: action.payload.take,
@@ -72,11 +58,9 @@ function byId(
 
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
-    case ActionTypeName.ADD_TAKE:
-      return state.concat(action.id);
     case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
       return state.concat(action.payload.takes.allIds);
-    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.ADD_TAKE_SUCCESS:
       return state.concat(action.payload.take.id);
     case ActionTypeName.DELETE_TAKE_SUCCESS:
       return state.filter((id) => id !== action.id);

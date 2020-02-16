@@ -1,8 +1,8 @@
 import { createAction } from './index';
 import { TrackState } from '../reducers/tracks';
 import {
-  uploadTakeFileSuccess,
-  UPLOAD_TAKE_FILE_SUCCESS,
+  addTakeSuccess,
+  ADD_TAKE_SUCCESS,
   deleteTakeSuccess,
   DELETE_TAKE_SUCCESS,
 } from './takes';
@@ -45,7 +45,7 @@ export const ActionTypeName = {
   LOAD_ACTIVE_TAKE_SUCCESS,
   ADD_TRACK_SUCCESS,
   DELETE_TRACK_SUCCESS,
-  UPLOAD_TAKE_FILE_SUCCESS,
+  ADD_TAKE_SUCCESS,
   // From outer modules.
   FETCH_VER_CONTENTS_SUCCESS,
   DELETE_TAKE_SUCCESS,
@@ -220,9 +220,9 @@ export type ActionUnionType =
   | ReturnType<typeof muteOff>
   | ReturnType<typeof soloOn>
   | ReturnType<typeof soloOff>
-  | ReturnType<typeof uploadTakeFileSuccess>
   | ReturnType<typeof addTrackSuccess>
   | ReturnType<typeof deleteTrackSuccess>
   // From outer modules.
   | ReturnType<typeof fetchVerContentsSuccess>
+  | ReturnType<typeof addTakeSuccess>
   | ReturnType<typeof deleteTakeSuccess>;

@@ -7,7 +7,7 @@ import Label from '../atoms/Label';
 import More from '../atoms/More';
 
 import { changeActiveTake } from '../actions/tracks';
-import { uploadTakeFile } from '../actions/takes';
+import { addTake } from '../actions/takes';
 import { RootState } from '../reducers';
 import TakeCtxMenu from './TakeCtxMenu';
 
@@ -38,7 +38,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       const body = new FormData();
       body.append('name', file.name);
       body.append('file', file);
-      dispatch(uploadTakeFile(trackId, body));
+      dispatch(addTake(trackId, body));
     },
     [trackId],
   );

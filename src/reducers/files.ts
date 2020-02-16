@@ -50,7 +50,7 @@ function byId(
         ...state,
         ...action.payload.files.byId,
       };
-    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.ADD_TAKE_SUCCESS:
       return {
         ...state,
         [action.payload.file.id]: action.payload.file,
@@ -68,7 +68,7 @@ function allIds(state: string[] = [], action: ActionUnionType): string[] {
       return state.concat(action.payload.allIds);
     case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
       return state.concat(action.payload.files.allIds);
-    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.ADD_TAKE_SUCCESS:
       return state.concat(action.payload.file.id);
     default:
       return state;

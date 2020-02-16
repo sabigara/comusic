@@ -40,7 +40,7 @@ function track(
       return { ...state, isSoloed: true };
     case ActionTypeName.SOLO_OFF:
       return { ...state, isSoloed: false };
-    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.ADD_TAKE_SUCCESS:
       return { ...state, activeTake: action.payload.take.id };
     case ActionTypeName.DELETE_TAKE_SUCCESS:
       return { ...state, activeTake: '' };
@@ -70,7 +70,7 @@ function byId(
     case ActionTypeName.MUTE_OFF:
     case ActionTypeName.SOLO_ON:
     case ActionTypeName.SOLO_OFF:
-    case ActionTypeName.UPLOAD_TAKE_FILE_SUCCESS:
+    case ActionTypeName.ADD_TAKE_SUCCESS:
       return {
         ...state,
         [action.id]: track(state[action.id], action),
