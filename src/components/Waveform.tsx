@@ -52,7 +52,7 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
 
     const peakListData = peakList.data[0];
     canvas.width = peakListData.length / 2;
-    canvas.height = 150;
+    canvas.height = 110;
     const h2 = canvas.height / 2;
     const maxValue = 2 ** (peakList.bits - 1);
 

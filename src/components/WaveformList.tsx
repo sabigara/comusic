@@ -105,7 +105,7 @@ const Wrapper = styled.div`
 `;
 
 const WaveformWrapper = styled.div`
-  height: 170px;
+  height: 130px;
 `;
 
 export default WaveformList;
