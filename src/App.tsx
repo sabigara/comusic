@@ -1,6 +1,7 @@
 import React, { createContext } from 'react';
 import { Provider } from 'react-redux';
 import styled from 'styled-components';
+import * as Sentry from '@sentry/browser';
 
 import { WebAudioAPI } from './AudioAPI';
 import initStore from './store';
@@ -10,6 +11,10 @@ import TrackList from './components/TrackList';
 import WaveformList from './components/WaveformList';
 
 const store = initStore();
+
+Sentry.init({
+  dsn: process.env.REACT_APP_SENTRY_DSN,
+});
 
 export const webAudioAPI = createContext(new WebAudioAPI());
 

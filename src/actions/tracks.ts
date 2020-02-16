@@ -166,7 +166,7 @@ export const addTrack = (verId: string) => {
       const resp = await backendAPI.addTrack(verId);
       dispatch(addTrackSuccess(verId, resp));
     } catch (err) {
-      dispatch(createAction(ADD_TRACK_FAILURE, verId));
+      dispatch(createAction(ADD_TRACK_FAILURE, verId, err.toString()));
     }
   };
 };
@@ -185,7 +185,7 @@ export const deleteTrack = (trackId: string) => {
       await backendAPI.delTrack(trackId);
       dispatch(deleteTrackSuccess(trackId));
     } catch (err) {
-      dispatch(createAction(DELETE_TRACK_FAILURE, trackId));
+      dispatch(createAction(DELETE_TRACK_FAILURE, trackId, err.toString()));
     }
   };
 };

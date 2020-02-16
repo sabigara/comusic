@@ -75,20 +75,18 @@ export default class Http {
       body = JSON.stringify(body);
       headers[CONTENT_TYPE] = APPLICATION_JSON;
     }
-    try {
-      const resp = await fetch(pathStr, {
-        method: method,
-        headers: { ...this.defaultHeaders(), ...headers },
-        body: body,
-      });
-      if (!resp.ok) throw 'Non 2xx response';
-      if (
-        resp.headers.get(CONTENT_TYPE)?.split(';')[0] === 'application/json'
-      ) {
-        return resp.json();
-      }
-    } catch (err) {
-      throw `http request error: ${err}`;
+    const resp = await fetch(pathStr, {
+      method: method,
+      headers: { ...this.defaultHeaders(), ...headers },
+      body: body,
+    });
+    if (!resp.ok) {
+      const respBody = await resp.text();
+      throw new Error(`Non 2xx response for request: ${method} ${pathStr}\n
+response: ${resp.status} ${respBody}`);
+    }
+    if (resp.headers.get(CONTENT_TYPE)?.split(';')[0] === APPLICATION_JSON) {
+      return resp.json();
     }
   }
 

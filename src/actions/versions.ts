@@ -50,10 +50,11 @@ export const fetchVerContentsSuccess = (
   };
 };
 
-export const fetchVerContentsFailure = (versionId: string) => {
+export const fetchVerContentsFailure = (versionId: string, err: string) => {
   return {
     type: FETCH_VER_CONTENTS_FAILURE,
     id: versionId,
+    err: err,
   };
 };
 
@@ -74,7 +75,7 @@ export const fetchVerContents = (versionId: string) => {
         ),
       );
     } catch (err) {
-      dispatch(fetchVerContentsFailure(versionId));
+      dispatch(fetchVerContentsFailure(versionId, err.toString()));
     }
   };
 };

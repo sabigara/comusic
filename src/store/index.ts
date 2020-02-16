@@ -1,13 +1,22 @@
 import { createStore, applyMiddleware, Store } from 'redux';
 import getReducers from '../reducers';
+import * as Sentry from '@sentry/browser';
 
 import thunk from 'redux-thunk';
+
+const errReporter = (store: any) => (next: any) => (action: any) => {
+  const matches = /(.*)_FAILURE/.exec(action.type);
+  if (!matches) return next(action);
+
+  Sentry.captureException(action.err);
+  return next(action);
+};
 
 export default (initialState?: Record<string, any>): Store => {
   const store = createStore(
     getReducers(),
     initialState || {},
-    applyMiddleware(thunk),
+    applyMiddleware(thunk, errReporter),
   );
   return store;
 };
