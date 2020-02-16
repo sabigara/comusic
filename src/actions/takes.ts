@@ -1,6 +1,6 @@
-import { createAction } from './index';
 import { TakeState } from '../reducers/takes';
 import { FileState } from '../reducers/files';
+import { createAction, backend } from '.';
 import {
   fetchVerContentsSuccess,
   FETCH_VER_CONTENTS_SUCCESS,
@@ -51,19 +51,9 @@ export const addTake = (trackId: string, formData: FormData) => {
   return async (dispatch: any) => {
     dispatch(createAction(ADD_TAKE_REQUEST, trackId));
     try {
-      const resp = await fetch(
-        'http://localhost:1323/takes?track_id=' + trackId,
-        {
-          method: 'POST',
-          body: formData,
-        },
-      );
-      if (resp.status !== 201) {
-        dispatch(createAction(ADD_TAKE_FAILURE, trackId));
-      }
-      const json = await resp.json();
-      dispatch(addTakeSuccess(trackId, json.take, json.file));
-    } catch {
+      const resp = await backend.addTake(trackId, formData);
+      dispatch(addTakeSuccess(trackId, resp.take, resp.file));
+    } catch (err) {
       dispatch(createAction(ADD_TAKE_FAILURE, trackId));
     }
   };
@@ -80,14 +70,9 @@ export const deleteTake = (takeId: string) => {
   return async (dispatch: any) => {
     dispatch(createAction(DELETE_TAKE_REQUEST, takeId));
     try {
-      const resp = await fetch('http://localhost:1323/takes/' + takeId, {
-        method: 'DELETE',
-      });
-      if (resp.status !== 204) {
-        dispatch(createAction(DELETE_TAKE_FAILURE, takeId));
-      }
+      await backend.delTake(takeId);
       dispatch(deleteTakeSuccess(takeId));
-    } catch {
+    } catch (err) {
       dispatch(createAction(DELETE_TAKE_FAILURE, takeId));
     }
   };
