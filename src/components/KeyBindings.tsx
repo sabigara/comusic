@@ -10,7 +10,8 @@ const KeyBindings: React.FC = () => {
   const dispatch = useDispatch();
   const space = React.useCallback(
     (e) => {
-      if (e.isComposing || e.keyCode === 32) {
+      if (e.keyCode === 32) {
+        e.preventDefault();
         switch (status) {
           case PlaybackStatus.Stopping:
             dispatch(play());
@@ -27,9 +28,9 @@ const KeyBindings: React.FC = () => {
     [status, dispatch],
   );
   useEffect(() => {
-    document.addEventListener('keydown', space);
+    window.addEventListener('keydown', space);
     return () => {
-      document.removeEventListener('keydown', space);
+      window.removeEventListener('keydown', space);
     };
   });
 
