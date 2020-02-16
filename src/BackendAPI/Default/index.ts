@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { TrackState } from '../../reducers/tracks';
 
-import Backend, { FetchVerContentsResp, AddTakeResp } from '../interface';
+import BackendAPI, { FetchVerContentsResp, AddTakeResp } from '../interface';
 import Http from '../http';
 
 const http = new Http('http', 'localhost', 1323);
 
-export default class Default implements Backend {
+export default class Default implements BackendAPI {
   async fetchVerContents(verId: string): Promise<FetchVerContentsResp> {
     return http.get({
       path: 'versions/:id/contents',
@@ -15,10 +15,13 @@ export default class Default implements Backend {
   }
 
   async addTrack(verId: string): Promise<TrackState> {
-    return http.post({
-      path: 'tracks',
-      queries: { version_id: verId },
-    });
+    return http.post(
+      {
+        path: 'tracks',
+        queries: { version_id: verId },
+      },
+      { name: '' },
+    );
   }
 
   async delTrack(trackId: string): Promise<void> {

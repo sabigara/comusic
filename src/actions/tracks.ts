@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { createAction } from './index';
 import { TrackState } from '../reducers/tracks';
 import {
@@ -10,6 +11,7 @@ import {
   fetchVerContentsSuccess,
   FETCH_VER_CONTENTS_SUCCESS,
 } from './versions';
+import { backendAPI } from '.';
 
 const ADD_TRACK_REQUEST = 'ADD_TRACK_REQUEST' as const;
 const ADD_TRACK_SUCCESS = 'ADD_TRACK_SUCCESS' as const;
@@ -161,22 +163,9 @@ export const addTrack = (verId: string) => {
   return async (dispatch: any) => {
     dispatch(createAction(ADD_TRACK_REQUEST, verId));
     try {
-      const resp = await fetch(
-        'http://localhost:1323/tracks?version_id=' + verId,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name: '' }),
-        },
-      );
-      if (resp.status !== 201) {
-        dispatch(createAction(ADD_TRACK_FAILURE, verId));
-      }
-      const json = await resp.json();
-      dispatch(addTrackSuccess(verId, json));
-    } catch {
+      const resp = await backendAPI.addTrack(verId);
+      dispatch(addTrackSuccess(verId, resp));
+    } catch (err) {
       dispatch(createAction(ADD_TRACK_FAILURE, verId));
     }
   };
@@ -193,15 +182,9 @@ export const deleteTrack = (trackId: string) => {
   return async (dispatch: any) => {
     dispatch(createAction(DELETE_TRACK_REQUEST, trackId));
     try {
-      const resp = await fetch('http://localhost:1323/tracks/' + trackId, {
-        method: 'DELETE',
-      });
-      if (resp.status !== 204) {
-        dispatch(createAction(DELETE_TRACK_FAILURE, trackId));
-        return;
-      }
+      await backendAPI.delTrack(trackId);
       dispatch(deleteTrackSuccess(trackId));
-    } catch {
+    } catch (err) {
       dispatch(createAction(DELETE_TRACK_FAILURE, trackId));
     }
   };

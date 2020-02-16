@@ -22,7 +22,7 @@ export type AddTakeResp = {
   file: FileState;
 };
 
-export default interface Backend {
+export default interface BackendAPI {
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
   addTrack(verId: string): Promise<TrackState>;
   delTrack(trackId: string): Promise<void>;

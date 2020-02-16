@@ -1,6 +1,6 @@
-import { Backend } from '../Backend';
+import { BackendAPI } from '../BackendAPI';
 
-export const backend = new Backend();
+export const backendAPI = new BackendAPI();
 
 export const createAction = (type: string, id: string) => {
   return {

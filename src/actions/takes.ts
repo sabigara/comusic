@@ -1,6 +1,6 @@
 import { TakeState } from '../reducers/takes';
 import { FileState } from '../reducers/files';
-import { createAction, backend } from '.';
+import { createAction, backendAPI } from '.';
 import {
   fetchVerContentsSuccess,
   FETCH_VER_CONTENTS_SUCCESS,
@@ -51,7 +51,7 @@ export const addTake = (trackId: string, formData: FormData) => {
   return async (dispatch: any) => {
     dispatch(createAction(ADD_TAKE_REQUEST, trackId));
     try {
-      const resp = await backend.addTake(trackId, formData);
+      const resp = await backendAPI.addTake(trackId, formData);
       dispatch(addTakeSuccess(trackId, resp.take, resp.file));
     } catch (err) {
       dispatch(createAction(ADD_TAKE_FAILURE, trackId));
@@ -70,7 +70,7 @@ export const deleteTake = (takeId: string) => {
   return async (dispatch: any) => {
     dispatch(createAction(DELETE_TAKE_REQUEST, takeId));
     try {
-      await backend.delTake(takeId);
+      await backendAPI.delTake(takeId);
       dispatch(deleteTakeSuccess(takeId));
     } catch (err) {
       dispatch(createAction(DELETE_TAKE_FAILURE, takeId));

@@ -2,7 +2,7 @@ import { TrackByIdState } from '../reducers/tracks';
 import { TakeByIdState } from '../reducers/takes';
 import { FileByIdState } from '../reducers/files';
 
-import { backend } from '.';
+import { backendAPI } from '.';
 
 const FETCH_VER_CONTENTS_REQUEST = 'FETCH_VER_CONTENTS_REQUEST' as const;
 export const FETCH_VER_CONTENTS_SUCCESS = 'FETCH_VER_CONTENTS_SUCCESS' as const;
@@ -61,7 +61,7 @@ export const fetchVerContents = (versionId: string) => {
   return async (dispatch: any) => {
     dispatch(fetchVerContentsRequest(versionId));
     try {
-      const resp = await backend.fetchVerContents(versionId);
+      const resp = await backendAPI.fetchVerContents(versionId);
       dispatch(
         fetchVerContentsSuccess(
           versionId,
