@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import useEventCallback from '../common/useEventCallback';
+import useEventCallback from '../hooks/useEventCallback';
 import styled from 'styled-components';
 
 function clamp(value: number, min: number, max: number): number {

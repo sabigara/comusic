@@ -3,6 +3,7 @@ import getReducers from '../reducers';
 import * as Sentry from '@sentry/browser';
 
 import thunk from 'redux-thunk';
+import logger from 'redux-logger';
 
 const errReporter = (store: any) => (next: any) => (action: any) => {
   const matches = /(.*)_FAILURE/.exec(action.type);
@@ -16,7 +17,7 @@ export default (initialState?: Record<string, any>): Store => {
   const store = createStore(
     getReducers(),
     initialState || {},
-    applyMiddleware(thunk, errReporter),
+    applyMiddleware(thunk, errReporter, logger),
   );
   return store;
 };

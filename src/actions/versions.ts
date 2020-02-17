@@ -1,14 +1,10 @@
-import { TrackByIdState } from '../reducers/tracks';
-import { TakeByIdState } from '../reducers/takes';
-import { FileByIdState } from '../reducers/files';
-
-import { backendAPI } from '.';
+import { Track, Take, File } from '../common/Domain';
 
 const FETCH_VER_CONTENTS_REQUEST = 'FETCH_VER_CONTENTS_REQUEST' as const;
-export const FETCH_VER_CONTENTS_SUCCESS = 'FETCH_VER_CONTENTS_SUCCESS' as const;
+const FETCH_VER_CONTENTS_SUCCESS = 'FETCH_VER_CONTENTS_SUCCESS' as const;
 const FETCH_VER_CONTENTS_FAILURE = 'FETCH_VER_CONTENTS_FAILURE' as const;
 
-export const ActionTypeName = {
+export const VersionActionTypeName = {
   FETCH_VER_CONTENTS_REQUEST,
   FETCH_VER_CONTENTS_SUCCESS,
   FETCH_VER_CONTENTS_FAILURE,
@@ -23,28 +19,28 @@ export const fetchVerContentsRequest = (versionId: string) => {
 
 export const fetchVerContentsSuccess = (
   versionId: string,
-  tracksById: TrackByIdState,
-  tracksAllIds: string[],
-  takesById: TakeByIdState,
-  takesAllIds: string[],
-  filesById: FileByIdState,
-  filesAllIds: string[],
+  trackById: { [id: string]: Track },
+  trackAllIds: string[],
+  takeById: { [id: string]: Take },
+  takeAllIds: string[],
+  fileById: { [id: string]: File },
+  fileAllIds: string[],
 ) => {
   return {
     type: FETCH_VER_CONTENTS_SUCCESS,
     id: versionId,
     payload: {
       tracks: {
-        byId: tracksById,
-        allIds: tracksAllIds,
+        byId: trackById,
+        allIds: trackAllIds,
       },
       takes: {
-        byId: takesById,
-        allIds: takesAllIds,
+        byId: takeById,
+        allIds: takeAllIds,
       },
       files: {
-        byId: filesById,
-        allIds: filesAllIds,
+        byId: fileById,
+        allIds: fileAllIds,
       },
     },
   };
@@ -58,29 +54,7 @@ export const fetchVerContentsFailure = (versionId: string, err: string) => {
   };
 };
 
-export const fetchVerContents = (versionId: string) => {
-  return async (dispatch: any) => {
-    dispatch(fetchVerContentsRequest(versionId));
-    try {
-      const resp = await backendAPI.fetchVerContents(versionId);
-      dispatch(
-        fetchVerContentsSuccess(
-          versionId,
-          resp.tracks.byId,
-          resp.tracks.allIds,
-          resp.takes.byId,
-          resp.takes.allIds,
-          resp.files.byId,
-          resp.files.allIds,
-        ),
-      );
-    } catch (err) {
-      dispatch(fetchVerContentsFailure(versionId, err.toString()));
-    }
-  };
-};
-
-export type ActionUnionType =
+export type VersionActionUnionType =
   | ReturnType<typeof fetchVerContentsRequest>
   | ReturnType<typeof fetchVerContentsSuccess>
   | ReturnType<typeof fetchVerContentsFailure>;

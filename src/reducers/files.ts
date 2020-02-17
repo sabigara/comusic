@@ -1,31 +1,28 @@
 import { combineReducers } from 'redux';
 
-import { ActionUnionType, ActionTypeName } from '../actions/files';
+import { File } from '../common/Domain';
+import { ActionUnionType, ActionTypeName } from '../actions';
 
-const initialState = {
+export type FileState = File;
+
+const initialState: FileState = {
   id: '',
   createdAt: '',
   updatedAt: '',
   url: '',
 };
 
-export type FileState = typeof initialState;
-
-function file(state: FileState, action: ActionUnionType): FileState {
+function file(
+  state: FileState = initialState,
+  action: ActionUnionType,
+): FileState {
   switch (action.type) {
-    case ActionTypeName.ADD_FILE:
-      return {
-        id: action.id,
-        createdAt: action.payload.createdAt,
-        updatedAt: action.payload.updatedAt,
-        url: action.payload.url,
-      };
     default:
       return state;
   }
 }
 
-export type FileByIdState = {
+type FileByIdState = {
   [id: string]: FileState;
 };
 
@@ -34,23 +31,23 @@ function byId(
   action: ActionUnionType,
 ): FileByIdState {
   switch (action.type) {
-    case ActionTypeName.ADD_FILE:
-    case ActionTypeName.RENAME_FILE:
+    case ActionTypeName.File.ADD_FILE:
+    case ActionTypeName.File.RENAME_FILE:
       return {
         ...state,
         [action.id]: file(state[action.id], action),
       };
-    case ActionTypeName.ADD_FILES:
+    case ActionTypeName.File.ADD_FILES:
       return {
         ...state,
         ...action.payload.byId,
       };
-    case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
+    case ActionTypeName.Version.FETCH_VER_CONTENTS_SUCCESS:
       return {
         ...state,
         ...action.payload.files.byId,
       };
-    case ActionTypeName.ADD_TAKE_SUCCESS:
+    case ActionTypeName.Take.ADD_TAKE_SUCCESS:
       return {
         ...state,
         [action.payload.file.id]: action.payload.file,
@@ -62,13 +59,13 @@ function byId(
 
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
-    case ActionTypeName.ADD_FILE:
+    case ActionTypeName.File.ADD_FILE:
       return state.concat(action.id);
-    case ActionTypeName.ADD_FILES:
+    case ActionTypeName.File.ADD_FILES:
       return state.concat(action.payload.allIds);
-    case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
+    case ActionTypeName.Version.FETCH_VER_CONTENTS_SUCCESS:
       return state.concat(action.payload.files.allIds);
-    case ActionTypeName.ADD_TAKE_SUCCESS:
+    case ActionTypeName.Take.ADD_TAKE_SUCCESS:
       return state.concat(action.payload.file.id);
     default:
       return state;

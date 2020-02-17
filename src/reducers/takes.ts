@@ -1,8 +1,11 @@
 import { combineReducers } from 'redux';
 
-import { ActionUnionType, ActionTypeName } from '../actions/takes';
+import { Take } from '../common/Domain';
+import { ActionTypeName, ActionUnionType } from '../actions';
 
-const initialState = {
+export type TakeState = Take;
+
+const initialState: TakeState = {
   id: '',
   trackId: '',
   fileId: '',
@@ -11,16 +14,17 @@ const initialState = {
   name: '',
 };
 
-export type TakeState = typeof initialState;
-
-function take(state: TakeState, action: ActionUnionType): TakeState {
+function take(
+  state: TakeState = initialState,
+  action: ActionUnionType,
+): TakeState {
   switch (action.type) {
     default:
       return state;
   }
 }
 
-export type TakeByIdState = {
+type TakeByIdState = {
   [id: string]: TakeState;
 };
 
@@ -29,22 +33,22 @@ function byId(
   action: ActionUnionType,
 ): TakeByIdState {
   switch (action.type) {
-    case ActionTypeName.RENAME_TAKE:
+    case ActionTypeName.Take.RENAME_TAKE:
       return {
         ...state,
         [action.id]: take(state[action.id], action),
       };
-    case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
+    case ActionTypeName.Version.FETCH_VER_CONTENTS_SUCCESS:
       return {
         ...state,
         ...action.payload.takes.byId,
       };
-    case ActionTypeName.ADD_TAKE_SUCCESS:
+    case ActionTypeName.Take.ADD_TAKE_SUCCESS:
       return {
         ...state,
         [action.payload.take.id]: action.payload.take,
       };
-    case ActionTypeName.DELETE_TAKE_SUCCESS:
+    case ActionTypeName.Take.DEL_TAKE_SUCCESS:
       // Extract rest of the state except given take ID.
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [action.id]: _, ...rest } = state;
@@ -58,11 +62,11 @@ function byId(
 
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
-    case ActionTypeName.FETCH_VER_CONTENTS_SUCCESS:
+    case ActionTypeName.Version.FETCH_VER_CONTENTS_SUCCESS:
       return state.concat(action.payload.takes.allIds);
-    case ActionTypeName.ADD_TAKE_SUCCESS:
+    case ActionTypeName.Take.ADD_TAKE_SUCCESS:
       return state.concat(action.payload.take.id);
-    case ActionTypeName.DELETE_TAKE_SUCCESS:
+    case ActionTypeName.Take.DEL_TAKE_SUCCESS:
       return state.filter((id) => id !== action.id);
     default:
       return state;

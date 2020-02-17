@@ -1,10 +1,9 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
-import { deleteTrack } from '../actions/tracks';
+import { useDelTrack } from '../hooks/tracks';
 
 type Props = {
   trackId: string;
@@ -16,13 +15,13 @@ type Data = {
 };
 
 const TrackContextMenu: React.FC<Props> = ({ trackId, children }) => {
-  const dispatch = useDispatch();
+  const delTrack = useDelTrack(trackId);
 
   const handler = (e: any, data: Data) => {
     e.stopPropagation();
     switch (data.method) {
       case 'DELETE':
-        dispatch(deleteTrack(data.id));
+        delTrack();
         break;
     }
   };

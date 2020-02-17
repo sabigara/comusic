@@ -1,0 +1,72 @@
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { FetchVerContentsResp } from '../BackendAPI/interface';
+import {
+  fetchVerContentsRequest,
+  fetchVerContentsSuccess,
+  fetchVerContentsFailure,
+} from '../actions/versions';
+import {
+  loadActiveTakeRequest,
+  loadActiveTakeSuccess,
+  loadActiveTakeFailure,
+} from '../actions/tracks';
+import useAudioAPI from './useAudioAPI';
+import useBackendAPI from './useBackendAPI';
+import { ITrack } from '../AudioAPI/interface';
+
+export const useFetchVerContents = (verId: string) => {
+  const backendAPI = useBackendAPI();
+  const audioAPI = useAudioAPI();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const trackAPIs: ITrack[] = [];
+    const _ = async () => {
+      dispatch(fetchVerContentsRequest(verId));
+      let resp: FetchVerContentsResp;
+      try {
+        resp = await backendAPI.fetchVerContents(verId);
+        dispatch(
+          fetchVerContentsSuccess(
+            verId,
+            resp.tracks.byId,
+            resp.tracks.allIds,
+            resp.takes.byId,
+            resp.takes.allIds,
+            resp.files.byId,
+            resp.files.allIds,
+          ),
+        );
+      } catch (err) {
+        dispatch(fetchVerContentsFailure(verId, err.toString()));
+        return;
+      }
+      resp.tracks.allIds.map(async (id) => {
+        const track = resp.tracks.byId[id];
+        const activeTake = resp.takes.byId[track.activeTake];
+        const trackAPI = audioAPI.loadTrack(id);
+        trackAPIs.push(trackAPI);
+        trackAPI.setVolume(track.volume);
+        trackAPI.setPan(track.pan);
+        if (!activeTake) return;
+        dispatch(loadActiveTakeRequest(id));
+        try {
+          await trackAPI.loadFile(resp.files.byId[activeTake.fileId].url);
+          dispatch(loadActiveTakeSuccess(id));
+        } catch (err) {
+          dispatch(loadActiveTakeFailure(id, err.toString()));
+        }
+      });
+    };
+    _();
+    return () => {
+      if (trackAPIs.length > 0) {
+        trackAPIs.map((trackAPI) => {
+          trackAPI.release();
+        });
+      }
+    };
+  }, [verId]);
+};

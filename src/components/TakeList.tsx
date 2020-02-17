@@ -5,10 +5,9 @@ import styled from 'styled-components';
 import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
-
 import { changeActiveTake } from '../actions/tracks';
-import { addTake } from '../actions/takes';
 import { RootState } from '../reducers';
+import { useAddTake } from '../hooks/takes';
 import TakeCtxMenu from './TakeCtxMenu';
 
 type Props = {
@@ -27,6 +26,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
   const dispatch = useDispatch();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseHoverId, setMouseHoverId] = useState<string | null>(null);
+  const addTake = useAddTake();
 
   const onFileSelected = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,7 +38,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       const body = new FormData();
       body.append('name', file.name);
       body.append('file', file);
-      dispatch(addTake(trackId, body));
+      addTake(trackId, body);
     },
     [trackId],
   );

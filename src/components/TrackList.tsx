@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
-import { fetchVerContents } from '../actions/versions';
-import { addTrack } from '../actions/tracks';
 import { RootState } from '../reducers';
 import { TrackState } from '../reducers/tracks';
+import { useFetchVerContents } from '../hooks/versions';
+import { useAddTrack } from '../hooks/tracks';
 import Track from './Track';
 
 const hasStateChanged = (prev: TrackState[], current: TrackState[]) => {
@@ -32,17 +32,12 @@ const TrackList: React.FC = () => {
       }
     },
   );
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchVerContents(verId));
-  }, [dispatch]);
 
-  const onDoubleClick = () => {
-    dispatch(addTrack(verId));
-  };
+  const addTrack = useAddTrack(verId);
+  useFetchVerContents(verId);
 
   return (
-    <Wrapper onDoubleClick={onDoubleClick}>
+    <Wrapper onDoubleClick={addTrack}>
       {state.map((track, i) => {
         return (
           <div key={`track-${i}`} onDoubleClick={(e) => e.stopPropagation()}>

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
-import { PlaybackStatus } from '../common/Enums';
+import { PlaybackStatus } from '../common/Domain';
 import { play, pause, stop, updateTime } from '../actions/playback';
 import Img from '../atoms/Img';
 import ToolBarItem from '../atoms/ToolBarItem';

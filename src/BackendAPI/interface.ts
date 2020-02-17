@@ -1,30 +1,28 @@
-import { TrackState, TrackByIdState } from '../reducers/tracks';
-import { TakeState, TakeByIdState } from '../reducers/takes';
-import { FileState, FileByIdState } from '../reducers/files';
+import { Track, Take, File } from '../common/Domain';
 
 export type FetchVerContentsResp = {
   tracks: {
-    byId: TrackByIdState;
+    byId: { [id: string]: Track };
     allIds: string[];
   };
   takes: {
-    byId: TakeByIdState;
+    byId: { [id: string]: Take };
     allIds: string[];
   };
   files: {
-    byId: FileByIdState;
+    byId: { [id: string]: File };
     allIds: string[];
   };
 };
 
 export type AddTakeResp = {
-  take: TakeState;
-  file: FileState;
+  take: Take;
+  file: File;
 };
 
 export default interface BackendAPI {
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
-  addTrack(verId: string): Promise<TrackState>;
+  addTrack(verId: string): Promise<Track>;
   delTrack(trackId: string): Promise<void>;
   addTake(trackId: string, formData: FormData): Promise<AddTakeResp>;
   delTake(takeId: string): Promise<void>;

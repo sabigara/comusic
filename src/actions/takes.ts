@@ -1,25 +1,21 @@
-import { TakeState } from '../reducers/takes';
-import { FileState } from '../reducers/files';
-import { createAction, backendAPI } from '.';
-import {
-  fetchVerContentsSuccess,
-  FETCH_VER_CONTENTS_SUCCESS,
-} from './versions';
+import { Take, File } from '../common/Domain';
 
 const RENAME_TAKE = 'RENAME_TAKE' as const;
 const ADD_TAKE_REQUEST = 'ADD_TAKE_REQUEST' as const;
-export const ADD_TAKE_SUCCESS = 'ADD_TAKE_SUCCESS' as const;
+const ADD_TAKE_SUCCESS = 'ADD_TAKE_SUCCESS' as const;
 const ADD_TAKE_FAILURE = 'ADD_TAKE_FAILURE' as const;
-const DELETE_TAKE_REQUEST = 'DELETE_TAKE_REQUEST' as const;
-export const DELETE_TAKE_SUCCESS = 'DELETE_TAKE_SUCCESS' as const;
-const DELETE_TAKE_FAILURE = 'DELETE_TAKE_FAILURE' as const;
+const DEL_TAKE_REQUEST = 'DEL_TAKE_REQUEST' as const;
+const DEL_TAKE_SUCCESS = 'DEL_TAKE_SUCCESS' as const;
+const DEL_TAKE_FAILURE = 'DEL_TAKE_FAILURE' as const;
 
-export const ActionTypeName = {
+export const TakeActionTypeName = {
   RENAME_TAKE,
+  ADD_TAKE_REQUEST,
   ADD_TAKE_SUCCESS,
-  DELETE_TAKE_SUCCESS,
-  // From outer modules.
-  FETCH_VER_CONTENTS_SUCCESS,
+  ADD_TAKE_FAILURE,
+  DEL_TAKE_REQUEST,
+  DEL_TAKE_SUCCESS,
+  DEL_TAKE_FAILURE,
 };
 
 export const renameTake = (id: string, name: string) => {
@@ -32,11 +28,7 @@ export const renameTake = (id: string, name: string) => {
   };
 };
 
-export const addTakeSuccess = (
-  id: string,
-  take: TakeState,
-  file: FileState,
-) => {
+export const addTakeSuccess = (id: string, take: Take, file: File) => {
   return {
     type: ADD_TAKE_SUCCESS,
     id: id,
@@ -47,40 +39,14 @@ export const addTakeSuccess = (
   };
 };
 
-export const addTake = (trackId: string, formData: FormData) => {
-  return async (dispatch: any) => {
-    dispatch(createAction(ADD_TAKE_REQUEST, trackId));
-    try {
-      const resp = await backendAPI.addTake(trackId, formData);
-      dispatch(addTakeSuccess(trackId, resp.take, resp.file));
-    } catch (err) {
-      dispatch(createAction(ADD_TAKE_FAILURE, trackId, err.toString()));
-    }
-  };
-};
-
-export const deleteTakeSuccess = (id: string) => {
+export const delTakeSuccess = (id: string) => {
   return {
-    type: DELETE_TAKE_SUCCESS,
+    type: DEL_TAKE_SUCCESS,
     id: id,
   };
 };
 
-export const deleteTake = (takeId: string) => {
-  return async (dispatch: any) => {
-    dispatch(createAction(DELETE_TAKE_REQUEST, takeId));
-    try {
-      await backendAPI.delTake(takeId);
-      dispatch(deleteTakeSuccess(takeId));
-    } catch (err) {
-      dispatch(createAction(DELETE_TAKE_FAILURE, takeId, err.toString()));
-    }
-  };
-};
-
-export type ActionUnionType =
+export type TakeActionUnionType =
   | ReturnType<typeof renameTake>
   | ReturnType<typeof addTakeSuccess>
-  | ReturnType<typeof deleteTakeSuccess>
-  // From outer modules.
-  | ReturnType<typeof fetchVerContentsSuccess>;
+  | ReturnType<typeof delTakeSuccess>;

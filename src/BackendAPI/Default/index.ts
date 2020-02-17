@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { TrackState } from '../../reducers/tracks';
+import { Track } from '../../common/Domain';
 
 import BackendAPI, { FetchVerContentsResp, AddTakeResp } from '../interface';
 import Http from '../http';
@@ -14,7 +14,7 @@ export default class Default implements BackendAPI {
     });
   }
 
-  async addTrack(verId: string): Promise<TrackState> {
+  async addTrack(verId: string): Promise<Track> {
     return http.post(
       {
         path: 'tracks',

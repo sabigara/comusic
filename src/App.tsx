@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import * as Sentry from '@sentry/browser';
 
 import { WebAudioAPI } from './AudioAPI';
+import { BackendAPI } from './BackendAPI';
 import initStore from './store';
 import KeyBindings from './components/KeyBindings';
 import ToolBar from './components/ToolBar';
@@ -16,7 +17,10 @@ Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
 });
 
-export const webAudioAPI = createContext(new WebAudioAPI());
+export const webAudioAPI = new WebAudioAPI();
+export const webAudioAPICtx = createContext(webAudioAPI);
+export const backendAPI = new BackendAPI();
+export const backendAPICtx = createContext(backendAPI);
 
 const App: React.FC = () => {
   return (

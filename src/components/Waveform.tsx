@@ -46,8 +46,7 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
       cc.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    const trackAPI = audioAPI.tracks[trackId];
-    const peakList = trackAPI.getPeakList();
+    const peakList = audioAPI.getTrack(trackId)?.getPeakList();
     if (!peakList) return;
 
     const peakListData = peakList.data[0];

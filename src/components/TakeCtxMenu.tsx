@@ -1,8 +1,7 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 
-import { deleteTake } from '../actions/takes';
+import { useDelTake } from '../hooks/takes';
 
 type Props = {
   takeId: string;
@@ -14,13 +13,12 @@ type Data = {
 };
 
 const TakeContextMenu: React.FC<Props> = ({ takeId, children }) => {
-  const dispatch = useDispatch();
-
+  const delTake = useDelTake();
   const handler = (e: any, data: Data) => {
     e.stopPropagation();
     switch (data.method) {
       case 'DELETE':
-        dispatch(deleteTake(data.id));
+        delTake(data.id);
         break;
     }
   };

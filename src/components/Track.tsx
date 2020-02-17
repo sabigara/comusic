@@ -1,15 +1,9 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { PlaybackStatus } from '../common/Enums';
 import Color from '../common/Color';
 import { RootState } from '../reducers';
-import {
-  loadActiveTakeRequest,
-  loadActiveTakeSuccess,
-} from '../actions/tracks';
-import useLoading from '../hooks/useLoading';
 import useAudioAPI from '../hooks/useAudioAPI';
 import TrackPanel from './TrackPanel';
 import TakeList from './TakeList';
@@ -27,66 +21,14 @@ const Track: React.FC<Props> = ({ trackId }) => {
       return prev.activeTake === current.activeTake;
     },
   );
-  const activeTake = useSelector((state: RootState) => {
-    const activeTakeId = state.tracks.byId[trackId].activeTake;
-    return state.takes.byId[activeTakeId];
-  });
-  const file = useSelector((state: RootState) => {
-    if (!activeTake) {
-      return;
-    }
-    return state.files.byId[activeTake.fileId];
-  });
-  const playback = useSelector(
-    (state: RootState) => {
-      return state.playback;
-    },
-    (prev, current) => {
-      return prev.status === current.status;
-    },
-  );
-  const loadingTake = useLoading('LOAD_ACTIVE_TAKE', trackId);
-  const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
-    const trackAPI = audioAPI.loadTrack(track.id);
+    const trackAPI = audioAPI.getTrack(track.id);
     return () => {
-      trackAPI.release();
+      trackAPI?.release();
     };
   }, [audioAPI, track.id]);
-
-  useEffect(() => {
-    const trackAPI = audioAPI.tracks[track.id];
-    trackAPI.setVolume(track.volume);
-    trackAPI.setPan(track.pan);
-    // shouldPlay ? trackAPI.unMute() : trackAPI.mute();
-  }, [audioAPI, track.id, track.name, track.pan, track.volume]);
-
-  useEffect(() => {
-    const trackAPI = audioAPI.tracks[trackId];
-    trackAPI.stop();
-    if (loadingTake) return;
-    if (playback.status === PlaybackStatus.Playing) {
-      if (!trackAPI.isPlaying) {
-        trackAPI.play(playback.time);
-      }
-    }
-  }, [audioAPI.tracks, loadingTake, playback.status, playback.time, trackId]);
-
-  useEffect(() => {
-    async function _() {
-      const tr = audioAPI.tracks[track.id];
-      if (!file) {
-        tr.clearBuffer();
-        return;
-      }
-      dispatch(loadActiveTakeRequest(track.id));
-      await tr.loadFile(file.url);
-      dispatch(loadActiveTakeSuccess(track.id));
-    }
-    _();
-  }, [dispatch, audioAPI.tracks, file, track.id]);
 
   return (
     <TrackWrapper>

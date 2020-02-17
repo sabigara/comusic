@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { PlaybackStatus } from '../common/Enums';
+import { PlaybackStatus } from '../common/Domain';
 import { RootState } from '../reducers';
 import { play, stop } from '../actions/playback';
 

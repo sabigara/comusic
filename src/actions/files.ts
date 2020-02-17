@@ -1,21 +1,13 @@
-import { FileByIdState } from '../reducers/files';
-import {
-  fetchVerContentsSuccess,
-  FETCH_VER_CONTENTS_SUCCESS,
-} from './versions';
-import { addTakeSuccess, ADD_TAKE_SUCCESS } from './takes';
+import { File } from '../common/Domain';
 
 const ADD_FILE = 'ADD_FILE' as const;
 const ADD_FILES = 'ADD_FILES' as const;
 const RENAME_FILE = 'RENAME_FILE' as const;
 
-export const ActionTypeName = {
+export const FileActionTypeName = {
   ADD_FILE,
   ADD_FILES,
   RENAME_FILE,
-  // From outer modules.
-  FETCH_VER_CONTENTS_SUCCESS,
-  ADD_TAKE_SUCCESS,
 };
 
 export const addFile = (
@@ -35,7 +27,7 @@ export const addFile = (
   };
 };
 
-export const addFiles = (byId: FileByIdState, allIds: string[]) => {
+export const addFiles = (byId: { [id: string]: File }, allIds: string[]) => {
   return {
     type: ADD_FILES,
     payload: {
@@ -55,10 +47,7 @@ export const renameFile = (id: string, name: string) => {
   };
 };
 
-export type ActionUnionType =
+export type FileActionUnionType =
   | ReturnType<typeof addFile>
   | ReturnType<typeof addFiles>
-  | ReturnType<typeof renameFile>
-  // From outer modules.
-  | ReturnType<typeof fetchVerContentsSuccess>
-  | ReturnType<typeof addTakeSuccess>;
+  | ReturnType<typeof renameFile>;

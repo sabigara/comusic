@@ -4,7 +4,7 @@ const STOP = 'STOP' as const;
 const UPDATE_TIME = 'UPDATE_TIME' as const;
 const CHANGE_MASTER_VOLUME = 'CHANGE_MASTER_VOLUME' as const;
 
-export const ActionTypeName = {
+export const PlaybackActionTypeName = {
   PLAY,
   PAUSE,
   STOP,
@@ -48,7 +48,7 @@ export const changeMasterVolume = (masterVolume: number) => {
   };
 };
 
-export type ActionUnionType =
+export type PlaybackActionUnionType =
   | ReturnType<typeof play>
   | ReturnType<typeof pause>
   | ReturnType<typeof stop>

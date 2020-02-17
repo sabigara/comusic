@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { PlaybackStatus } from '../common/Enums';
+import { PlaybackStatus } from '../common/Domain';
 import { RootState } from '../reducers';
 import { TrackState } from '../reducers/tracks';
 import { updateTime } from '../actions/playback';

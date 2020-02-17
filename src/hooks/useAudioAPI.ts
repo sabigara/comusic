@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import { webAudioAPI } from '../App';
+import { webAudioAPICtx } from '../App';
 import AudioAPI from '../AudioAPI/interface';
 
 export default (): AudioAPI => {
-  return useContext(webAudioAPI);
+  return useContext(webAudioAPICtx);
 };

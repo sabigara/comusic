@@ -27,7 +27,7 @@ const EditableLabel: React.FC<Props> = (props) => {
           }, 1);
         }}
       >
-        {text}
+        {text ? text : '_'}
       </StyledLabel>
       <StyledInput
         ref={inputRef}

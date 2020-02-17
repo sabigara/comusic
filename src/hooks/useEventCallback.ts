@@ -8,10 +8,10 @@ const useEnhancedEffect =
  *
  * @param {function} fn
  */
-export default function useEventCallback(fn) {
+export default function useEventCallback(fn: any) {
   const ref = React.useRef(fn);
   useEnhancedEffect(() => {
     ref.current = fn;
   });
-  return React.useCallback((...args) => (0, ref.current)(...args), []);
+  return React.useCallback((...args) => ref.current(...args), []);
 }

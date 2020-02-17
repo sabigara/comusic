@@ -1,18 +1,11 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import {
-  muteOn,
-  muteOff,
-  soloOn,
-  soloOff,
-  changeVolume,
-  changePan,
-  changeName,
-} from '../actions/tracks';
+import { TrackParam } from '../common/Domain';
 import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
+import { useUpdateTrackParam } from '../hooks/tracks';
 import useShouldTrackPlay from '../hooks/useShouldTrackPlay';
 import Color from '../common/Color';
 import FlexBox from '../atoms/FlexBox';
@@ -29,19 +22,10 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
   const track = useSelector((state: RootState) => {
     return state.tracks.byId[trackId];
   });
-
-  const dispatch = useDispatch();
+  const updateTrackParam = useUpdateTrackParam();
   const audioAPI = useAudioAPI();
   const [wavePeak, setWavePeak] = React.useState(0);
   const shouldPlay = useShouldTrackPlay(track.id);
-
-  useEffect(() => {
-    audioAPI.getTrack(track.id)?.setPan(track.pan);
-  }, [audioAPI, track.id, track.pan]);
-
-  useEffect(() => {
-    audioAPI.getTrack(track.id)?.setVolume(track.volume);
-  }, [audioAPI, track.id, track.volume]);
 
   useEffect(() => {
     const trackAPI = audioAPI.tracks[track.id];
@@ -57,21 +41,41 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
     return (): void => clearInterval(interval);
   }, [audioAPI, track.id]);
 
+  const onVolumeFaderMove = useCallback((_: unknown, vol: number) => {
+    updateTrackParam(track.id, TrackParam.volume, vol);
+  }, []);
+
+  const onPanFaderMove = useCallback((_: unknown, pan: number) => {
+    updateTrackParam(track.id, TrackParam.pan, pan);
+  }, []);
+
+  const onMuteClick = useCallback(() => {
+    track.isMuted
+      ? updateTrackParam(track.id, TrackParam.isMuted, 0)
+      : updateTrackParam(track.id, TrackParam.isMuted, 1);
+  }, [track.isMuted]);
+
+  const onSoloClick = useCallback(() => {
+    track.isSoloed
+      ? updateTrackParam(track.id, TrackParam.isSoloed, 0)
+      : updateTrackParam(track.id, TrackParam.isSoloed, 1);
+  }, [track.isSoloed]);
+
   return (
     <TrackCtxMenu trackId={trackId}>
       <LeftSide>
         <EditableLabel
           text={track.name}
-          setText={(text: string) => dispatch(changeName(track.id, text))}
+          setText={
+            (text: string) => console.log(text) // dispatch(updateTrackParam(track.id, TrackParam.name, 0))
+          }
           fontSize="15px"
         />
         <InstrumentIcon src="placeholder.png" />
       </LeftSide>
       <RightSide>
         <Fader
-          onChange={(_: unknown, vol: number) => {
-            dispatch(changeVolume(track.id, vol));
-          }}
+          onChange={onVolumeFaderMove}
           orientation="horizontal"
           max={1}
           min={0}
@@ -86,9 +90,7 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
         <FlexBox>
           <PanWrapper>
             <Fader
-              onChange={(e, pan) => {
-                dispatch(changePan(track.id, pan));
-              }}
+              onChange={onPanFaderMove}
               orientation="horizontal"
               max={1}
               min={-1}
@@ -103,17 +105,9 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
           <MuteSoloWrapper>
             <MuteSoloButton
               muteOn={track.isMuted}
-              onMuteClick={() => {
-                track.isMuted
-                  ? dispatch(muteOff(track.id))
-                  : dispatch(muteOn(track.id));
-              }}
+              onMuteClick={onMuteClick}
               soloOn={track.isSoloed}
-              onSoloClick={() => {
-                track.isSoloed
-                  ? dispatch(soloOff(track.id))
-                  : dispatch(soloOn(track.id));
-              }}
+              onSoloClick={onSoloClick}
             />
           </MuteSoloWrapper>
         </FlexBox>
