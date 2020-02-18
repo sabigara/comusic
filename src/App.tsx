@@ -3,8 +3,8 @@ import { Provider } from 'react-redux';
 import styled from 'styled-components';
 import * as Sentry from '@sentry/browser';
 
-import { WebAudioAPI } from './AudioAPI';
-import { BackendAPI } from './BackendAPI';
+import WebAudioAPI from './AudioAPI/WebAudioAPI';
+import BackendAPI from './BackendAPI/Default';
 import initStore from './store';
 import KeyBindings from './components/KeyBindings';
 import ToolBar from './components/ToolBar';
