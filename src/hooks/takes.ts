@@ -1,11 +1,13 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ActionTypeName as ATN, createAction } from '../actions';
 import { addTakeSuccess, delTakeSuccess } from '../actions/takes';
 import { AddTakeResp } from '../BackendAPI/interface';
-import useBackendAPI from './useBackendAPI';
 import { useLoadActiveTake } from './tracks';
+import useBackendAPI from './useBackendAPI';
+import useAudioAPI from './useAudioAPI';
+import { RootState } from '../reducers';
 
 export const useAddTake = () => {
   const dispatch = useDispatch();
@@ -30,6 +32,8 @@ export const useAddTake = () => {
 export const useDelTake = () => {
   const backendAPI = useBackendAPI();
   const dispatch = useDispatch();
+  const audioAPI = useAudioAPI();
+  const takes = useSelector((state: RootState) => state.takes.byId);
 
   return useCallback(async (takeId: string) => {
     dispatch(createAction(ATN.Take.DEL_TAKE_REQUEST, takeId));
@@ -39,5 +43,8 @@ export const useDelTake = () => {
     } catch (err) {
       dispatch(createAction(ATN.Take.DEL_TAKE_FAILURE, takeId, err.toString()));
     }
+    const trackAPI = audioAPI.getTrack(takes[takeId].trackId);
+    trackAPI?.stop();
+    trackAPI?.clearBuffer();
   }, []);
 };
