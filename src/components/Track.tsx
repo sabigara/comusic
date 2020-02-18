@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
-import { RootState } from '../reducers';
-import useAudioAPI from '../hooks/useAudioAPI';
+import { useRestartTrack } from '../hooks/tracks';
 import TrackPanel from './TrackPanel';
 import TakeList from './TakeList';
 
@@ -13,23 +11,7 @@ type Props = {
 };
 
 const Track: React.FC<Props> = ({ trackId }) => {
-  const track = useSelector(
-    (state: RootState) => {
-      return state.tracks.byId[trackId];
-    },
-    (prev, current) => {
-      return prev.activeTake === current.activeTake;
-    },
-  );
-  const audioAPI = useAudioAPI();
-
-  useEffect(() => {
-    const trackAPI = audioAPI.getTrack(track.id);
-    return () => {
-      trackAPI?.release();
-    };
-  }, [audioAPI, track.id]);
-
+  useRestartTrack(trackId);
   return (
     <TrackWrapper>
       <TrackPanel trackId={trackId} />

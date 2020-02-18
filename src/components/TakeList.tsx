@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
-import { changeActiveTake } from '../actions/tracks';
+import { useChangeActiveTake } from '../hooks/tracks';
 import { RootState } from '../reducers';
 import { useAddTake } from '../hooks/takes';
 import TakeCtxMenu from './TakeCtxMenu';
@@ -23,10 +23,10 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
   const activeTakeId = useSelector((state: RootState) => {
     return state.tracks.byId[trackId].activeTake;
   });
-  const dispatch = useDispatch();
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseHoverId, setMouseHoverId] = useState<string | null>(null);
   const addTake = useAddTake();
+  const changeActiveTake = useChangeActiveTake(trackId);
 
   const onFileSelected = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,8 +40,14 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       body.append('file', file);
       addTake(trackId, body);
     },
-    [trackId],
+    [trackId, addTake],
   );
+
+  const onTakeChange = (id: string) => {
+    if (id !== activeTakeId) {
+      changeActiveTake(id);
+    }
+  };
 
   return (
     <Wrapper
@@ -56,11 +62,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
             onMouseLeave={() => setMouseHoverId(null)}
             key={i}
             isActive={take.id === activeTakeId}
-            onClick={() => {
-              if (take.id !== activeTakeId) {
-                dispatch(changeActiveTake(trackId, take.id));
-              }
-            }}
+            onClick={() => onTakeChange(take.id)}
           >
             <ButtonLabel>{take.name}</ButtonLabel>
             {mouseHoverId === take.id ? (

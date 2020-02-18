@@ -110,12 +110,12 @@ export class Track implements ITrack {
 
   public release(): void {
     this.source?.disconnect();
-    this.gain.disconnect();
-    this.pan.disconnect();
-    this.analyzer.disconnect();
-    this.masterGain.disconnect();
-    this.masterAnalyzer.disconnect();
-    this.ac.destination.disconnect();
+    this.gain?.disconnect();
+    this.pan?.disconnect();
+    this.analyzer?.disconnect();
+    this.masterGain?.disconnect();
+    this.masterAnalyzer?.disconnect();
+    this.ac.destination?.disconnect();
 
     delete this.source;
     delete this.buffer;

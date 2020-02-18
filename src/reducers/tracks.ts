@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import { Track, InstIcon } from '../common/Domain';
+import { Track, InstIcon, TrackParam } from '../common/Domain';
 import { ActionUnionType, ActionTypeName } from '../actions';
 
 // State of track is the same as domain model.
@@ -26,7 +26,17 @@ function track(
 ): TrackState {
   switch (action.type) {
     case ActionTypeName.Track.UPDATE_TRACK_PARAM:
-      return { ...state, [action.payload.param]: action.payload.value };
+      if (
+        action.payload.param === TrackParam.isMuted ||
+        action.payload.param === TrackParam.isSoloed
+      ) {
+        return {
+          ...state,
+          [action.payload.param]: Boolean(action.payload.value),
+        };
+      } else {
+        return { ...state, [action.payload.param]: action.payload.value };
+      }
     case ActionTypeName.Track.CHANGE_ACTIVE_TAKE:
       return { ...state, activeTake: action.payload.activeTakeId };
     case ActionTypeName.Take.ADD_TAKE_SUCCESS:

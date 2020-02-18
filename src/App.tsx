@@ -17,10 +17,9 @@ Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
 });
 
-export const webAudioAPI = new WebAudioAPI();
-export const webAudioAPICtx = createContext(webAudioAPI);
-export const backendAPI = new BackendAPI();
-export const backendAPICtx = createContext(backendAPI);
+// Inject dependencies.
+export const webAudioAPICtx = createContext(new WebAudioAPI());
+export const backendAPICtx = createContext(new BackendAPI());
 
 const App: React.FC = () => {
   return (

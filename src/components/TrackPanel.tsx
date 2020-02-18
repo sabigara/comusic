@@ -1,16 +1,16 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { TrackParam } from '../common/Domain';
 import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
-import { useUpdateTrackParam } from '../hooks/tracks';
+import { useUpdateTrackParam, useSwitchMuteSolo } from '../hooks/tracks';
 import useShouldTrackPlay from '../hooks/useShouldTrackPlay';
 import Color from '../common/Color';
 import FlexBox from '../atoms/FlexBox';
 import Fader from '../atoms/Fader';
-import MuteSoloButton from '../atoms/MutoSoloButton';
+import MuteSoloButton from '../atoms/MuteSoloButton';
 import EditableLabel from '../atoms/EditableLabel';
 import TrackCtxMenu from './TrackCtxMenu';
 
@@ -22,10 +22,11 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
   const track = useSelector((state: RootState) => {
     return state.tracks.byId[trackId];
   });
+  const [wavePeak, setWavePeak] = useState(0);
   const updateTrackParam = useUpdateTrackParam();
   const audioAPI = useAudioAPI();
-  const [wavePeak, setWavePeak] = React.useState(0);
   const shouldPlay = useShouldTrackPlay(track.id);
+  const [switchMute, switchSolo] = useSwitchMuteSolo(trackId);
 
   useEffect(() => {
     const trackAPI = audioAPI.tracks[track.id];
@@ -48,18 +49,6 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
   const onPanFaderMove = useCallback((_: unknown, pan: number) => {
     updateTrackParam(track.id, TrackParam.pan, pan);
   }, []);
-
-  const onMuteClick = useCallback(() => {
-    track.isMuted
-      ? updateTrackParam(track.id, TrackParam.isMuted, 0)
-      : updateTrackParam(track.id, TrackParam.isMuted, 1);
-  }, [track.isMuted]);
-
-  const onSoloClick = useCallback(() => {
-    track.isSoloed
-      ? updateTrackParam(track.id, TrackParam.isSoloed, 0)
-      : updateTrackParam(track.id, TrackParam.isSoloed, 1);
-  }, [track.isSoloed]);
 
   return (
     <TrackCtxMenu trackId={trackId}>
@@ -105,9 +94,9 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
           <MuteSoloWrapper>
             <MuteSoloButton
               muteOn={track.isMuted}
-              onMuteClick={onMuteClick}
+              onMuteClick={switchMute}
               soloOn={track.isSoloed}
-              onSoloClick={onSoloClick}
+              onSoloClick={switchSolo}
             />
           </MuteSoloWrapper>
         </FlexBox>

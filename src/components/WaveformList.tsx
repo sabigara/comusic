@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { PlaybackStatus } from '../common/Domain';
 import { RootState } from '../reducers';
-import { TrackState } from '../reducers/tracks';
 import { updateTime } from '../actions/playback';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { pixelsToSeconds } from '../common/conversions';
@@ -13,31 +12,13 @@ import Waveform from './Waveform';
 import Locator from './Locator';
 import Cursor from './Cursor';
 
-const hasStateChanged = (
-  prev: TrackState[],
-  current: TrackState[],
-): boolean => {
-  return prev.reduce((isEqual: boolean, track, i) => {
-    return isEqual || track.id === current[i].id;
-  }, false);
-};
-
 const PADDING_LEFT = 20;
 
 const WaveformList: React.FC = () => {
-  const state = useSelector(
-    (state: RootState) => {
-      return state.tracks.allIds.map((id) => state.tracks.byId[id]);
-    },
-    (prev, current) => {
-      // Rerendering should happen only when track(s) is inserted or deleted,
-      if (prev.length !== current.length) {
-        return false;
-      } else {
-        return hasStateChanged(prev, current);
-      }
-    },
-  );
+  const trackIds = useSelector((state: RootState) => {
+    return state.tracks.allIds;
+  });
+
   const playback = useSelector(
     (state: RootState) => state.playback,
     (prev, current) => prev.status === current.status,
@@ -73,10 +54,10 @@ const WaveformList: React.FC = () => {
       <Locator />
       <Cursor offset={PADDING_LEFT} />
       <div id="waveform-parent" ref={ref}>
-        {state.map((track, i) => {
+        {trackIds.map((trackId, i) => {
           return (
             <WaveformWrapper key={`waveform-${i}`}>
-              <Waveform trackId={track.id} />
+              <Waveform trackId={trackId} />
             </WaveformWrapper>
           );
         })}

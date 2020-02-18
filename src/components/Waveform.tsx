@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import useLoading from '../hooks/useLoading';
+import { useLoading } from '../hooks/loading';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { RootState } from '../reducers';
 
@@ -65,11 +65,7 @@ const Waveform: React.FC<Props> = ({ trackId }) => {
     }
   }, [audioAPI, dispatch, loadingTake, trackId, activeTake]);
 
-  return (
-    <Wrapper>
-      <Canvas ref={ref} />
-    </Wrapper>
-  );
+  return <Wrapper>{loadingTake ? null : <Canvas ref={ref} />}</Wrapper>;
 };
 
 const Wrapper = styled.div`

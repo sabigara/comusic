@@ -23,8 +23,8 @@ function padStr(numStr: string, pad: string, length: number, right = false) {
 }
 
 const Clock: React.FC = () => {
-  const state = useSelector((state: RootState) => state.playback.time);
-  const { minutes, seconds, miliSecs } = formatTime(state);
+  const time = useSelector((state: RootState) => state.playback.time);
+  const { minutes, seconds, miliSecs } = formatTime(time);
   const strMiliSecs = miliSecs.toString().slice(2);
 
   return (

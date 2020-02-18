@@ -7,11 +7,7 @@ import {
   fetchVerContentsSuccess,
   fetchVerContentsFailure,
 } from '../actions/versions';
-import {
-  loadActiveTakeRequest,
-  loadActiveTakeSuccess,
-  loadActiveTakeFailure,
-} from '../actions/tracks';
+import { useLoadActiveTake } from '../hooks/tracks';
 import useAudioAPI from './useAudioAPI';
 import useBackendAPI from './useBackendAPI';
 import { ITrack } from '../AudioAPI/interface';
@@ -20,6 +16,7 @@ export const useFetchVerContents = (verId: string) => {
   const backendAPI = useBackendAPI();
   const audioAPI = useAudioAPI();
   const dispatch = useDispatch();
+  const loadActiveTake = useLoadActiveTake();
 
   useEffect(() => {
     const trackAPIs: ITrack[] = [];
@@ -51,22 +48,14 @@ export const useFetchVerContents = (verId: string) => {
         trackAPI.setVolume(track.volume);
         trackAPI.setPan(track.pan);
         if (!activeTake) return;
-        dispatch(loadActiveTakeRequest(id));
-        try {
-          await trackAPI.loadFile(resp.files.byId[activeTake.fileId].url);
-          dispatch(loadActiveTakeSuccess(id));
-        } catch (err) {
-          dispatch(loadActiveTakeFailure(id, err.toString()));
-        }
+        loadActiveTake(id, resp.files.byId[activeTake.fileId].url);
       });
     };
     _();
     return () => {
-      if (trackAPIs.length > 0) {
-        trackAPIs.map((trackAPI) => {
-          trackAPI.release();
-        });
-      }
+      trackAPIs.map((trackAPI) => {
+        trackAPI.release();
+      });
     };
   }, [verId]);
 };

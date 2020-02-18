@@ -17,7 +17,7 @@ export default (trackId: string): boolean => {
       .map((track) => track.id);
   }, shallowEqual);
 
-  const shouldPlay = useMemo(() => {
+  return useMemo(() => {
     let _shouldPlay: boolean;
     // if there are solo tracks, only they should play.
     if (soloedTracks.length > 0) {
@@ -34,5 +34,4 @@ export default (trackId: string): boolean => {
     }
     return _shouldPlay;
   }, [trackId, soloedTracks, mutedTracks]);
-  return shouldPlay;
 };

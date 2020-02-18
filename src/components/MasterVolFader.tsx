@@ -7,14 +7,14 @@ import { changeMasterVolume } from '../actions/playback';
 import Fader from '../atoms/Fader';
 
 const MasterVolume: React.FC = () => {
-  const state = useSelector((state: RootState) => state.playback.masterVolume);
+  const master = useSelector((state: RootState) => state.playback.masterVolume);
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
   const [wavePeak, setWavePeak] = React.useState(0);
 
   useEffect(() => {
-    audioAPI.setMasterVolume(state);
-  }, [state, audioAPI]);
+    audioAPI.setMasterVolume(master);
+  }, [master, audioAPI]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -33,7 +33,7 @@ const MasterVolume: React.FC = () => {
       max={1}
       min={0}
       step={0.01}
-      value={state}
+      value={master}
       wavePeak={wavePeak}
       type="volume"
       railHeight={12}

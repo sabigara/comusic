@@ -1,18 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 
-import useLoading from '../hooks/useLoading';
+import { useLoading } from '../hooks/loading';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { secondsToPixels } from '../common/conversions';
 import styled from 'styled-components';
 
 const Locator: React.FC = () => {
-  const loadingTake = useLoading('LOAD_ACTIVE_TAKE');
+  const loading = useLoading('LOAD_ACTIVE_TAKE');
   const audioAPI = useAudioAPI();
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (loadingTake) return;
-
+    if (loading) return;
     const maxLength = Math.max(
       ...Object.values(audioAPI.tracks).map((track) => track.duration),
     );
@@ -29,7 +28,7 @@ const Locator: React.FC = () => {
       const px = secondsToPixels(i, audioAPI.resolution, audioAPI.sampleRate);
       cc.fillRect(px, 10, 1, 10);
     }
-  }, [audioAPI.resolution, audioAPI.sampleRate, audioAPI.tracks, loadingTake]);
+  }, [audioAPI.resolution, audioAPI.sampleRate, audioAPI.tracks, loading]);
 
   return (
     <Wrapper>

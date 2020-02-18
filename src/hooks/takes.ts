@@ -3,24 +3,27 @@ import { useDispatch } from 'react-redux';
 
 import { ActionTypeName as ATN, createAction } from '../actions';
 import { addTakeSuccess, delTakeSuccess } from '../actions/takes';
+import { AddTakeResp } from '../BackendAPI/interface';
 import useBackendAPI from './useBackendAPI';
-import useAudioAPI from './useAudioAPI';
+import { useLoadActiveTake } from './tracks';
 
 export const useAddTake = () => {
   const dispatch = useDispatch();
   const backendAPI = useBackendAPI();
-  const audioAPI = useAudioAPI();
+  const loadActiveTake = useLoadActiveTake();
 
   return useCallback(async (trackId: string, formData: FormData) => {
+    let resp: AddTakeResp | undefined = undefined;
     dispatch(createAction(ATN.Take.ADD_TAKE_REQUEST, trackId));
     try {
-      const resp = await backendAPI.addTake(trackId, formData);
+      resp = await backendAPI.addTake(trackId, formData);
       dispatch(addTakeSuccess(trackId, resp.take, resp.file));
     } catch (err) {
       dispatch(
         createAction(ATN.Take.ADD_TAKE_FAILURE, trackId, err.toString()),
       );
     }
+    loadActiveTake(trackId, resp ? resp.file.url : undefined);
   }, []);
 };
 

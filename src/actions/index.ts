@@ -1,11 +1,8 @@
-import { BackendAPI } from '../BackendAPI';
 import { FileActionTypeName, FileActionUnionType } from './files';
 import { TakeActionTypeName, TakeActionUnionType } from './takes';
 import { TrackActionTypeName, TrackActionUnionType } from './tracks';
 import { VersionActionTypeName, VersionActionUnionType } from './versions';
 import { PlaybackActionTypeName, PlaybackActionUnionType } from './playback';
-
-export const backendAPI = new BackendAPI();
 
 export const ActionTypeName = {
   File: FileActionTypeName,

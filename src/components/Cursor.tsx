@@ -11,9 +11,9 @@ type Props = {
 };
 
 const Cursor: React.FC<Props> = ({ offset = 0 }) => {
-  const state = useSelector((state: RootState) => state.playback.time);
+  const time = useSelector((state: RootState) => state.playback.time);
   const audioAPI = useAudioAPI();
-  const left = secondsToPixels(state, 1000, audioAPI.sampleRate) + offset;
+  const left = secondsToPixels(time, 1000, audioAPI.sampleRate) + offset;
 
   return <Wrapper style={{ left: left.toString() + 'px' }}></Wrapper>;
 };

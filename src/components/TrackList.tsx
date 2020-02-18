@@ -1,51 +1,43 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
 import { RootState } from '../reducers';
-import { TrackState } from '../reducers/tracks';
 import { useFetchVerContents } from '../hooks/versions';
 import { useAddTrack } from '../hooks/tracks';
+import useAudioAPI from '../hooks/useAudioAPI';
 import Track from './Track';
-
-const hasStateChanged = (prev: TrackState[], current: TrackState[]) => {
-  return prev.reduce((isEqual, track, i) => {
-    return isEqual || track.id === current[i].id;
-  }, false);
-};
 
 const verId = '6f3291f3-ec12-409d-a3ba-09e813bd96ba';
 
 const TrackList: React.FC = () => {
-  const state = useSelector(
-    (state: RootState) => {
-      return state.tracks.allIds.map((id: string) => state.tracks.byId[id]);
-    },
-    (prev, current) => {
-      // Re-rendering should happen only when track(s) is inserted or deleted.
-      // (Not when volume of a track changed, for example.)
-      if (prev.length !== current.length) {
-        return false;
-      } else {
-        return hasStateChanged(prev, current);
-      }
-    },
-  );
+  const tracks = useSelector((state: RootState) => {
+    return state.tracks.allIds;
+  });
 
+  const audioAPI = useAudioAPI();
   const addTrack = useAddTrack(verId);
   useFetchVerContents(verId);
 
+  useEffect(() => {
+    return () => {
+      Object.values(audioAPI.tracks).map((trackAPI) => {
+        trackAPI.release();
+      });
+    };
+  }, [audioAPI, tracks]);
+
   return (
     <Wrapper onDoubleClick={addTrack}>
-      {state.map((track, i) => {
+      {tracks.map((trackId, i) => {
         return (
           <div key={`track-${i}`} onDoubleClick={(e) => e.stopPropagation()}>
             <SeparatorH />
             <TrackWrapper>
-              <Track trackId={track.id} />
+              <Track trackId={trackId} />
             </TrackWrapper>
-            {i === state.length - 1 ? <SeparatorH /> : null}
+            {i === tracks.length - 1 ? <SeparatorH /> : null}
           </div>
         );
       })}

@@ -14,7 +14,7 @@ import StopIcon from '../icons/Stop.png';
 import PauseIcon from '../icons/Pause.png';
 
 const PlaybackControls: React.FC = () => {
-  const state = useSelector(
+  const playback = useSelector(
     (state: RootState) => state.playback,
     (prev, current) => prev.status === current.status,
   );
@@ -23,26 +23,23 @@ const PlaybackControls: React.FC = () => {
   const audioAPI = useAudioAPI();
 
   useEffect(() => {
-    async function _(): Promise<void> {
-      switch (state.status) {
-        case PlaybackStatus.Playing:
-          audioAPI.play(state.time);
-          break;
-        case PlaybackStatus.Pausing:
-          audioAPI.stop();
-          break;
-        case PlaybackStatus.Stopping:
-          audioAPI.stop();
-          break;
-        default:
-          break;
-      }
+    switch (playback.status) {
+      case PlaybackStatus.Playing:
+        audioAPI.play(playback.time);
+        break;
+      case PlaybackStatus.Pausing:
+        audioAPI.stop();
+        break;
+      case PlaybackStatus.Stopping:
+        audioAPI.stop();
+        break;
+      default:
+        break;
     }
-    _();
-  }, [audioAPI, state.status, state.time]);
+  }, [audioAPI, playback.status, playback.time]);
 
   useEffect(() => {
-    switch (state.status) {
+    switch (playback.status) {
       case PlaybackStatus.Playing:
         const interval = setInterval(() => {
           dispatch(updateTime(audioAPI.secondsElapsed));
@@ -54,31 +51,29 @@ const PlaybackControls: React.FC = () => {
       default:
         break;
     }
-  }, [audioAPI, dispatch, state]);
+  }, [audioAPI, dispatch, playback]);
+
+  const onStopClick = () => dispatch(stop());
+  const onPauseClick = () => dispatch(pause());
+  const onPlayClick = () => dispatch(play());
 
   return (
     <ToolBackItemContainer>
       <ToolBarItem
-        isActive={state.status === PlaybackStatus.Stopping}
-        onClick={() => {
-          dispatch(stop());
-        }}
+        isActive={playback.status === PlaybackStatus.Stopping}
+        onClick={onStopClick}
       >
         <IconImg src={StopIcon} alt="stop" />
       </ToolBarItem>
       <ToolBarItem
-        isActive={state.status === PlaybackStatus.Pausing}
-        onClick={() => {
-          dispatch(pause());
-        }}
+        isActive={playback.status === PlaybackStatus.Pausing}
+        onClick={onPauseClick}
       >
         <IconImg src={PauseIcon} alt="pause" />
       </ToolBarItem>
       <ToolBarItem
-        isActive={state.status === PlaybackStatus.Playing}
-        onClick={() => {
-          dispatch(play());
-        }}
+        isActive={playback.status === PlaybackStatus.Playing}
+        onClick={onPlayClick}
       >
         <IconImg src={PlayIcon} alt="play" />
       </ToolBarItem>
