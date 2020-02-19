@@ -20,6 +20,14 @@ type Props = {
   onScroll: any;
 };
 
+function genRenderer(_style: React.CSSProperties) {
+  return {
+    renderer: ({ elementRef, style, ...rest }: any) => {
+      return <div {...rest} ref={elementRef} style={{ ...style, ..._style }} />;
+    },
+  };
+}
+
 const WaveformList = React.forwardRef(({ onScroll }: Props, refWav: any) => {
   const trackIds = useSelector((state: RootState) => {
     return state.tracks.allIds;
@@ -75,7 +83,7 @@ const WaveformList = React.forwardRef(({ onScroll }: Props, refWav: any) => {
             return <div ref={elementRef} />;
           },
         }}
-        wrapperProps={{ style: { bottom: 0 } }}
+        wrapperProps={genRenderer({ bottom: 0 })}
         style={{ height: 20 }}
       >
         <Locator />
@@ -83,37 +91,12 @@ const WaveformList = React.forwardRef(({ onScroll }: Props, refWav: any) => {
       <Scrollbar
         ref={refWav}
         onScroll={onScrollWav}
-        scrollerProps={{
-          renderer: (props) => {
-            const { elementRef, style, ...restProps } = props;
-            return (
-              <div
-                {...restProps}
-                ref={elementRef}
-                style={{ ...style, marginBottom: -25 }}
-                className="ScrollbarsCustom-Scroller"
-              />
-            );
-          },
-        }}
-        trackXProps={{
-          renderer: ({ elementRef, style, ...rest }: any) => {
-            return (
-              <div {...rest} ref={elementRef} style={{ ...style, left: 0 }} />
-            );
-          },
-        }}
-        contentProps={{
-          renderer: ({ elementRef, style, ...rest }: any) => {
-            return (
-              <div
-                {...rest}
-                ref={elementRef}
-                style={{ ...style, position: 'relative' }}
-              />
-            );
-          },
-        }}
+        scrollerProps={genRenderer({ marginBottom: -25 })}
+        trackXProps={genRenderer({ left: 0 })}
+        wrapperProps={genRenderer({ right: 0, bottom: 0 })}
+        contentProps={genRenderer({ position: 'relative' })}
+        thumbXProps={genRenderer({ background: '#FFFFFF55' })}
+        thumbYProps={genRenderer({ background: '#FFFFFF55' })}
       >
         <Cursor offset={0} />
         <div id="waveform-parent" ref={refDiv}>
