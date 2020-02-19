@@ -33,6 +33,7 @@ export const useDelTake = () => {
   const backendAPI = useBackendAPI();
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
+  const tracks = useSelector((state: RootState) => state.tracks.byId);
   const takes = useSelector((state: RootState) => state.takes.byId);
 
   return useCallback(async (takeId: string) => {
@@ -43,8 +44,11 @@ export const useDelTake = () => {
     } catch (err) {
       dispatch(createAction(ATN.Take.DEL_TAKE_FAILURE, takeId, err.toString()));
     }
-    const trackAPI = audioAPI.getTrack(takes[takeId].trackId);
-    trackAPI?.stop();
-    trackAPI?.clearBuffer();
+    const track = tracks[takes[takeId].trackId];
+    const trackAPI = audioAPI.getTrack(track.id);
+    if (track.activeTake === takeId) {
+      trackAPI?.stop();
+      trackAPI?.clearBuffer();
+    }
   }, []);
 };
