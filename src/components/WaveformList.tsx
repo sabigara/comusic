@@ -103,6 +103,17 @@ const WaveformList = React.forwardRef(({ onScroll }: Props, refWav: any) => {
             );
           },
         }}
+        contentProps={{
+          renderer: ({ elementRef, style, ...rest }: any) => {
+            return (
+              <div
+                {...rest}
+                ref={elementRef}
+                style={{ ...style, position: 'relative' }}
+              />
+            );
+          },
+        }}
       >
         <Cursor offset={0} />
         <div id="waveform-parent" ref={refDiv}>
