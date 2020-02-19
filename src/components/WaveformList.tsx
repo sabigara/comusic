@@ -74,7 +74,7 @@ const WaveformList = React.forwardRef(({ onScroll }: Props, refWav: any) => {
   };
 
   return (
-    <Wrapper onClick={onSomewhereClick}>
+    <Wrapper>
       <Scrollbar
         ref={refLoc as any}
         onScroll={onScrollLoc}
@@ -91,7 +91,10 @@ const WaveformList = React.forwardRef(({ onScroll }: Props, refWav: any) => {
       <Scrollbar
         ref={refWav}
         onScroll={onScrollWav}
-        scrollerProps={genRenderer({ marginBottom: -25 })}
+        scrollerProps={{
+          ...genRenderer({ marginBottom: -25 }),
+          onClick: onSomewhereClick,
+        }}
         trackXProps={genRenderer({ left: 0 })}
         wrapperProps={genRenderer({ right: 0, bottom: 0 })}
         contentProps={genRenderer({ position: 'relative' })}
