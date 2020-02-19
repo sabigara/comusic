@@ -30,7 +30,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
 
   const onFileSelected = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.files) {
+      if (!e.target.files || e.target.files.length === 0) {
         return;
       }
       const file = e.target.files[0];
