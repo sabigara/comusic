@@ -35,6 +35,9 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       }
       const file = e.target.files[0];
       if (!file) return;
+      // Remove file from input element to enable
+      // submitting the same file multiple times.
+      e.target.value = '';
       const body = new FormData();
       body.append('name', file.name);
       body.append('file', file);
