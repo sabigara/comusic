@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
 import { useRestartTrack } from '../hooks/tracks';
+import useAudioAPI from '../hooks/useAudioAPI';
 import TrackPanel from './TrackPanel';
 import TakeList from './TakeList';
 
@@ -11,7 +12,15 @@ type Props = {
 };
 
 const Track: React.FC<Props> = ({ trackId }) => {
+  const audioAPI = useAudioAPI();
+  useEffect(() => {
+    return () => {
+      audioAPI.getTrack(trackId)?.release();
+    };
+  }, [audioAPI, trackId]);
+
   useRestartTrack(trackId);
+
   return (
     <TrackWrapper>
       <TrackPanel trackId={trackId} />

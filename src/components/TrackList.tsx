@@ -8,7 +8,6 @@ import Color from '../common/Color';
 import { RootState } from '../reducers';
 import { useFetchVerContents } from '../hooks/versions';
 import { useAddTrack } from '../hooks/tracks';
-import useAudioAPI from '../hooks/useAudioAPI';
 import Track from './Track';
 
 const verId = '6f3291f3-ec12-409d-a3ba-09e813bd96ba';
@@ -22,17 +21,8 @@ const TrackList = React.forwardRef(({ onScroll }: Props, ref: any) => {
     return state.tracks.allIds;
   });
 
-  const audioAPI = useAudioAPI();
   const addTrack = useAddTrack(verId);
   useFetchVerContents(verId);
-
-  useEffect(() => {
-    return () => {
-      Object.values(audioAPI.tracks).map((trackAPI) => {
-        trackAPI.release();
-      });
-    };
-  }, [audioAPI, tracks]);
 
   return (
     <Scrollbar
