@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Scrollbar } from 'react-scrollbars-custom';
@@ -40,7 +40,10 @@ const TrackList = React.forwardRef(({ onScroll }: Props, ref: any) => {
       <Wrapper>
         {tracks.map((trackId, i) => {
           return (
-            <div key={`track-${i}`} onDoubleClick={(e) => e.stopPropagation()}>
+            <div
+              key={`trk-${trackId}`}
+              onDoubleClick={(e) => e.stopPropagation()}
+            >
               <SeparatorH />
               <TrackWrapper>
                 <Track trackId={trackId} />

@@ -101,9 +101,9 @@ const WaveformList = React.forwardRef(({ onScroll }: Props, refWav: any) => {
       >
         <Cursor offset={0} />
         <div id="waveform-parent" ref={refDiv}>
-          {trackIds.map((trackId, i) => {
+          {trackIds.map((trackId) => {
             return (
-              <WaveformWrapper key={`waveform-${i}`}>
+              <WaveformWrapper key={`wf-${trackId}`}>
                 <Waveform trackId={trackId} />
               </WaveformWrapper>
             );
