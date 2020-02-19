@@ -22,13 +22,21 @@ export const webAudioAPICtx = createContext(new WebAudioAPI());
 export const backendAPICtx = createContext(new BackendAPI());
 
 const App: React.FC = () => {
+  const refTrk = React.useRef<HTMLDivElement>(null);
+  const refWav = React.useRef<HTMLDivElement>(null);
+  const onScrollTrk = (e: any) => {
+    refWav.current?.scrollTo(e.scrollLeft, e.scrollTop);
+  };
+  const onScrollWav = (e: any) => {
+    refTrk.current?.scrollTo(e.scrollLeft, e.scrollTop);
+  };
   return (
     <Provider store={store}>
       <KeyBindings />
       <ToolBar />
       <FixedHeightContainer>
-        <TrackList />
-        <WaveformList />
+        <TrackList ref={refTrk} onScroll={onScrollTrk} />
+        <WaveformList ref={refWav} onScroll={onScrollWav} />
       </FixedHeightContainer>
     </Provider>
   );
@@ -36,7 +44,7 @@ const App: React.FC = () => {
 
 const FixedHeightContainer = styled.div`
   height: calc(100vh - 70px);
-  overflow-y: scroll;
+  overflow: hidden;
   display: flex;
 `;
 
