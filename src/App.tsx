@@ -25,10 +25,14 @@ const App: React.FC = () => {
   const refTrk = React.useRef<HTMLDivElement>(null);
   const refWav = React.useRef<HTMLDivElement>(null);
   const onScrollTrk = (e: any) => {
-    refWav.current?.scrollTo(e.scrollLeft, e.scrollTop);
+    if (e.scrollLeft) {
+      refWav.current?.scrollTo(e.scrollLeft, refWav.current?.scrollTop);
+    } else {
+      refWav.current?.scrollTo(refWav.current?.scrollLeft, e.scrollTop);
+    }
   };
   const onScrollWav = (e: any) => {
-    refTrk.current?.scrollTo(e.scrollLeft, e.scrollTop);
+    refTrk.current?.scrollTo(0, e.scrollTop);
   };
   return (
     <Provider store={store}>
