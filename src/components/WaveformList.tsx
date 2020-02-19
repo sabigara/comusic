@@ -14,8 +14,6 @@ import Waveform from './Waveform';
 import Locator from './Locator';
 import Cursor from './Cursor';
 
-const PADDING_LEFT = 20;
-
 type Props = {
   onScroll: any;
 };
@@ -123,7 +121,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   background-color: ${Color.Waveform.Background};
   overflow: hidden;
-  padding-left: ${PADDING_LEFT.toString() + 'px'};
+  padding-left: 20px;
 `;
 
 const WaveformWrapper = styled.div`
