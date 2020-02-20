@@ -153,8 +153,11 @@ export const useChangeActiveTake = (trackId: string) => {
   const dispatch = useDispatch();
   const loadActiveTake = useLoadActiveTake();
 
-  return useCallback(async (takeId) => {
-    dispatch(changeActiveTake(trackId, takeId));
-    loadActiveTake(trackId, undefined, takeId);
-  }, []);
+  return useCallback(
+    async (takeId) => {
+      dispatch(changeActiveTake(trackId, takeId));
+      loadActiveTake(trackId, undefined, takeId);
+    },
+    [loadActiveTake],
+  );
 };

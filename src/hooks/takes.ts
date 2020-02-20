@@ -14,19 +14,22 @@ export const useAddTake = () => {
   const backendAPI = useBackendAPI();
   const loadActiveTake = useLoadActiveTake();
 
-  return useCallback(async (trackId: string, formData: FormData) => {
-    let resp: AddTakeResp | undefined = undefined;
-    dispatch(createAction(ATN.Take.ADD_TAKE_REQUEST, trackId));
-    try {
-      resp = await backendAPI.addTake(trackId, formData);
-      dispatch(addTakeSuccess(trackId, resp.take, resp.file));
-    } catch (err) {
-      dispatch(
-        createAction(ATN.Take.ADD_TAKE_FAILURE, trackId, err.toString()),
-      );
-    }
-    loadActiveTake(trackId, resp ? resp.file.url : undefined);
-  }, []);
+  return useCallback(
+    async (trackId: string, formData: FormData) => {
+      let resp: AddTakeResp | undefined = undefined;
+      dispatch(createAction(ATN.Take.ADD_TAKE_REQUEST, trackId));
+      try {
+        resp = await backendAPI.addTake(trackId, formData);
+        dispatch(addTakeSuccess(trackId, resp.take, resp.file));
+      } catch (err) {
+        dispatch(
+          createAction(ATN.Take.ADD_TAKE_FAILURE, trackId, err.toString()),
+        );
+      }
+      loadActiveTake(trackId, resp ? resp.file.url : undefined);
+    },
+    [loadActiveTake],
+  );
 };
 
 export const useDelTake = () => {
