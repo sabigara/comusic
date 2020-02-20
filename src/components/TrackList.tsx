@@ -14,7 +14,7 @@ import Track from './Track';
 type Props = {
   verId: string;
   paddingBottom: number;
-  onScroll: any;
+  onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
 };
 
 const TrackList = React.forwardRef(
@@ -26,13 +26,15 @@ const TrackList = React.forwardRef(
 
     return (
       <Scrollbar
-        ref={ref}
+        ref={ref as any}
         style={scroll}
         wrapperProps={styledScrollRenderer(scrollWrapper)}
         contentProps={styledScrollRenderer(scrollContent(paddingBottom))}
         trackYProps={disabledScrollRenderer()}
         onDoubleClick={addTrack}
-        onScroll={onScroll}
+        // https://github.com/xobotyi/react-scrollbars-custom/issues/109
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onScroll={onScroll as any}
       >
         {tracks.map((trackId, i) => {
           return (

@@ -10,6 +10,7 @@ const verId = '6f3291f3-ec12-409d-a3ba-09e813bd96ba';
 const Editor: React.FC = () => {
   const refTrk = useRef<HTMLDivElement>(null);
   const refWav = useRef<HTMLDivElement>(null);
+  // e: React.UIEvent<HTMLDivElement> doesn't supply e.scrollLeft
   const onScrollTrk = (e: any) => {
     if (e.scrollLeft) {
       refWav.current?.scrollTo(e.scrollLeft, refWav.current?.scrollTop);

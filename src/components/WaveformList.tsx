@@ -18,7 +18,7 @@ import Cursor from './Cursor';
 
 type Props = {
   paddingBottom: number;
-  onScroll: any;
+  onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
 };
 
 const WaveformList = React.forwardRef(
@@ -71,7 +71,9 @@ const WaveformList = React.forwardRef(
       <Wrapper>
         <Scrollbar
           ref={refLoc as any}
-          onScroll={onScrollLoc}
+          // https://github.com/xobotyi/react-scrollbars-custom/issues/109
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onScroll={onScrollLoc as any}
           style={scrollLoc}
           wrapperProps={styledScrollRenderer(scrollWrapperLoc)}
           trackXProps={disabledScrollRenderer()}
@@ -80,7 +82,7 @@ const WaveformList = React.forwardRef(
         </Scrollbar>
         <Scrollbar
           ref={refWav}
-          onScroll={onScrollWav}
+          onScroll={onScrollWav as any}
           scrollerProps={{
             ...styledScrollRenderer(scrollScrollerWav),
             onClick: onSomewhereClick,
