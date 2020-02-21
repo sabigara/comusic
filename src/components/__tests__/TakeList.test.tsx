@@ -2,12 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import {
-  render,
-  fireEvent,
-  getByText as GetByText,
-} from '@testing-library/react';
+import { fireEvent, getByText as GetByText } from '@testing-library/react';
 
 import { ActionTypeName as ATN, createAction } from '../../actions';
 import { delTakeSuccess } from '../../actions/takes';
@@ -15,6 +10,7 @@ import Color from '../../common/Color';
 import getReducers from '../../reducers';
 import * as TakeHooks from '../../hooks/takes';
 import TakeList from '../TakeList';
+import * as utils from '../../testutils';
 
 jest.mock('../../AudioAPI/WebAudioAPI');
 jest.mock('../../BackendAPI/Default');
@@ -82,13 +78,11 @@ function renderWithRedux(store?: any) {
   if (!store) {
     store = createStore(getReducers(), mockState);
   }
-  return render(
-    <Provider store={store}>
-      <TakeList trackId={'86017d4b-fb33-46ce-b3db-29a4300448f3'} />
-    </Provider>,
+  return utils.renderWithRedux(
+    <TakeList trackId={'86017d4b-fb33-46ce-b3db-29a4300448f3'} />,
+    store,
   );
 }
-
 describe('TakeList', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -146,7 +140,7 @@ describe('TakeList', () => {
   });
 
   it('deletes a take by clicking ctx menu item', () => {
-    const store = createStore(getReducers(), mockState);
+    const store = utils.initStore(mockState);
     // Replace custom hook that returns async function with
     // one returns synchronous version.
     const mockUseDelTake = jest.spyOn(TakeHooks, 'useDelTake');
@@ -155,7 +149,6 @@ describe('TakeList', () => {
       store.dispatch(delTakeSuccess(takeId));
     });
     mockUseDelTake.mockReturnValue(mockDelTake);
-
     const { container, getByTestId } = renderWithRedux(store);
     expect(container.querySelectorAll('.take-button').length).toBe(2);
     const takeBtn = getByTestId(
