@@ -58,9 +58,12 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
       onMouseEnter={() => setMouseOver(true)}
       onMouseLeave={() => setMouseOver(false)}
     >
-      {takes.map((take, i) => {
+      {takes.map((take) => {
         return (
           <TakeButton
+            className="take-button"
+            key={take.id}
+            onClick={() => onTakeChange(take.id)}
             onMouseEnter={() => setMouseHoverId(take.id)}
             onMouseLeave={() => setMouseHoverId(null)}
             key={i}
