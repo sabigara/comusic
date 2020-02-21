@@ -39,19 +39,24 @@ export const useDelTake = () => {
   const tracks = useSelector((state: RootState) => state.tracks.byId);
   const takes = useSelector((state: RootState) => state.takes.byId);
 
-  return useCallback(async (takeId: string) => {
-    dispatch(createAction(ATN.Take.DEL_TAKE_REQUEST, takeId));
-    try {
-      await backendAPI.delTake(takeId);
-      dispatch(delTakeSuccess(takeId));
-    } catch (err) {
-      dispatch(createAction(ATN.Take.DEL_TAKE_FAILURE, takeId, err.toString()));
-    }
-    const track = tracks[takes[takeId].trackId];
-    const trackAPI = audioAPI.getTrack(track.id);
-    if (track.activeTake === takeId) {
-      trackAPI?.stop();
-      trackAPI?.clearBuffer();
-    }
-  }, []);
+  return useCallback(
+    async (takeId: string) => {
+      dispatch(createAction(ATN.Take.DEL_TAKE_REQUEST, takeId));
+      try {
+        await backendAPI.delTake(takeId);
+        dispatch(delTakeSuccess(takeId));
+      } catch (err) {
+        dispatch(
+          createAction(ATN.Take.DEL_TAKE_FAILURE, takeId, err.toString()),
+        );
+      }
+      const track = tracks[takes[takeId].trackId];
+      const trackAPI = audioAPI.getTrack(track.id);
+      if (track.activeTake === takeId) {
+        trackAPI?.stop();
+        trackAPI?.clearBuffer();
+      }
+    },
+    [tracks, takes],
+  );
 };
