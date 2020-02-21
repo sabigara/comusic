@@ -1,63 +1,83 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from 'react';
-import * as Redux from 'react-redux';
-import { shallow, mount } from 'enzyme';
+import React from 'react';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { render, fireEvent } from '@testing-library/react';
 
-import TakeList from '../TakeList';
-import More from '../../atoms/More';
-import TakeCtxMenu from '../TakeCtxMenu';
-import * as TrackHooks from '../../hooks/tracks';
+import Color from '../../common/Color';
+import getReducers from '../../reducers';
 import * as TakeHooks from '../../hooks/takes';
-import * as Selectors from '../../hooks/selectors';
+import TakeList from '../TakeList';
 
 jest.mock('../../AudioAPI/WebAudioAPI');
-jest.mock('../../hooks/takes');
+jest.mock('../../BackendAPI/Default');
 
-const mockTakes = [
-  {
-    id: '4c92e8b3-9456-4d8b-aec4-2d23b9bbaaff',
-    name: 'with ride cymbal',
-    trackId: '116c2e4e-ea34-49d7-8a2a-9b2da03d7048',
-    file: '16229d8b-e4e3-41e6-85e3-5ce847ae7fa4',
+const mockState = {
+  tracks: {
+    byId: {
+      '86017d4b-fb33-46ce-b3db-29a4300448f3': {
+        id: '86017d4b-fb33-46ce-b3db-29a4300448f3',
+        createdAt: '2020-02-21T05:09:07Z',
+        updatedAt: '2020-02-21T05:12:03Z',
+        versionId: '6f3291f3-ec12-409d-a3ba-09e813bd96ba',
+        name: 'Drums',
+        volume: 0.7,
+        pan: 0,
+        isMuted: false,
+        isSoloed: false,
+        icon: 0,
+        activeTake: '11e44e9d-4ef7-40cc-ba5b-24338bff14e0',
+      },
+    },
+    allIds: ['86017d4b-fb33-46ce-b3db-29a4300448f3'],
   },
-  {
-    id: '7599b9e5-6055-4917-b183-e59bd4ec429e',
-    name: 'with hihat',
-    trackId: '116c2e4e-ea34-49d7-8a2a-9b2da03d7048',
-    file: '21c64940-fbca-470d-9b5d-99db5c98efee',
+  takes: {
+    byId: {
+      '11e44e9d-4ef7-40cc-ba5b-24338bff14e0': {
+        id: '11e44e9d-4ef7-40cc-ba5b-24338bff14e0',
+        createdAt: '2020-02-21T05:10:21Z',
+        updatedAt: '2020-02-21T05:10:21Z',
+        trackId: '86017d4b-fb33-46ce-b3db-29a4300448f3',
+        name: 'drs-tk1',
+        fileId: 'a0a8bbfe-7cf8-4261-ac22-cf7ebe73b533',
+      },
+      '54027b56-8047-4180-9d4a-5db5c7c7ed6e': {
+        id: '54027b56-8047-4180-9d4a-5db5c7c7ed6e',
+        createdAt: '2020-02-21T05:12:03Z',
+        updatedAt: '2020-02-21T05:12:03Z',
+        trackId: '86017d4b-fb33-46ce-b3db-29a4300448f3',
+        name: 'drs-tk2',
+        fileId: '59e651ce-7762-47da-bca8-bf4f4b49e2f3',
+      },
+    },
+    allIds: [
+      '11e44e9d-4ef7-40cc-ba5b-24338bff14e0',
+      '54027b56-8047-4180-9d4a-5db5c7c7ed6e',
+    ],
   },
-];
+  files: {
+    byId: {
+      '59e651ce-7762-47da-bca8-bf4f4b49e2f3': {
+        url: 'some-url',
+      },
+      'a0a8bbfe-7cf8-4261-ac22-cf7ebe73b533': {
+        url: 'some-url',
+      },
+    },
+    allIds: [
+      'a0a8bbfe-7cf8-4261-ac22-cf7ebe73b533',
+      '59e651ce-7762-47da-bca8-bf4f4b49e2f3',
+    ],
+  },
+};
 
-function mockHooks() {
-  const mockUseTakes = jest
-    .spyOn(Selectors, 'useTakes')
-    .mockReturnValue(mockTakes as any);
-  const mockActiveTakeId = jest
-    .spyOn(Selectors, 'useActiveTakeId')
-    .mockReturnValue('4c92e8b3-9456-4d8b-aec4-2d23b9bbaaff');
-  const mockUseAddTake = jest.spyOn(TakeHooks, 'useAddTake');
-  const mockUseDispatch = jest.spyOn(Redux, 'useDispatch');
-  const mockUseState = jest.spyOn(React, 'useState');
-  const mockUseCallback = jest.spyOn(React, 'useCallback');
-  // Just pass through the given function.
-  mockUseCallback.mockImplementation((fn: any) => fn);
-  const mockChangeActiveTake = jest.fn();
-  jest
-    .spyOn(TrackHooks, 'useChangeActiveTake')
-    .mockReturnValue(mockChangeActiveTake);
-  return {
-    mockUseState,
-    mockUseCallback,
-    mockUseDispatch,
-    mockUseTakes,
-    mockUseAddTake,
-    mockActiveTakeId,
-    mockChangeActiveTake,
-  };
-}
-
-function shallowRender() {
-  return shallow(<TakeList trackId={'116c2e4e-ea34-49d7-8a2a-9b2da03d7048'} />);
+function renderWithRedux(state = {}) {
+  return render(
+    <Provider store={createStore(getReducers(), state)}>
+      <TakeList trackId={'86017d4b-fb33-46ce-b3db-29a4300448f3'} />
+    </Provider>,
+  );
 }
 
 describe('TakeList', () => {
@@ -65,68 +85,52 @@ describe('TakeList', () => {
     jest.clearAllMocks();
   });
 
-  it('should match the snapshot', () => {
-    mockHooks();
-    const container = shallowRender();
-    expect(container).toMatchSnapshot();
-  });
-
-  it('has take-button named "with ride cymbal activated"', () => {
-    mockHooks();
-    const container = shallowRender();
-    const takeBtn = container.find('.take-button').first();
-    expect(takeBtn.text()).toBe('with ride cymbal');
-    expect(takeBtn.prop('isActive')).toBe(true);
-  });
-
-  it('calls changeActiveTake with proper takeId', () => {
-    const { mockChangeActiveTake } = mockHooks();
-    const container = shallowRender();
-    const takeBtn1 = container.find('.take-button').at(0);
-    const takeBtn2 = container.find('.take-button').at(1);
-    // Shouldn't be called to prevent unnecessary update.
-    takeBtn1.simulate('click');
-    expect(mockChangeActiveTake.mock.calls.length).toBe(0);
-    takeBtn2.simulate('click');
-    expect(mockChangeActiveTake.mock.calls[0][0]).toBe(
-      '7599b9e5-6055-4917-b183-e59bd4ec429e',
+  it('changes button color on non-active button click', () => {
+    const { getByTestId } = renderWithRedux(mockState);
+    const btn1 = getByTestId(
+      `take-button-11e44e9d-4ef7-40cc-ba5b-24338bff14e0`,
     );
-  });
-
-  it('prints More component on mouse enter', () => {
-    mockHooks();
-    const container = shallowRender();
-    const takeBtn = container.find('.take-button').first();
-    takeBtn.simulate('mouseenter');
-    expect(container).toMatchSnapshot();
+    const btn2 = getByTestId(
+      `take-button-54027b56-8047-4180-9d4a-5db5c7c7ed6e`,
+    );
+    // btn1 is active.
+    expect(btn1).toHaveStyle(`background-color: ${Color.Button.MuteOn}`);
+    expect(btn2).toHaveStyle(`background-color: ${Color.Button.Disabled}`);
+    // btn2 should be active, and btn1 should be turned-off.
+    fireEvent.click(btn2);
+    expect(btn1).toHaveStyle(`background-color: ${Color.Button.Disabled}`);
+    expect(btn2).toHaveStyle(`background-color: ${Color.Button.MuteOn}`);
+    // Should not change since btn2's already active.
+    fireEvent.click(btn2);
+    expect(btn1).toHaveStyle(`background-color: ${Color.Button.Disabled}`);
+    expect(btn2).toHaveStyle(`background-color: ${Color.Button.MuteOn}`);
   });
 
   it('shows more icon on mouse enter and hide on leave', () => {
-    mockHooks();
-    const container = shallowRender();
-    const takeBtn = container.find('.take-button').first();
-    takeBtn.simulate('mouseenter');
-    // takeBtn.contains(<More />) should be true, but it doesn't
-    // contain any under TackCtxMenu. So instead assert by container.
-    expect(container.contains(<More />)).toBe(true);
-    takeBtn.simulate('mouseleave');
-    expect(takeBtn.contains(<More />)).toBe(false);
+    const { getByTestId } = renderWithRedux(mockState);
+    const takeBtn = getByTestId(
+      `take-button-11e44e9d-4ef7-40cc-ba5b-24338bff14e0`,
+    );
+    fireEvent.mouseEnter(takeBtn);
+    expect(takeBtn.querySelector('.more')).not.toBeNull();
+    fireEvent.mouseLeave(takeBtn);
+    expect(takeBtn.querySelector('.more')).toBeNull();
   });
 
   it('calls addTake() with proper args', () => {
-    const { mockUseAddTake } = mockHooks();
+    const mockUseAddTake = jest.spyOn(TakeHooks, 'useAddTake');
     const mockAddTake = jest.fn();
     mockUseAddTake.mockReturnValue(mockAddTake);
-    const container = shallowRender();
-    const input = container.find('input').first();
-    input.simulate('change', {
+    const { container } = renderWithRedux(mockState);
+    const input = container.querySelector('input')!;
+    fireEvent.change(input, {
       target: {
         files: [{ name: 'dummy.wav' }],
       },
     });
     expect(mockAddTake.mock.calls.length).toBe(1);
     expect(mockAddTake.mock.calls[0][0]).toBe(
-      '116c2e4e-ea34-49d7-8a2a-9b2da03d7048',
+      '86017d4b-fb33-46ce-b3db-29a4300448f3',
     );
     const body = mockAddTake.mock.calls[0][1];
     expect(body.get('name')).toBe('dummy.wav');

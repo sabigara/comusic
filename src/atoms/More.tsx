@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const More: React.FC = () => {
   return (
-    <Wrapper>
+    <Wrapper className="more">
       <Dot />
       <Dot />
       <Dot />

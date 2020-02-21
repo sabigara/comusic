@@ -55,6 +55,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
           <TakeButton
             className="take-button"
             key={take.id}
+            data-testid={`take-button-${take.id}`}
             onClick={() => onTakeChange(take.id)}
             onMouseEnter={() => setMouseHoverId(take.id)}
             onMouseLeave={() => setMouseHoverId(null)}
