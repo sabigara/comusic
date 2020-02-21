@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
 import { useChangeActiveTake } from '../hooks/tracks';
-import { RootState } from '../reducers';
+import { useTakes, useActiveTakeId } from '../hooks/selectors';
 import { useAddTake } from '../hooks/takes';
 import TakeCtxMenu from './TakeCtxMenu';
 
@@ -15,14 +14,8 @@ type Props = {
 };
 
 const TakeList: React.FC<Props> = ({ trackId }) => {
-  const takes = useSelector((state: RootState) => {
-    return state.takes.allIds
-      .map((id) => state.takes.byId[id])
-      .filter((take) => take.trackId === trackId);
-  });
-  const activeTakeId = useSelector((state: RootState) => {
-    return state.tracks.byId[trackId].activeTake;
-  });
+  const takes = useTakes(trackId);
+  const activeTakeId = useActiveTakeId(trackId);
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseHoverId, setMouseHoverId] = useState<string | null>(null);
   const addTake = useAddTake();
@@ -45,7 +38,6 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
     },
     [trackId, addTake],
   );
-
   const onTakeChange = (id: string) => {
     if (id !== activeTakeId) {
       changeActiveTake(id);
@@ -66,9 +58,7 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
             onClick={() => onTakeChange(take.id)}
             onMouseEnter={() => setMouseHoverId(take.id)}
             onMouseLeave={() => setMouseHoverId(null)}
-            key={i}
             isActive={take.id === activeTakeId}
-            onClick={() => onTakeChange(take.id)}
           >
             <ButtonLabel>{take.name}</ButtonLabel>
             {mouseHoverId === take.id ? (
@@ -128,7 +118,7 @@ const Button = styled.div`
   padding: 0 0 0 5px;
 `;
 
-const TakeButton = styled(Button)<{ isActive: boolean }>`
+const TakeButton = styled(Button) <{ isActive: boolean }>`
   background-color: ${(props) => {
     return props.isActive ? Color.Button.MuteOn : Color.Button.Disabled;
   }};
