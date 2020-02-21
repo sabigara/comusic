@@ -3,8 +3,14 @@
 import React from 'react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { render, fireEvent } from '@testing-library/react';
+import {
+  render,
+  fireEvent,
+  getByText as GetByText,
+} from '@testing-library/react';
 
+import { ActionTypeName as ATN, createAction } from '../../actions';
+import { delTakeSuccess } from '../../actions/takes';
 import Color from '../../common/Color';
 import getReducers from '../../reducers';
 import * as TakeHooks from '../../hooks/takes';
@@ -72,9 +78,12 @@ const mockState = {
   },
 };
 
-function renderWithRedux(state = {}) {
+function renderWithRedux(store?: any) {
+  if (!store) {
+    store = createStore(getReducers(), mockState);
+  }
   return render(
-    <Provider store={createStore(getReducers(), state)}>
+    <Provider store={store}>
       <TakeList trackId={'86017d4b-fb33-46ce-b3db-29a4300448f3'} />
     </Provider>,
   );
@@ -86,7 +95,7 @@ describe('TakeList', () => {
   });
 
   it('changes button color on non-active button click', () => {
-    const { getByTestId } = renderWithRedux(mockState);
+    const { getByTestId } = renderWithRedux();
     const btn1 = getByTestId(
       `take-button-11e44e9d-4ef7-40cc-ba5b-24338bff14e0`,
     );
@@ -107,7 +116,7 @@ describe('TakeList', () => {
   });
 
   it('shows more icon on mouse enter and hide on leave', () => {
-    const { getByTestId } = renderWithRedux(mockState);
+    const { getByTestId } = renderWithRedux();
     const takeBtn = getByTestId(
       `take-button-11e44e9d-4ef7-40cc-ba5b-24338bff14e0`,
     );
@@ -121,7 +130,7 @@ describe('TakeList', () => {
     const mockUseAddTake = jest.spyOn(TakeHooks, 'useAddTake');
     const mockAddTake = jest.fn();
     mockUseAddTake.mockReturnValue(mockAddTake);
-    const { container } = renderWithRedux(mockState);
+    const { container } = renderWithRedux();
     const input = container.querySelector('input')!;
     fireEvent.change(input, {
       target: {
@@ -134,5 +143,27 @@ describe('TakeList', () => {
     );
     const body = mockAddTake.mock.calls[0][1];
     expect(body.get('name')).toBe('dummy.wav');
+  });
+
+  it('deletes a take by clicking ctx menu item', () => {
+    const store = createStore(getReducers(), mockState);
+    // Replace custom hook that returns async function with
+    // one returns synchronous version.
+    const mockUseDelTake = jest.spyOn(TakeHooks, 'useDelTake');
+    const mockDelTake = jest.fn().mockImplementation((takeId: string) => {
+      store.dispatch(createAction(ATN.Take.DEL_TAKE_REQUEST, takeId));
+      store.dispatch(delTakeSuccess(takeId));
+    });
+    mockUseDelTake.mockReturnValue(mockDelTake);
+
+    const { container, getByTestId } = renderWithRedux(store);
+    expect(container.querySelectorAll('.take-button').length).toBe(2);
+    const takeBtn = getByTestId(
+      'take-button-11e44e9d-4ef7-40cc-ba5b-24338bff14e0',
+    );
+    fireEvent.mouseEnter(takeBtn);
+    fireEvent.click(takeBtn.querySelector('.more')!);
+    fireEvent.click(GetByText(takeBtn, 'Delete'));
+    expect(container.querySelectorAll('.take-button').length).toBe(1);
   });
 });
