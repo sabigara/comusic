@@ -39,12 +39,12 @@ export const useAddTrack = (verId: string) => {
   }, [verId]);
 };
 
-export const useDelTrack = (trackId: string) => {
+export const useDelTrack = () => {
   const backendAPI = useBackendAPI();
   const audioAPI = useAudioAPI();
   const dispatch = useDispatch();
 
-  return useCallback(async () => {
+  return useCallback(async (trackId: string) => {
     dispatch(createAction(ATN.Track.DEL_TRACK_REQUEST, trackId));
     try {
       await backendAPI.delTrack(trackId);
@@ -54,7 +54,7 @@ export const useDelTrack = (trackId: string) => {
       err = err.toString();
       dispatch(createAction(ATN.Track.DEL_TRACK_FAILURE, trackId, err));
     }
-  }, [trackId]);
+  }, []);
 };
 
 export const useUpdateTrackParam = () => {
@@ -89,13 +89,13 @@ export const useSwitchMuteSolo = (trackId: string) => {
     dispatch(
       updateTrackParam(trackId, TrackParam.isMuted, Number(!track.isMuted)),
     );
-  }, [trackId, track.isMuted, shouldPlay]);
+  }, [trackId, track, shouldPlay]);
 
   const switchSolo = useCallback(() => {
     dispatch(
       updateTrackParam(trackId, TrackParam.isSoloed, Number(!track.isSoloed)),
     );
-  }, [trackId, track.isSoloed, shouldPlay]);
+  }, [trackId, track, shouldPlay]);
 
   return [switchMute, switchSolo];
 };

@@ -20,16 +20,16 @@ type Props = {
 
 const TrackPanel: React.FC<Props> = ({ trackId }) => {
   const track = useSelector((state: RootState) => {
-    return state.tracks.byId[trackId];
+    return state.tracks.byId[trackId] || { id: null };
   });
   const [wavePeak, setWavePeak] = useState(0);
   const updateTrackParam = useUpdateTrackParam();
   const audioAPI = useAudioAPI();
   const shouldPlay = useShouldTrackPlay(track.id);
-  const [switchMute, switchSolo] = useSwitchMuteSolo(trackId);
+  const [switchMute, switchSolo] = useSwitchMuteSolo(track.id);
 
   useEffect(() => {
-    const trackAPI = audioAPI.tracks[track.id];
+    const trackAPI = audioAPI.getTrack(track.id);
     if (!trackAPI) return;
     shouldPlay ? trackAPI.unMute() : trackAPI.mute();
   }, [audioAPI, shouldPlay, track.id]);

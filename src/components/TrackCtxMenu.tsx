@@ -15,13 +15,13 @@ type Data = {
 };
 
 const TrackContextMenu: React.FC<Props> = ({ trackId, children }) => {
-  const delTrack = useDelTrack(trackId);
+  const delTrack = useDelTrack();
 
   const handler = (e: any, data: Data) => {
     e.stopPropagation();
     switch (data.method) {
       case 'DELETE':
-        delTrack();
+        delTrack(data.id);
         break;
     }
   };
