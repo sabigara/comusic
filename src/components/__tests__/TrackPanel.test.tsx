@@ -123,6 +123,9 @@ describe('TrackPanel', () => {
     const { container, getByText } = renderWithRedux(store);
     fireEvent.contextMenu(container);
     fireEvent.click(getByText('Delete'));
+    const state = store.getState();
+    expect(state.tracks.byId).toStrictEqual({});
+    expect(state.tracks.allIds).toStrictEqual([]);
   });
 });
 
