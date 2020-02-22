@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { createStore } from 'redux';
 import { fireEvent, getByText as GetByText } from '@testing-library/react';
 
 import { ActionTypeName as ATN, createAction } from '../../actions';
 import { delTakeSuccess } from '../../actions/takes';
 import Color from '../../common/Color';
-import getReducers from '../../reducers';
 import * as TakeHooks from '../../hooks/takes';
 import TakeList from '../TakeList';
 import * as utils from '../../testutils';
@@ -76,7 +74,7 @@ const mockState = {
 
 function renderWithRedux(store?: any) {
   if (!store) {
-    store = createStore(getReducers(), mockState);
+    store = utils.initStore(mockState);
   }
   return utils.renderWithRedux(
     <TakeList trackId={'86017d4b-fb33-46ce-b3db-29a4300448f3'} />,

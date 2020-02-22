@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { createStore } from 'redux';
 import { fireEvent } from '@testing-library/react';
 
 import Color from '../../common/Color';
-import getReducers from '../../reducers';
+import * as utils from '../../testutils';
 import * as TrackHooks from '../../hooks/tracks';
 import { ActionTypeName as ATN, createAction } from '../../actions';
 import { delTrackSuccess } from '../../actions/tracks';
 import TrackPanel from '../TrackPanel';
-import * as utils from '../../testutils';
 
 jest.mock('../../AudioAPI/WebAudioAPI');
 jest.mock('../../BackendAPI/Default');
@@ -76,7 +74,7 @@ const mockState = {
 
 function renderWithRedux(store?: any) {
   if (!store) {
-    store = createStore(getReducers(), mockState);
+    store = utils.initStore(mockState);
   }
   return utils.renderWithRedux(
     <TrackPanel trackId={'86017d4b-fb33-46ce-b3db-29a4300448f3'} />,
