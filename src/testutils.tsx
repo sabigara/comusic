@@ -12,3 +12,7 @@ export function initStore(state: any) {
 export function renderWithRedux(elem: React.ReactElement, store: any) {
   return render(<Provider store={store}> {elem} </Provider>);
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
