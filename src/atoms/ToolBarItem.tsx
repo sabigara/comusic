@@ -5,6 +5,7 @@ import Color from '../common/Color';
 
 type Props = {
   isActive: boolean;
+  id?: string;
   setActive?: Function;
   onClick?: Function;
   isLeftMost?: boolean;
@@ -14,6 +15,7 @@ type Props = {
 const ToolBarItem: React.FC<Props> = (props) => {
   const {
     isActive,
+    id,
     setActive,
     onClick,
     children,
@@ -23,6 +25,7 @@ const ToolBarItem: React.FC<Props> = (props) => {
 
   return (
     <Wrapper
+      id={id}
       isActive={isActive}
       isLeftMost={isLeftMost}
       isRightMost={isRightMost}

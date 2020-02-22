@@ -60,18 +60,21 @@ const PlaybackControls: React.FC = () => {
   return (
     <ToolBackItemContainer>
       <ToolBarItem
+        id="stop-button"
         isActive={playback.status === PlaybackStatus.Stopping}
         onClick={onStopClick}
       >
         <IconImg src={StopIcon} alt="stop" />
       </ToolBarItem>
       <ToolBarItem
+        id="pause-button"
         isActive={playback.status === PlaybackStatus.Pausing}
         onClick={onPauseClick}
       >
         <IconImg src={PauseIcon} alt="pause" />
       </ToolBarItem>
       <ToolBarItem
+        id="play-button"
         isActive={playback.status === PlaybackStatus.Playing}
         onClick={onPlayClick}
       >
