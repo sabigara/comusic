@@ -19,11 +19,19 @@ const MuteSoloButton: React.FC<Props> = ({
 }) => {
   return (
     <Outer>
-      <Mute isEnabled={muteOn} onClick={() => onMuteClick()}>
+      <Mute
+        className="mute-button"
+        isEnabled={muteOn}
+        onClick={() => onMuteClick()}
+      >
         <Char>M</Char>
       </Mute>
       <Separator />
-      <Solo isEnabled={soloOn} onClick={() => onSoloClick()}>
+      <Solo
+        className="solo-button"
+        isEnabled={soloOn}
+        onClick={() => onSoloClick()}
+      >
         <Char>S</Char>
       </Solo>
     </Outer>

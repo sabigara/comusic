@@ -304,11 +304,17 @@ const Slider: React.FC<Props> = (props) => {
   const Knob = type === 'volume' ? VolumeKnob : PanKnob;
 
   return (
-    <Root onMouseDown={handleMouseDown} type={type} width={width}>
+    <Root
+      className={`fader-${type === 'volume' ? 'vol' : 'pan'}`}
+      onMouseDown={handleMouseDown}
+      type={type}
+      width={width}
+    >
       <Rail height={railHeight} type={type}>
         <KnobMotionRange ref={sliderRef}>
           {type === 'volume' ? <WavePeak value={wavePeak} /> : null}
           <Knob
+            className="fader-knob"
             style={style}
             data-index={0}
             height={knobHeight}
@@ -374,7 +380,7 @@ const WavePeak = styled.div.attrs((props: { value?: number }) => ({
   style: {
     width: props.value ? props.value.toString() + 'px' : 0,
   },
-}))<{ value?: number }>`
+})) <{ value?: number }>`
   background-color: #4cd964;
   height: 100%;
 `;
@@ -411,7 +417,7 @@ const PanKnob = styled(AbstractKnob)`
   border-style: solid;
   border-width: ${(props) =>
     `${props.height + 'px'} ${props.width / 2 + 'px'} 0 ${props.width / 2 +
-      'px'}`};
+    'px'}`};
   border-color: #ddd transparent transparent transparent;
   opacity: 0.7;
 `;
