@@ -119,7 +119,7 @@ const Button = styled.div`
   padding: 0 0 0 5px;
 `;
 
-const TakeButton = styled(Button) <{ isActive: boolean }>`
+const TakeButton = styled(Button)<{ isActive: boolean }>`
   background-color: ${(props) => {
     return props.isActive ? Color.Button.MuteOn : Color.Button.Disabled;
   }};

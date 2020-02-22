@@ -83,6 +83,7 @@ function renderWithRedux(store?: any) {
     store,
   );
 }
+
 describe('TakeList', () => {
   beforeEach(() => {
     jest.clearAllMocks();
