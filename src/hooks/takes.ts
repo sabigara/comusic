@@ -27,7 +27,7 @@ export const useAddTake = () => {
         );
         return;
       }
-      loadActiveTake(trackId, resp ? resp.file.url : undefined);
+      loadActiveTake(trackId);
     },
     [loadActiveTake],
   );

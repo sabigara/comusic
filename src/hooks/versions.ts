@@ -48,7 +48,7 @@ export const useFetchVerContents = (verId: string) => {
         trackAPI.setVolume(track.volume);
         trackAPI.setPan(track.pan);
         if (!activeTake) return;
-        loadActiveTake(id, resp.files.byId[activeTake.fileId].url);
+        loadActiveTake(id);
       });
     };
     _();

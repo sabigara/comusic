@@ -300,43 +300,14 @@ describe('useLoadActiveTake', () => {
     jest.clearAllMocks();
   });
 
-  it('loads file by url', async () => {
+  it('loads file for active take', async () => {
     const trackIdToLoad = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
     const { result } = renderHookWithRedux(() => useLoadActiveTake());
-    // Load by url.
     await act(async () => {
-      await result.current(trackIdToLoad, 'some-url');
+      await result.current(trackIdToLoad);
     });
 
     expect(mockTrackAPI.loadFile.mock.calls[0][0]).toBe('some-url');
-  });
-
-  it('loads file by takeId', async () => {
-    const trackIdToLoad = '86017d4b-fb33-46ce-b3db-29a4300448f3';
-    mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
-    const { result } = renderHookWithRedux(() => useLoadActiveTake());
-    // Load by take id.
-    await act(async () => {
-      await result.current(
-        trackIdToLoad,
-        undefined,
-        '11e44e9d-4ef7-40cc-ba5b-24338bff14e0',
-      );
-    });
-
-    expect(mockTrackAPI.loadFile.mock.calls[0][0]).toBe('some-url');
-  });
-
-  it('fails to load file by invalid takeId', async () => {
-    const trackIdToLoad = '86017d4b-fb33-46ce-b3db-29a4300448f3';
-    mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
-    const { result } = renderHookWithRedux(() => useLoadActiveTake());
-    // Load by takeId that's not related to the track.
-    await act(async () => {
-      await result.current(trackIdToLoad, undefined, 'some-invalid-take-id');
-    });
-
-    expect(mockTrackAPI.loadFile.mock.calls.length).toBe(0);
   });
 });
