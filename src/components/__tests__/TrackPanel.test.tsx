@@ -86,7 +86,9 @@ describe('TrackPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
+  // FIXME: react-test-renderer sometimes complains "An update to
+  // TrackPanel inside a test was not wrapped in act", but sometimes not.
+  // https://reactjs.org/docs/test-utils.html#act
   it('activates mute/solo buttons correctly', () => {
     const { container } = renderWithRedux();
     const muteBtn = container.querySelector('.mute-button')!;
