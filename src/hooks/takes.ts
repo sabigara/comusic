@@ -25,6 +25,7 @@ export const useAddTake = () => {
         dispatch(
           createAction(ATN.Take.ADD_TAKE_FAILURE, trackId, err.toString()),
         );
+        return;
       }
       loadActiveTake(trackId, resp ? resp.file.url : undefined);
     },
@@ -49,6 +50,7 @@ export const useDelTake = () => {
         dispatch(
           createAction(ATN.Take.DEL_TAKE_FAILURE, takeId, err.toString()),
         );
+        return;
       }
       const track = tracks[takes[takeId].trackId];
       const trackAPI = audioAPI.getTrack(track.id);
