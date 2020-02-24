@@ -84,10 +84,13 @@ export const addTrackSuccess = (verId: string, track: Track) => {
   };
 };
 
-export const delTrackSuccess = (trackId: string) => {
+export const delTrackSuccess = (trackId: string, relatedTakeIds: string[]) => {
   return {
     type: DEL_TRACK_SUCCESS,
     id: trackId,
+    payload: {
+      relatedTakeIds: relatedTakeIds,
+    },
   };
 };
 

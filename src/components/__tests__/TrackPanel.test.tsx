@@ -115,15 +115,23 @@ describe('TrackPanel', () => {
     const mockUseDelTrack = jest.spyOn(TrackHooks, 'useDelTrack');
     const mockDelTrack = jest.fn().mockImplementation((trackId: string) => {
       store.dispatch(createAction(ATN.Track.DEL_TRACK_REQUEST, trackId));
-      store.dispatch(delTrackSuccess(trackId));
+      store.dispatch(
+        delTrackSuccess(trackId, [
+          '11e44e9d-4ef7-40cc-ba5b-24338bff14e0',
+          '54027b56-8047-4180-9d4a-5db5c7c7ed6e',
+        ]),
+      );
     });
     mockUseDelTrack.mockReturnValue(mockDelTrack);
     const { container, getByText } = renderWithRedux(store);
     fireEvent.contextMenu(container);
     fireEvent.click(getByText('Delete'));
     const state = store.getState();
+    // Assert specified track and related takes are all deleted.
     expect(state.tracks.byId).toStrictEqual({});
     expect(state.tracks.allIds).toStrictEqual([]);
+    expect(state.takes.byId).toStrictEqual({});
+    expect(state.takes.allIds).toStrictEqual([]);
   });
 });
 

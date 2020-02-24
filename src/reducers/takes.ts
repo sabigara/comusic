@@ -55,6 +55,13 @@ function byId(
       return {
         ...rest,
       };
+    case ActionTypeName.Track.DEL_TRACK_SUCCESS:
+      const filtered = Object.values(state).filter(
+        (take) => take.trackId !== action.id,
+      );
+      return filtered.reduce((prev, take) => {
+        return { ...prev, [take.id]: take };
+      }, {});
     default:
       return state;
   }
@@ -68,6 +75,8 @@ function allIds(state: string[] = [], action: ActionUnionType): string[] {
       return state.concat(action.payload.take.id);
     case ActionTypeName.Take.DEL_TAKE_SUCCESS:
       return state.filter((id) => id !== action.id);
+    case ActionTypeName.Track.DEL_TRACK_SUCCESS:
+      return state.filter((id) => !action.payload.relatedTakeIds.includes(id));
     default:
       return state;
   }

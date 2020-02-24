@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { TrackParam, PlaybackStatus } from '../common/Domain';
+import { TrackParam, PlaybackStatus, Track } from '../common/Domain';
 import { RootState } from '../reducers';
 import { ActionTypeName as ATN, createAction } from '../actions';
 import {
@@ -25,17 +25,22 @@ export const useAddTrack = (verId: string) => {
 
   return useCallback(async () => {
     dispatch(createAction(ATN.Track.ADD_TRACK_REQUEST, verId));
+    let resp: Track | null = null;
     try {
-      const resp = await backendAPI.addTrack(verId);
+      resp = await backendAPI.addTrack(verId);
       dispatch(addTrackSuccess(verId, resp));
-      const trackAPI = audioAPI.loadTrack(resp.id);
-      trackAPI.setVolume(resp.volume);
-      trackAPI.setPan(resp.pan);
     } catch (err) {
       dispatch(
         createAction(ATN.Track.ADD_TRACK_FAILURE, verId, err.toString()),
       );
+      return;
     }
+    if (resp === null) {
+      throw 'side effects for addTrack failed';
+    }
+    const trackAPI = audioAPI.loadTrack(resp.id);
+    trackAPI.setVolume(resp.volume);
+    trackAPI.setPan(resp.pan);
   }, [verId]);
 };
 
@@ -43,18 +48,29 @@ export const useDelTrack = () => {
   const backendAPI = useBackendAPI();
   const audioAPI = useAudioAPI();
   const dispatch = useDispatch();
+  const takes = useSelector((state: RootState) =>
+    state.takes.allIds.map((id) => state.takes.byId[id]),
+  );
 
-  return useCallback(async (trackId: string) => {
-    dispatch(createAction(ATN.Track.DEL_TRACK_REQUEST, trackId));
-    try {
-      await backendAPI.delTrack(trackId);
-      dispatch(delTrackSuccess(trackId));
+  return useCallback(
+    async (trackId: string) => {
+      dispatch(createAction(ATN.Track.DEL_TRACK_REQUEST, trackId));
+      try {
+        await backendAPI.delTrack(trackId);
+        const relatedTakeIds =
+          takes
+            .filter((take) => take.trackId === trackId)
+            .map((take) => take.id) || [];
+        dispatch(delTrackSuccess(trackId, relatedTakeIds));
+      } catch (err) {
+        err = err.toString();
+        dispatch(createAction(ATN.Track.DEL_TRACK_FAILURE, trackId, err));
+        return;
+      }
       audioAPI.getTrack(trackId)?.release();
-    } catch (err) {
-      err = err.toString();
-      dispatch(createAction(ATN.Track.DEL_TRACK_FAILURE, trackId, err));
-    }
-  }, []);
+    },
+    [takes],
+  );
 };
 
 export const useUpdateTrackParam = () => {
@@ -134,7 +150,7 @@ export const useLoadActiveTake = () => {
         const take = takeById[takeId];
         if (!take) throw 'Provided takeId is not valid';
         const file = fileById[take.fileId];
-        if (!file) throw 'Provided fileId is not ';
+        if (!file) throw 'Provided fileId is not valid';
         url = file.url;
       }
       const trackAPI = audioAPI.getTrack(trackId);
