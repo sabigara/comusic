@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { Provider } from 'react-redux';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react-hooks';
 
 import * as utils from '../../testutils';
 import {
@@ -86,14 +85,6 @@ const mockState = {
   },
 };
 
-function renderHookWithRedux<P, R>(callback: (props: P) => R, state?: any) {
-  const store = utils.initStore(state || mockState);
-  const wrapper: React.FC = ({ children }) => (
-    <Provider store={store}>{children}</Provider>
-  );
-  return { ...renderHook<P, R>(callback, { wrapper }), store };
-}
-
 describe('useAddTrack', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -117,7 +108,10 @@ describe('useAddTrack', () => {
     mockBackendAPI.addTrack.mockResolvedValue(mockResp);
     mockAudioAPI.loadTrack.mockReturnValue(mockTrackAPI);
     // Render with empty state.
-    const { result, store } = renderHookWithRedux(() => useAddTrack(verId), {});
+    const { result, store } = utils.renderHookWithRedux(
+      () => useAddTrack(verId),
+      {},
+    );
 
     await act(async () => {
       await result.current();
@@ -141,7 +135,10 @@ describe('useAddTrack', () => {
     });
     mockAudioAPI.loadTrack.mockReturnValue(mockTrackAPI);
     // Render with empty state.
-    const { result, store } = renderHookWithRedux(() => useAddTrack(verId), {});
+    const { result, store } = utils.renderHookWithRedux(
+      () => useAddTrack(verId),
+      {},
+    );
 
     await act(async () => {
       await result.current();
@@ -164,7 +161,10 @@ describe('useDelTake', () => {
   });
 
   it('delete a track successfully', async () => {
-    const { result, store } = renderHookWithRedux(() => useDelTrack());
+    const { result, store } = utils.renderHookWithRedux(
+      () => useDelTrack(),
+      mockState,
+    );
     const trackIdToDel = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
     await act(async () => {
@@ -185,7 +185,10 @@ describe('useDelTake', () => {
   });
 
   it('fails to delete due to backedAPI error', async () => {
-    const { result, store } = renderHookWithRedux(() => useDelTrack());
+    const { result, store } = utils.renderHookWithRedux(
+      () => useDelTrack(),
+      mockState,
+    );
     const trackIdToDel = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockBackendAPI.delTrack.mockImplementation(() => {
       throw new Error();
@@ -213,7 +216,10 @@ describe('useUpdateTrackParam', () => {
   });
 
   it('updates volume to 0.5', async () => {
-    const { result, store } = renderHookWithRedux(() => useUpdateTrackParam());
+    const { result, store } = utils.renderHookWithRedux(
+      () => useUpdateTrackParam(),
+      mockState,
+    );
     const trackIdToUpdate = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
     await act(async () => {
@@ -229,7 +235,10 @@ describe('useUpdateTrackParam', () => {
   });
 
   it('updates pan to 0.5', async () => {
-    const { result, store } = renderHookWithRedux(() => useUpdateTrackParam());
+    const { result, store } = utils.renderHookWithRedux(
+      () => useUpdateTrackParam(),
+      mockState,
+    );
     const trackIdToUpdate = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
     await act(async () => {
@@ -253,8 +262,9 @@ describe('useSwitchMuteSolo', () => {
   it('mutes, then unmutes', async () => {
     const trackIdToUpdate = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
-    const { result, store } = renderHookWithRedux(() =>
-      useSwitchMuteSolo(trackIdToUpdate),
+    const { result, store } = utils.renderHookWithRedux(
+      () => useSwitchMuteSolo(trackIdToUpdate),
+      mockState,
     );
 
     act(() => result.current[0]());
@@ -266,8 +276,9 @@ describe('useSwitchMuteSolo', () => {
   it('solos, then unsolos', async () => {
     const trackIdToUpdate = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
-    const { result, store } = renderHookWithRedux(() =>
-      useSwitchMuteSolo(trackIdToUpdate),
+    const { result, store } = utils.renderHookWithRedux(
+      () => useSwitchMuteSolo(trackIdToUpdate),
+      mockState,
     );
 
     act(() => result.current[1]());
@@ -279,8 +290,9 @@ describe('useSwitchMuteSolo', () => {
   it('mutes and solos, then unmutes and unsolos', async () => {
     const trackIdToUpdate = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
-    const { result, store } = renderHookWithRedux(() =>
-      useSwitchMuteSolo(trackIdToUpdate),
+    const { result, store } = utils.renderHookWithRedux(
+      () => useSwitchMuteSolo(trackIdToUpdate),
+      mockState,
     );
 
     act(() => result.current[0]());
@@ -303,7 +315,10 @@ describe('useLoadActiveTake', () => {
   it('loads file for active take', async () => {
     const trackIdToLoad = '86017d4b-fb33-46ce-b3db-29a4300448f3';
     mockAudioAPI.getTrack.mockReturnValue(mockTrackAPI);
-    const { result } = renderHookWithRedux(() => useLoadActiveTake());
+    const { result } = utils.renderHookWithRedux(
+      () => useLoadActiveTake(),
+      mockState,
+    );
     await act(async () => {
       await result.current(trackIdToLoad);
     });

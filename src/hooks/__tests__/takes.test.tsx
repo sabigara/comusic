@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { Provider } from 'react-redux';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { act } from '@testing-library/react-hooks';
 
 import * as utils from '../../testutils';
 import { useAddTake, useDelTake } from '../takes';
@@ -74,14 +73,6 @@ const mockState = {
   },
 };
 
-function renderHookWithRedux<P, R>(callback: (props: P) => R, state?: any) {
-  const store = utils.initStore(state || mockState);
-  const wrapper: React.FC = ({ children }) => (
-    <Provider store={store}>{children}</Provider>
-  );
-  return { ...renderHook<P, R>(callback, { wrapper }), store };
-}
-
 describe('useAddTake', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -105,7 +96,7 @@ describe('useAddTake', () => {
     };
     mockBackendAPI.addTake.mockResolvedValue(mockResp);
     // Render with empty state.
-    const { result, store } = renderHookWithRedux(() => useAddTake(), {});
+    const { result, store } = utils.renderHookWithRedux(() => useAddTake(), {});
     const formData = new FormData();
     formData.append('key', 'val');
 
@@ -131,7 +122,7 @@ describe('useAddTake', () => {
       throw new Error();
     });
     // Render with empty state.
-    const { result, store } = renderHookWithRedux(() => useAddTake(), {});
+    const { result, store } = utils.renderHookWithRedux(() => useAddTake(), {});
     const formData = new FormData();
     formData.append('key', 'val');
 
@@ -144,7 +135,7 @@ describe('useAddTake', () => {
     // Assert backend API is called with correct args.
     expect(mockBackendAPI.addTake.mock.calls[0][0]).toBe(trackId);
     expect(mockBackendAPI.addTake.mock.calls[0][1]).toBe(formData);
-    // Assert nothing happens.
+    // Assert nothing changes.
     expect(store.getState().takes.allIds.length).toBe(0);
     expect(store.getState().files.allIds.length).toBe(0);
   });
@@ -156,7 +147,10 @@ describe('useDelTake', () => {
   });
 
   it('delete a take successfully', async () => {
-    const { result, store } = renderHookWithRedux(() => useDelTake());
+    const { result, store } = utils.renderHookWithRedux(
+      () => useDelTake(),
+      mockState,
+    );
     const takeIdToDel = '11e44e9d-4ef7-40cc-ba5b-24338bff14e0';
     await act(async () => {
       await result.current(takeIdToDel);
@@ -179,7 +173,10 @@ describe('useDelTake', () => {
       throw new Error();
     });
     // Render with empty state.
-    const { result, store } = renderHookWithRedux(() => useDelTake());
+    const { result, store } = utils.renderHookWithRedux(
+      () => useDelTake(),
+      mockState,
+    );
 
     await act(async () => {
       await result.current('fake');
@@ -189,7 +186,7 @@ describe('useDelTake', () => {
     expect(mockBackendAPI.delTake.mock.calls.length).toBe(1);
     // Assert backend API is called with correct args.
     expect(mockBackendAPI.delTake.mock.calls[0][0]).toBe('fake');
-    // Assert nothing happens.
+    // Assert nothing changes.
     expect(store.getState().takes.allIds.length).toBe(1);
     expect(mockTrackAPI.stop.mock.calls.length).toBe(0);
     expect(mockTrackAPI.clearBuffer.mock.calls.length).toBe(0);
