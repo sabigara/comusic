@@ -7,6 +7,7 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import * as utils from '../../testutils';
 import { useAddTake, useDelTake } from '../takes';
 
+// Mocking from function is not working so do it here.
 const mockBackendAPI = {
   addTake: jest.fn(),
   delTake: jest.fn(),
@@ -74,7 +75,7 @@ const mockState = {
 };
 
 function renderHookWithRedux<P, R>(callback: (props: P) => R, state?: any) {
-  const store = utils.initStore(state || mockState, true);
+  const store = utils.initStore(state || mockState);
   const wrapper: React.FC = ({ children }) => (
     <Provider store={store}>{children}</Provider>
   );
