@@ -31,7 +31,7 @@ function isFormData(arg?: JSONBody | FormData): arg is FormData {
   return arg?.append !== undefined;
 }
 
-const pat = /(?<=\/):.[^\/]/g;
+const pat = /(?<=\/):.[^/]/g;
 
 function constructPath(path: Path): string {
   path.params?.map((param) => {

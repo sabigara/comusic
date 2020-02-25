@@ -15,7 +15,6 @@ import {
 } from '../actions/tracks';
 import useAudioAPI from './useAudioAPI';
 import useBackendAPI from './useBackendAPI';
-import useShouldTrackPlay from './useShouldTrackPlay';
 import { useLoading } from './loading';
 
 export const useAddTrack = (verId: string) => {
@@ -41,7 +40,7 @@ export const useAddTrack = (verId: string) => {
     const trackAPI = audioAPI.loadTrack(resp.id);
     trackAPI.setVolume(resp.volume);
     trackAPI.setPan(resp.pan);
-  }, [verId]);
+  }, [verId, audioAPI, backendAPI, dispatch]);
 };
 
 export const useDelTrack = () => {
@@ -69,7 +68,7 @@ export const useDelTrack = () => {
       }
       audioAPI.getTrack(trackId)?.release();
     },
-    [takes],
+    [takes, audioAPI, backendAPI, dispatch],
   );
 };
 
@@ -92,26 +91,25 @@ export const useUpdateTrackParam = () => {
           break;
       }
     },
-    [],
+    [audioAPI, dispatch],
   );
 };
 
 export const useSwitchMuteSolo = (trackId: string) => {
   const dispatch = useDispatch();
   const track = useSelector((state: RootState) => state.tracks.byId[trackId]);
-  const shouldPlay = useShouldTrackPlay(trackId);
 
   const switchMute = useCallback(() => {
     dispatch(
       updateTrackParam(trackId, TrackParam.isMuted, Number(!track.isMuted)),
     );
-  }, [trackId, track, shouldPlay]);
+  }, [trackId, track, dispatch]);
 
   const switchSolo = useCallback(() => {
     dispatch(
       updateTrackParam(trackId, TrackParam.isSoloed, Number(!track.isSoloed)),
     );
-  }, [trackId, track, shouldPlay]);
+  }, [trackId, track, dispatch]);
 
   return [switchMute, switchSolo];
 };
@@ -163,6 +161,6 @@ export const useChangeActiveTake = (trackId: string) => {
       dispatch(changeActiveTake(trackId, takeId));
       loadActiveTake(trackId, url);
     },
-    [loadActiveTake],
+    [loadActiveTake, trackId, dispatch],
   );
 };

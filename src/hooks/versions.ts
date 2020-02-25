@@ -53,9 +53,7 @@ export const useFetchVerContents = (verId: string) => {
     };
     _();
     return () => {
-      trackAPIs.map((trackAPI) => {
-        trackAPI.release();
-      });
+      trackAPIs.map((trackAPI) => trackAPI.release());
     };
-  }, [verId]);
+  }, [verId, loadActiveTake, audioAPI, backendAPI, dispatch]);
 };

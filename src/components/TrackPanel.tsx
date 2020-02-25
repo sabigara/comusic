@@ -42,13 +42,19 @@ const TrackPanel: React.FC<Props> = ({ trackId }) => {
     return (): void => clearInterval(interval);
   }, [audioAPI, track.id]);
 
-  const onVolumeFaderMove = useCallback((_: unknown, vol: number) => {
-    updateTrackParam(track.id, TrackParam.volume, vol);
-  }, []);
+  const onVolumeFaderMove = useCallback(
+    (_: unknown, vol: number) => {
+      updateTrackParam(track.id, TrackParam.volume, vol);
+    },
+    [track.id, updateTrackParam],
+  );
 
-  const onPanFaderMove = useCallback((_: unknown, pan: number) => {
-    updateTrackParam(track.id, TrackParam.pan, pan);
-  }, []);
+  const onPanFaderMove = useCallback(
+    (_: unknown, pan: number) => {
+      updateTrackParam(track.id, TrackParam.pan, pan);
+    },
+    [track.id, updateTrackParam],
+  );
 
   return (
     <TrackCtxMenu trackId={trackId}>

@@ -23,7 +23,7 @@ export const useOnSettled = (
   dep: any[],
 ) => {
   const state = useSelector((state: RootState) => state.loading[action]);
-  dep.push(state);
+  dep.push(state, callback);
   useEffect(() => {
     if (state === undefined) return;
     if (state.length > 0) return;

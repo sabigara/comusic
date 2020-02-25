@@ -29,7 +29,7 @@ export const useAddTake = () => {
       }
       loadActiveTake(trackId, resp.file.url);
     },
-    [loadActiveTake],
+    [loadActiveTake, backendAPI, dispatch],
   );
 };
 
@@ -59,6 +59,6 @@ export const useDelTake = () => {
         trackAPI?.clearBuffer();
       }
     },
-    [tracks, takes],
+    [tracks, takes, audioAPI, backendAPI, dispatch],
   );
 };
