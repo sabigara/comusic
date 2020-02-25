@@ -104,11 +104,22 @@ describe('useFetchVerContents', () => {
     mockBackendAPI.fetchVerContents.mockResolvedValue(mockResp);
     mockAudioAPI.loadTrack.mockReturnValue(mockTrackAPI);
     // Render with empty state.
-    const { waitForNextUpdate, unmount, store } = utils.renderHookWithRedux(
+    const { unmount, store } = utils.renderHookWithRedux(
       () => useFetchVerContents(verId),
       {},
     );
-    await waitForNextUpdate();
+
+    // Here, `await waitForNextUpdate()` will never resolve.
+    // Doc says: "Returns a Promise that resolves the next time
+    // the hook renders, commonly when state is updated as the
+    // result of an asynchronous update."
+    // But in our code, if backendAPI.fetchVerContents throws,
+    // it's caught and error action is dispatched, so state should
+    // be considered being updated.
+
+    // For now, just sleep.
+    await utils.sleep(500);
+
     // Assert backend API is mocked.
     expect(mockBackendAPI.fetchVerContents.mock.calls.length).toBe(1);
     // Assert translation from response into state is done properly.
@@ -134,20 +145,11 @@ describe('useFetchVerContents', () => {
     });
     mockAudioAPI.loadTrack.mockReturnValue(mockTrackAPI);
     // Render with empty state.
-    const { waitForNextUpdate, unmount, store } = utils.renderHookWithRedux(
+    const { unmount, store } = utils.renderHookWithRedux(
       () => useFetchVerContents(verId),
       {},
     );
 
-    // Here, `await waitForNextUpdate()` will never resolve.
-    // Doc says: "Returns a Promise that resolves the next time
-    // the hook renders, commonly when state is updated as the
-    // result of an asynchronous update."
-    // But in our code, if backendAPI.fetchVerContents throws,
-    // it's caught and error action is dispatched, so state should
-    // be considered being updated.
-
-    // For now, just sleep.
     utils.sleep(500);
 
     // Assert backend API is mocked.

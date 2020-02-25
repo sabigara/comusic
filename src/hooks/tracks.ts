@@ -139,21 +139,15 @@ export const useRestartTrack = (trackId: string) => {
 export const useLoadActiveTake = () => {
   const dispatch = useDispatch();
   const audioAPI = useAudioAPI();
-  const trackById = useSelector((state: RootState) => state.tracks.byId);
-  const fileById = useSelector((state: RootState) => state.files.byId);
-  const takeById = useSelector((state: RootState) => state.takes.byId);
 
-  return async (trackId: string) => {
+  return async (trackId: string, url: string) => {
     dispatch(loadActiveTakeRequest(trackId));
     try {
-      const track = trackById[trackId];
-      const take = takeById[track.activeTake];
-      const file = fileById[take.fileId];
       const trackAPI = audioAPI.getTrack(trackId);
       if (!trackAPI) throw 'No track to add take';
       trackAPI.stop();
       trackAPI.clearBuffer();
-      await trackAPI.loadFile(file.url);
+      await trackAPI.loadFile(url);
       dispatch(loadActiveTakeSuccess(trackId));
     } catch (err) {
       dispatch(loadActiveTakeFailure(trackId, err.toString()));
@@ -164,11 +158,10 @@ export const useLoadActiveTake = () => {
 export const useChangeActiveTake = (trackId: string) => {
   const dispatch = useDispatch();
   const loadActiveTake = useLoadActiveTake();
-
   return useCallback(
-    async (takeId) => {
+    async (takeId: string, url: string) => {
       dispatch(changeActiveTake(trackId, takeId));
-      loadActiveTake(trackId);
+      loadActiveTake(trackId, url);
     },
     [loadActiveTake],
   );

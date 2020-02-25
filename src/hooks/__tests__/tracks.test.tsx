@@ -320,7 +320,7 @@ describe('useLoadActiveTake', () => {
       mockState,
     );
     await act(async () => {
-      await result.current(trackIdToLoad);
+      await result.current(trackIdToLoad, 'some-url');
     });
 
     expect(mockTrackAPI.loadFile.mock.calls[0][0]).toBe('some-url');

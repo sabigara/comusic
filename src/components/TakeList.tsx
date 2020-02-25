@@ -5,22 +5,29 @@ import Color from '../common/Color';
 import Label from '../atoms/Label';
 import More from '../atoms/More';
 import { useChangeActiveTake } from '../hooks/tracks';
-import { useTakes, useActiveTakeId } from '../hooks/selectors';
 import { useAddTake } from '../hooks/takes';
 import TakeCtxMenu from './TakeCtxMenu';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducers';
 
 type Props = {
   trackId: string;
 };
 
 const TakeList: React.FC<Props> = ({ trackId }) => {
-  const takes = useTakes(trackId);
-  const activeTakeId = useActiveTakeId(trackId);
+  const takes = useSelector((state: RootState) => {
+    return state.takes.allIds
+      .map((id) => state.takes.byId[id])
+      .filter((take) => take.trackId === trackId);
+  });
+  const files = useSelector((state: RootState) => state.files.byId);
+  const activeTakeId = useSelector((state: RootState) => {
+    return state.tracks.byId[trackId].activeTake;
+  });
   const [mouseOver, setMouseOver] = useState(false);
   const [mouseHoverId, setMouseHoverId] = useState<string | null>(null);
   const addTake = useAddTake();
   const changeActiveTake = useChangeActiveTake(trackId);
-
   const onFileSelected = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files || e.target.files.length === 0) {
@@ -40,7 +47,8 @@ const TakeList: React.FC<Props> = ({ trackId }) => {
   );
   const onTakeChange = (id: string) => {
     if (id !== activeTakeId) {
-      changeActiveTake(id);
+      const take = takes.filter((take) => take.id === id)[0];
+      changeActiveTake(id, files[take.fileId].url);
     }
   };
 
