@@ -31,11 +31,9 @@ function isFormData(arg?: JSONBody | FormData): arg is FormData {
   return arg?.append !== undefined;
 }
 
-const pat = /(?<=\/):.[^/]/g;
-
 function constructPath(path: Path): string {
   path.params?.map((param) => {
-    path.path = path.path.replace(pat, param);
+    path.path = path.path.replace(/(?<=\/):.[^/]/g, param);
   });
   const url = new URL(path.path);
   url.search = new URLSearchParams(path.queries).toString();
