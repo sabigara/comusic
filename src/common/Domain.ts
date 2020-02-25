@@ -24,6 +24,16 @@ type Domain = {
   updatedAt: string;
 };
 
+export type Song = {
+  studioId: string;
+  name: string;
+} & Domain;
+
+export type Version = {
+  songId: string;
+  name: string;
+} & Domain;
+
 export type Track = {
   versionId: string;
   activeTake: string;
