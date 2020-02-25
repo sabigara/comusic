@@ -1,4 +1,4 @@
-import { combineReducers, Reducer } from 'redux';
+import { combineReducers } from 'redux';
 
 import loading, { LoadingState } from './loading';
 import playback, { PlaybackState } from './playback';
@@ -14,7 +14,7 @@ export type RootState = {
   files: FileCombinedState;
 };
 
-const getReducers = (): Reducer => {
+const getReducers = () => {
   const reducers = combineReducers({
     loading,
     playback,

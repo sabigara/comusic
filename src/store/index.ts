@@ -13,11 +13,10 @@ const errReporter = (store: any) => (next: any) => (action: any) => {
   return next(action);
 };
 
-export default (initialState?: Record<string, any>): Store => {
-  const store = createStore(
+export default (initialState?: any) => {
+  return createStore(
     getReducers(),
     initialState || {},
     applyMiddleware(thunk, errReporter, logger),
   );
-  return store;
 };
