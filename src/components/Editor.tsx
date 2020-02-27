@@ -5,9 +5,11 @@ import { useFetchVerContents } from '../hooks/versions';
 import TrackList from './TrackList';
 import WaveformList from './WaveformList';
 
-const verId = '6f3291f3-ec12-409d-a3ba-09e813bd96ba';
+type Props = {
+  verId: string;
+};
 
-const Editor: React.FC = () => {
+const Editor: React.FC<Props> = ({ verId }) => {
   const refTrk = useRef<HTMLDivElement>(null);
   const refWav = useRef<HTMLDivElement>(null);
   // e: React.UIEvent<HTMLDivElement> doesn't supply e.scrollLeft
@@ -26,25 +28,25 @@ const Editor: React.FC = () => {
   const paddingBottom = 52;
 
   return (
-    <FixedHeightContainer>
+    <Container>
       <TrackList
-        paddingBottom={paddingBottom}
         verId={verId}
+        paddingBottom={paddingBottom}
         ref={refTrk}
         onScroll={onScrollTrk}
       />
       <WaveformList
+        verId={verId}
         paddingBottom={paddingBottom}
         ref={refWav}
         onScroll={onScrollWav}
       />
-    </FixedHeightContainer>
+    </Container>
   );
 };
 
-const FixedHeightContainer = styled.div`
-  height: calc(100vh - 70px);
-  overflow: hidden;
+const Container = styled.div`
+  flex-grow: 1;
   display: flex;
 `;
 

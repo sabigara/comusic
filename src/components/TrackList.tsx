@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react/display-name */
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import styled from 'styled-components';
 import { Scrollbar } from 'react-scrollbars-custom';
 
@@ -20,8 +20,10 @@ type Props = {
 const TrackList = React.forwardRef(
   ({ verId, paddingBottom, onScroll }: Props, ref: any) => {
     const tracks = useSelector((state: RootState) => {
-      return state.tracks.allIds;
-    });
+      return state.tracks.allIds.filter(
+        (id) => state.tracks.byId[id].versionId === verId,
+      );
+    }, shallowEqual);
     const addTrack = useAddTrack(verId);
 
     return (

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react/display-name */
 import React, { useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Scrollbar } from 'react-scrollbars-custom';
 
 import { PlaybackStatus } from '../common/Domain';
@@ -17,15 +17,18 @@ import Locator from './Locator';
 import Cursor from './Cursor';
 
 type Props = {
+  verId: string;
   paddingBottom: number;
   onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
 };
 
 const WaveformList = React.forwardRef(
-  ({ paddingBottom, onScroll }: Props, refWav: any) => {
+  ({ verId, paddingBottom, onScroll }: Props, refWav: any) => {
     const trackIds = useSelector((state: RootState) => {
-      return state.tracks.allIds;
-    });
+      return state.tracks.allIds.filter(
+        (id) => state.tracks.byId[id].versionId === verId,
+      );
+    }, shallowEqual);
 
     const playback = useSelector(
       (state: RootState) => state.playback,
