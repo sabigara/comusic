@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import { Take } from '../common/Domain';
+import { uniqueArray } from '../common/utils';
 import { ActionTypeName, ActionUnionType } from '../actions';
 
 export type TakeState = Take;
@@ -70,7 +71,7 @@ function byId(
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
     case ActionTypeName.Version.FETCH_VER_CONTENTS_SUCCESS:
-      return state.concat(action.payload.takes.allIds);
+      return uniqueArray(state.concat(action.payload.takes.allIds));
     case ActionTypeName.Take.ADD_TAKE_SUCCESS:
       return state.concat(action.payload.take.id);
     case ActionTypeName.Take.DEL_TAKE_SUCCESS:

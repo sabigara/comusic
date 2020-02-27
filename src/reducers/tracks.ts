@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import { Track, InstIcon, TrackParam } from '../common/Domain';
+import { uniqueArray } from '../common/utils';
 import { ActionUnionType, ActionTypeName } from '../actions';
 
 // State of track is the same as domain model.
@@ -109,7 +110,7 @@ function allIds(state: string[] = [], action: ActionUnionType): string[] {
     case ActionTypeName.Track.DEL_TRACK_SUCCESS:
       return state.filter((id) => id !== action.id);
     case ActionTypeName.Version.FETCH_VER_CONTENTS_SUCCESS:
-      return state.concat(action.payload.tracks.allIds);
+      return uniqueArray(state.concat(action.payload.tracks.allIds));
     default:
       return state;
   }
