@@ -1,12 +1,24 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Track } from '../../common/Domain';
 
-import BackendAPI, { FetchVerContentsResp, AddTakeResp } from '../interface';
+import BackendAPI, {
+  FetchStudioContentsResp,
+  FetchVerContentsResp,
+  AddTakeResp,
+} from '../interface';
 import Http from '../http';
 
 const http = new Http('http', 'localhost', 1323);
 
 export default class Default implements BackendAPI {
+  async fetchStudioContents(
+    studioId: string,
+  ): Promise<FetchStudioContentsResp> {
+    return http.get({
+      path: 'studios/:id/contents',
+      params: [studioId],
+    });
+  }
   async fetchVerContents(verId: string): Promise<FetchVerContentsResp> {
     return http.get({
       path: 'versions/:id/contents',

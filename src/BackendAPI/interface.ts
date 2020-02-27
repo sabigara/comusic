@@ -1,4 +1,15 @@
-import { Track, Take, File } from '../common/Domain';
+import { Song, Version, Track, Take, File } from '../common/Domain';
+
+export type FetchStudioContentsResp = {
+  songs: {
+    byId: { [id: string]: Song };
+    allIds: string[];
+  };
+  versions: {
+    byId: { [id: string]: Version };
+    allIds: string[];
+  };
+};
 
 export type FetchVerContentsResp = {
   tracks: {
@@ -21,6 +32,7 @@ export type AddTakeResp = {
 };
 
 export default interface BackendAPI {
+  fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
   addTrack(verId: string): Promise<Track>;
   delTrack(trackId: string): Promise<void>;
