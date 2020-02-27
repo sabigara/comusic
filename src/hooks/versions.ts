@@ -19,6 +19,7 @@ export const useFetchVerContents = (verId: string) => {
   const loadActiveTake = useLoadActiveTake();
 
   useEffect(() => {
+    if (verId === '') return;
     const trackAPIs: ITrack[] = [];
     const _ = async () => {
       dispatch(fetchVerContentsRequest(verId));
