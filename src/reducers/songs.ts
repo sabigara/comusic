@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 import { Song } from '../common/Domain';
+import { uniqueArray } from '../common/utils';
 import { ActionTypeName, ActionUnionType } from '../actions';
 
 export type SongState = Song;
@@ -29,6 +30,11 @@ type ByIdState = {
 
 function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
   switch (action.type) {
+    case ActionTypeName.Studio.FETCH_STUDIO_CONTENTS_SUCCESS:
+      return {
+        ...state,
+        ...action.payload.songs.byId,
+      };
     default:
       return state;
   }
@@ -36,6 +42,8 @@ function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
 
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
+    case ActionTypeName.Studio.FETCH_STUDIO_CONTENTS_SUCCESS:
+      return uniqueArray(state.concat(action.payload.songs.allIds));
     default:
       return state;
   }
