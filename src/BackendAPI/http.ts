@@ -45,8 +45,8 @@ export default class Http {
   private domain: string;
   private port: string;
 
-  constructor(schema: string, domain: string, port: number) {
-    this.schema = schema;
+  constructor(secure: boolean, domain: string, port: number) {
+    this.schema = secure ? 'https' : 'http';
     this.domain = domain;
     this.port = port.toString();
   }

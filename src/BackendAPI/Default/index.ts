@@ -5,10 +5,11 @@ import BackendAPI, {
   FetchStudioContentsResp,
   FetchVerContentsResp,
   AddTakeResp,
+  AddVersionResp,
 } from '../interface';
 import Http from '../http';
 
-const http = new Http('http', 'localhost', 1323);
+const http = new Http(false, 'localhost', 1323);
 
 export default class Default implements BackendAPI {
   async fetchStudioContents(
@@ -22,6 +23,23 @@ export default class Default implements BackendAPI {
   async fetchVerContents(verId: string): Promise<FetchVerContentsResp> {
     return http.get({
       path: 'versions/:id/contents',
+      params: [verId],
+    });
+  }
+
+  async addVersion(songId: string, name: string): Promise<AddVersionResp> {
+    return http.post(
+      {
+        path: 'versions',
+        queries: { song_id: songId },
+      },
+      { name: name },
+    );
+  }
+
+  async delVersion(verId: string): Promise<void> {
+    return http.delete({
+      path: 'versions/:id',
       params: [verId],
     });
   }

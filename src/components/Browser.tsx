@@ -16,6 +16,7 @@ import { RootState } from '../reducers';
 import { SongState } from '../reducers/songs';
 import { VersionState } from '../reducers/versions';
 import { useFetchStudioContents } from '../hooks/studios';
+import { useAddVersion, useDelVersion } from '../hooks/versions';
 
 type NodeData = SongState | VersionState;
 
@@ -28,13 +29,13 @@ type Node = {
 
 const studioId = 'ab18afe2-b0a2-4ec4-89ab-ae3570237a4e';
 
-type Props = {
-  setVerId: any;
-};
-
 function isFolder(node: Node) {
   return node.hasOwnProperty('children');
 }
+
+type Props = {
+  setVerId: any;
+};
 
 const Browser: React.FC<Props> = ({ setVerId }) => {
   const [collapsedNodes, setCollapsedNodes] = React.useState<string[]>([]);
@@ -69,9 +70,10 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     (prev, curr) =>
       prev.children.every((node, i) => node.module === curr.children[i].module),
   );
-  console.log(treeData);
 
   useFetchStudioContents(studioId);
+  const addVersion = useAddVersion();
+  const delVersion = useDelVersion();
 
   const handleNodeClick = (node: Node) => {
     if (isFolder(node)) {
@@ -86,7 +88,11 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
   };
 
   const handleAddVersion = (node: NodeData) => {
-    console.log(node.id);
+    addVersion(node.id, 'new ver.');
+  };
+
+  const handleDelVersion = (node: NodeData) => {
+    delVersion(node.id);
   };
 
   const renderNode = (node: any) => {
@@ -104,6 +110,17 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAddVersion(node.data);
+                }}
+              />
+            </React.Fragment>
+          )}
+          {!isFolder && (
+            <React.Fragment>
+              <Icon
+                icon={filePlus}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelVersion(node.data);
                 }}
               />
             </React.Fragment>

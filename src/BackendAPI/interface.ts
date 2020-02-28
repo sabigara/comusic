@@ -31,9 +31,13 @@ export type AddTakeResp = {
   file: File;
 };
 
+export type AddVersionResp = Version;
+
 export default interface BackendAPI {
   fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
+  addVersion(songId: string, verName: string): Promise<Version>;
+  delVersion(verId: string): Promise<void>;
   addTrack(verId: string): Promise<Track>;
   delTrack(trackId: string): Promise<void>;
   addTake(trackId: string, formData: FormData): Promise<AddTakeResp>;
