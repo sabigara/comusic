@@ -52,22 +52,8 @@ const backendAPI = new BackendAPI();
 // It will just return 401 so `after middleware` logs the user out.
 backendAPI.before(async (req) => {
   const idToken = await getIdToken();
-  const headers = new Headers();
-  Object.entries(req.headers).map(([key, val]) => {
-    headers.append(key, val);
-  });
-  headers.append('Authorization', 'Bearer ' + idToken);
-  const newReq = new Request(req.url, {
-    method: req.method,
-    headers: headers,
-    mode: req.mode,
-    credentials: req.credentials,
-    cache: req.cache,
-    redirect: req.redirect,
-    referrer: req.referrer,
-    body: req.body,
-  });
-  return newReq;
+  req.headers.set('Authorization', 'Bearer ' + idToken);
+  return req;
 });
 
 // Error handler.
