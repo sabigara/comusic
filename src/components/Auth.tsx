@@ -1,6 +1,7 @@
 import React from 'react';
 import firebaseMod from 'firebase';
 import * as firebaseui from 'firebaseui';
+import 'firebaseui/dist/firebaseui.css';
 
 import useFirebase from '../hooks/useFirebase';
 
