@@ -44,11 +44,23 @@ export default class Http {
   private schema: string;
   private domain: string;
   private port: string;
+  private beforeFuncs: ((
+    request: Request,
+  ) => Request | Promise<Request>)[] = [];
+  private afterFuncs: ((response: Response) => object | Promise<object>)[] = [];
 
   constructor(secure: boolean, domain: string, port: number) {
     this.schema = secure ? 'https' : 'http';
     this.domain = domain;
     this.port = port.toString();
+  }
+
+  public before(func: (request: Request) => Request | Promise<Request>) {
+    this.beforeFuncs.push(func);
+  }
+
+  public after(func: (response: Response) => any | Promise<any>) {
+    this.afterFuncs.push(func);
   }
 
   private baseURL() {
@@ -73,19 +85,28 @@ export default class Http {
       body = JSON.stringify(body);
       headers[CONTENT_TYPE] = APPLICATION_JSON;
     }
-    const resp = await fetch(pathStr, {
+    const request = new Request(pathStr, {
       method: method,
       headers: { ...this.defaultHeaders(), ...headers },
       body: body,
     });
-    if (!resp.ok) {
-      const respBody = await resp.text();
-      throw new Error(`Non 2xx response for request: ${method} ${pathStr}\n
-response: ${resp.status} ${respBody}`);
+    // Apply beforeFuncs to modify request and do any other stuff.
+    // Funcs could be either sync and async; if sync, await is just ignored.
+    let reducedReq = request;
+    for (const f of this.beforeFuncs) {
+      reducedReq = await f(reducedReq);
     }
-    if (resp.headers.get(CONTENT_TYPE)?.split(';')[0] === APPLICATION_JSON) {
-      return resp.json();
+
+    // Actually send request.
+    const resp = await fetch(reducedReq);
+
+    // Apply afterFuncs. Response could be any, to allow middleware
+    // to convert them into any form including json().
+    let reducedResp: any = resp;
+    for (const f of this.afterFuncs) {
+      reducedResp = await f(reducedResp);
     }
+    return reducedResp;
   }
 
   public get(path: Path, headers: Headers = {}) {

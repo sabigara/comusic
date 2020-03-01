@@ -24,6 +24,11 @@ type Domain = {
   updatedAt: string;
 };
 
+export type Profile = {
+  nickname: string;
+  bio: string;
+};
+
 export type Song = {
   studioId: string;
   name: string;

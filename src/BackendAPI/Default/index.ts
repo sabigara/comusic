@@ -6,12 +6,27 @@ import BackendAPI, {
   FetchVerContentsResp,
   AddTakeResp,
   AddVersionResp,
+  FetchProfileResp,
 } from '../interface';
 import Http from '../http';
 
 const http = new Http(false, 'localhost', 1323);
 
 export default class Default implements BackendAPI {
+  async fetchProfile(): Promise<FetchProfileResp> {
+    return http.get({
+      path: 'profile',
+    });
+  }
+
+  public before(func: (request: Request) => Request | Promise<Request>) {
+    http.before(func);
+  }
+
+  public after(func: (response: Response) => any | Promise<any>) {
+    http.after(func);
+  }
+
   async fetchStudioContents(
     studioId: string,
   ): Promise<FetchStudioContentsResp> {

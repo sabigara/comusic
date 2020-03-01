@@ -1,4 +1,6 @@
-import { Song, Version, Track, Take, File } from '../common/Domain';
+import { Profile, Song, Version, Track, Take, File } from '../common/Domain';
+
+export type FetchProfileResp = Profile;
 
 export type FetchStudioContentsResp = {
   songs: {
@@ -34,6 +36,9 @@ export type AddTakeResp = {
 export type AddVersionResp = Version;
 
 export default interface BackendAPI {
+  before(func: (request: Request) => Request | Promise<Request>): void;
+  after(func: (response: Response) => any | Promise<any>): void;
+  fetchProfile(): Promise<FetchProfileResp>;
   fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
   addVersion(songId: string, verName: string): Promise<Version>;

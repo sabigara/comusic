@@ -27,7 +27,7 @@ type Node = {
   data: NodeData;
 };
 
-const studioId = 'ab18afe2-b0a2-4ec4-89ab-ae3570237a4e';
+const studioId = '0a39c182-b9ad-4603-9c02-25a858087e2f';
 
 function isFolder(node: Node) {
   return node.hasOwnProperty('children');
