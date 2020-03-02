@@ -7,6 +7,7 @@ import 'firebase/auth';
 
 import WebAudioAPI from './AudioAPI/WebAudioAPI';
 import BackendAPI from './BackendAPI/Default';
+import { setBearerToken } from './BackendAPI/middleware';
 import initStore from './store';
 import Main from './components/Main';
 import Auth from './components/Auth';
@@ -24,7 +25,7 @@ const firebase = fbApp.initializeApp({
 });
 
 const getIdToken = () => {
-  return new Promise((resolve, _) => {
+  return new Promise<string>((resolve, _) => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       unsubscribe();
       if (user) {
@@ -33,31 +34,17 @@ const getIdToken = () => {
             resolve(idToken);
           },
           (err) => {
-            resolve(null);
+            resolve('');
           },
         );
       } else {
-        resolve(null);
+        resolve('');
       }
     });
   });
 };
 
-const backendAPI = new BackendAPI();
-
-// HTTP Middleware
-
-// Retrieved user's credential from firebase, and append it to Authorization header.
-// Even if an error occurs while getting token, ignore it and send empty string.
-// It will just return 401 so `after middleware` logs the user out.
-backendAPI.before(async (req) => {
-  const idToken = await getIdToken();
-  req.headers.set('Authorization', 'Bearer ' + idToken);
-  return req;
-});
-
-// Error handler.
-backendAPI.after(async (resp) => {
+const handleErr = async (resp: Response) => {
   if (!resp.ok) {
     // Check if idToken appended to Authorization header is valid.
     // If not, jump to login form.
@@ -68,14 +55,14 @@ backendAPI.after(async (resp) => {
     throw new Error(`Non 2xx response: ${resp.status} ${respBody}`);
   }
   return resp;
-});
+};
 
-// Read response as json.
-backendAPI.after(async (resp) => {
-  if (resp.headers.get('Content-Type')?.split(';')[0] === 'application/json') {
-    return resp.json();
-  }
-});
+const backendAPI = new BackendAPI();
+
+// HTTP Middleware
+
+backendAPI.beforeRequest(setBearerToken(getIdToken));
+backendAPI.afterResponse(handleErr);
 
 // Inject dependencies (Delivered by hooks API).
 export const webAudioAPICtx = createContext(new WebAudioAPI());
@@ -87,9 +74,6 @@ const App: React.FC = () => {
     <Provider store={store}>
       <Router>
         <Switch>
-          <Route exact path="/">
-            <Main />
-          </Route>
           <Route path="/login">
             <Auth />
           </Route>

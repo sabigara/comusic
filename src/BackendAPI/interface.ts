@@ -36,8 +36,10 @@ export type AddTakeResp = {
 export type AddVersionResp = Version;
 
 export default interface BackendAPI {
-  before(func: (request: Request) => Request | Promise<Request>): void;
-  after(func: (response: Response) => any | Promise<any>): void;
+  beforeRequest(func: (request: Request) => Request | Promise<Request>): void;
+  afterResponse(
+    func: (response: Response) => Response | Promise<Response>,
+  ): void;
   fetchProfile(): Promise<FetchProfileResp>;
   fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;

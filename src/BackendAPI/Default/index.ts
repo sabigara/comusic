@@ -19,12 +19,14 @@ export default class Default implements BackendAPI {
     });
   }
 
-  public before(func: (request: Request) => Request | Promise<Request>) {
-    http.before(func);
+  public beforeRequest(func: (request: Request) => Request | Promise<Request>) {
+    http.beforeRequest(func);
   }
 
-  public after(func: (response: Response) => any | Promise<any>) {
-    http.after(func);
+  public afterResponse(
+    func: (response: Response) => Response | Promise<Response>,
+  ) {
+    http.afterResponse(func);
   }
 
   async fetchStudioContents(

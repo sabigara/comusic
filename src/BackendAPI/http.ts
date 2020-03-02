@@ -1,3 +1,5 @@
+// Wrapper class of fetch, for convenient request to the backend.
+
 enum HttpMethod {
   GET = 'GET',
   POST = 'POST',
@@ -47,7 +49,9 @@ export default class Http {
   private beforeFuncs: ((
     request: Request,
   ) => Request | Promise<Request>)[] = [];
-  private afterFuncs: ((response: Response) => object | Promise<object>)[] = [];
+  private afterFuncs: ((
+    response: Response,
+  ) => Response | Promise<Response>)[] = [];
 
   constructor(secure: boolean, domain: string, port: number) {
     this.schema = secure ? 'https' : 'http';
@@ -55,11 +59,13 @@ export default class Http {
     this.port = port.toString();
   }
 
-  public before(func: (request: Request) => Request | Promise<Request>) {
+  public beforeRequest(func: (request: Request) => Request | Promise<Request>) {
     this.beforeFuncs.push(func);
   }
 
-  public after(func: (response: Response) => any | Promise<any>) {
+  public afterResponse(
+    func: (response: Response) => Response | Promise<Response>,
+  ) {
     this.afterFuncs.push(func);
   }
 
@@ -100,13 +106,20 @@ export default class Http {
     // Actually send request.
     const resp = await fetch(reducedReq);
 
-    // Apply afterFuncs. Response could be any, to allow middleware
-    // to convert them into any form including json().
-    let reducedResp: any = resp;
+    // Apply afterFuncs.
+    let reducedResp = resp;
     for (const f of this.afterFuncs) {
       reducedResp = await f(reducedResp);
     }
-    return reducedResp;
+
+    // Convert to json if content-type is matched, else create object with
+    // `data` property whose value is plain string.
+    if (resp.headers.get(CONTENT_TYPE)?.split(';')[0] === APPLICATION_JSON) {
+      return reducedResp.json();
+    } else {
+      const data = await reducedResp.text();
+      return { data };
+    }
   }
 
   public get(path: Path, headers: Headers = {}) {
