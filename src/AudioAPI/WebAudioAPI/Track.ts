@@ -8,13 +8,11 @@ export class Track implements ITrack {
   public duration: number;
   public isPlaying: boolean;
   private ac: AudioContext;
-  private isMuted: boolean;
   private masterGain: GainNode;
   private masterAnalyzer: AnalyserNode;
   private gain: GainNode;
   private gainValue: number;
   private pan: StereoPannerNode;
-  private panValue: number;
   private analyzer: AnalyserNode;
   private tmpArray: Uint8Array | null = null;
   private buffer: AudioBuffer | null = null;
@@ -33,11 +31,9 @@ export class Track implements ITrack {
     this.gain = this.ac.createGain();
     this.pan = this.ac.createStereoPanner();
     this.analyzer = this.ac.createAnalyser();
-    this.isMuted = false;
     this.masterGain = masterGain;
     this.masterAnalyzer = masterAnalyzer;
     this.gainValue = 0;
-    this.panValue = 0;
     this.tmpArray = null;
   }
 
@@ -132,19 +128,16 @@ export class Track implements ITrack {
 
   public setPan(value: number): void {
     if (!this.pan) return;
-    this.panValue = value;
     this.pan.pan.value = value;
   }
 
   public mute(): void {
     if (!this.gain) return;
-    this.isMuted = true;
     this.gain.gain.value = 0;
   }
 
   public unMute(): void {
     if (!this.gain) return;
-    this.isMuted = false;
     this.gain.gain.value = this.gainValue;
   }
 
