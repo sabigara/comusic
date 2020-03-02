@@ -1,3 +1,5 @@
+export type LoadFunc = (src: string, ac: AudioContext) => Promise<AudioBuffer>;
+
 export interface ITrack {
   readonly duration: number;
   readonly isPlaying: boolean;

@@ -64,9 +64,18 @@ const backendAPI = new BackendAPI();
 backendAPI.beforeRequest(setBearerToken(getIdToken));
 backendAPI.afterResponse(handleErr);
 
+const webAudioAPI = new WebAudioAPI(async (src, ac) => {
+  const idToken = await getIdToken();
+  const resp = await fetch(src, {
+    headers: { Authorization: 'Bearer ' + idToken },
+  });
+  const arrayBuffer = await resp.arrayBuffer();
+  return ac.decodeAudioData(arrayBuffer);
+});
+
 // Inject dependencies (Delivered by hooks API).
-export const webAudioAPICtx = createContext(new WebAudioAPI());
 export const backendAPICtx = createContext(backendAPI);
+export const webAudioAPICtx = createContext(webAudioAPI);
 export const firebaseCtx = createContext(firebase);
 
 const App: React.FC = () => {

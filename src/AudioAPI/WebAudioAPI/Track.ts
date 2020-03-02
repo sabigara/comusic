@@ -1,7 +1,6 @@
 import extractPeaks from '../../common/extractPeaks';
 
-import { ITrack } from '../interface';
-import LoaderFactory from './loader/LoaderFactory';
+import { ITrack, LoadFunc } from '../interface';
 
 export class Track implements ITrack {
   public id: string;
@@ -17,12 +16,14 @@ export class Track implements ITrack {
   private tmpArray: Uint8Array | null = null;
   private buffer: AudioBuffer | null = null;
   private source: AudioBufferSourceNode | null = null;
+  private load: LoadFunc;
 
   constructor(
     id: string,
     ac: AudioContext,
     masterGain: GainNode,
     masterAnalyzer: AnalyserNode,
+    load: LoadFunc,
   ) {
     this.id = id;
     this.duration = 0;
@@ -35,11 +36,11 @@ export class Track implements ITrack {
     this.masterAnalyzer = masterAnalyzer;
     this.gainValue = 0;
     this.tmpArray = null;
+    this.load = load;
   }
 
   public async loadFile(url: string): Promise<void> {
-    const loader = LoaderFactory.createLoader(url, this.ac);
-    this.buffer = await loader.load();
+    this.buffer = await this.load(url, this.ac);
     this.duration = this.buffer ? this.buffer.duration : 0;
   }
 

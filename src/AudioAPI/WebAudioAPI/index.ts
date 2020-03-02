@@ -1,4 +1,4 @@
-import IAudioAPI from '../interface';
+import IAudioAPI, { LoadFunc } from '../interface';
 import { Track } from './Track';
 
 type TrackMap = {
@@ -15,8 +15,9 @@ export default class implements IAudioAPI {
   private masterAnalyzer: AnalyserNode;
   private masterTmpArray: Uint8Array;
   private offset: number;
+  private load: LoadFunc;
 
-  constructor() {
+  constructor(load: LoadFunc) {
     this.ac = new AudioContext();
     this.masterGain = this.ac.createGain();
     this.masterAnalyzer = this.ac.createAnalyser();
@@ -28,6 +29,7 @@ export default class implements IAudioAPI {
     this.sampleRate = this.ac.sampleRate;
     this.startTime = 0;
     this.offset = 0;
+    this.load = load;
   }
 
   public get secondsElapsed() {
@@ -35,7 +37,13 @@ export default class implements IAudioAPI {
   }
 
   loadTrack(id: string) {
-    const track = new Track(id, this.ac, this.masterGain, this.masterAnalyzer);
+    const track = new Track(
+      id,
+      this.ac,
+      this.masterGain,
+      this.masterAnalyzer,
+      this.load,
+    );
     this.tracks[id] = track;
     return track;
   }
