@@ -93,6 +93,9 @@ const App: React.FC = () => {
           <Route path="/login">
             <Auth />
           </Route>
+          <Route path="/">
+            <Main />
+          </Route>
         </Switch>
       </Router>
     </Provider>
