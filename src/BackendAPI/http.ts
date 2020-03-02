@@ -79,7 +79,7 @@ export default class Http {
     };
   }
 
-  private async request(
+  private async requestResp(
     method: HttpMethod,
     path: Path,
     headers: Headers = {},
@@ -111,19 +111,28 @@ export default class Http {
     for (const f of this.afterFuncs) {
       reducedResp = await f(reducedResp);
     }
+    return reducedResp;
+  }
 
+  private async requestContent(
+    method: HttpMethod,
+    path: Path,
+    headers: Headers = {},
+    body?: string | JSONBody | FormData,
+  ) {
+    const resp = await this.requestResp(method, path, headers, body);
     // Convert to json if content-type is matched, else create object with
     // `data` property whose value is plain string.
     if (resp.headers.get(CONTENT_TYPE)?.split(';')[0] === APPLICATION_JSON) {
-      return reducedResp.json();
+      return resp.json();
     } else {
-      const data = await reducedResp.text();
+      const data = await resp.text();
       return { data };
     }
   }
 
   public get(path: Path, headers: Headers = {}) {
-    return this.request(HttpMethod.GET, path, headers);
+    return this.requestContent(HttpMethod.GET, path, headers);
   }
 
   public post(
@@ -131,7 +140,7 @@ export default class Http {
     body: JSONBody | FormData = {},
     headers: Headers = {},
   ) {
-    return this.request(HttpMethod.POST, path, headers, body);
+    return this.requestContent(HttpMethod.POST, path, headers, body);
   }
 
   public put(
@@ -139,7 +148,7 @@ export default class Http {
     body: JSONBody | FormData = {},
     headers: Headers = {},
   ) {
-    return this.request(HttpMethod.PUT, path, headers, body);
+    return this.requestContent(HttpMethod.PUT, path, headers, body);
   }
 
   public patch(
@@ -147,10 +156,10 @@ export default class Http {
     body: JSONBody | FormData = {},
     headers: Headers = {},
   ) {
-    return this.request(HttpMethod.PATCH, path, headers, body);
+    return this.requestContent(HttpMethod.PATCH, path, headers, body);
   }
 
   public delete(path: Path, headers: Headers = {}) {
-    return this.request(HttpMethod.DELETE, path, headers);
+    return this.requestContent(HttpMethod.DELETE, path, headers);
   }
 }
