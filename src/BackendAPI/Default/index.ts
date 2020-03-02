@@ -10,42 +10,46 @@ import BackendAPI, {
 } from '../interface';
 import Http from '../http';
 
-const http = new Http(false, 'localhost', 1323);
-
 export default class Default implements BackendAPI {
+  private client: Http;
+
+  constructor(secure: boolean, host: string, port: number) {
+    this.client = new Http(secure, host, port);
+  }
+
   async fetchProfile(): Promise<FetchProfileResp> {
-    return http.get({
+    return this.client.get({
       path: 'profile',
     });
   }
 
   public beforeRequest(func: (request: Request) => Request | Promise<Request>) {
-    http.beforeRequest(func);
+    this.client.beforeRequest(func);
   }
 
   public afterResponse(
     func: (response: Response) => Response | Promise<Response>,
   ) {
-    http.afterResponse(func);
+    this.client.afterResponse(func);
   }
 
   async fetchStudioContents(
     studioId: string,
   ): Promise<FetchStudioContentsResp> {
-    return http.get({
+    return this.client.get({
       path: 'studios/:id/contents',
       params: [studioId],
     });
   }
   async fetchVerContents(verId: string): Promise<FetchVerContentsResp> {
-    return http.get({
+    return this.client.get({
       path: 'versions/:id/contents',
       params: [verId],
     });
   }
 
   async addVersion(songId: string, name: string): Promise<AddVersionResp> {
-    return http.post(
+    return this.client.post(
       {
         path: 'versions',
         queries: { song_id: songId },
@@ -55,14 +59,14 @@ export default class Default implements BackendAPI {
   }
 
   async delVersion(verId: string): Promise<void> {
-    return http.delete({
+    return this.client.delete({
       path: 'versions/:id',
       params: [verId],
     });
   }
 
   async addTrack(verId: string): Promise<Track> {
-    return http.post(
+    return this.client.post(
       {
         path: 'tracks',
         queries: { version_id: verId },
@@ -72,20 +76,20 @@ export default class Default implements BackendAPI {
   }
 
   async delTrack(trackId: string): Promise<void> {
-    return http.delete({
+    return this.client.delete({
       path: 'tracks/:id',
       params: [trackId],
     });
   }
 
   async addTake(trackId: string, formData: FormData): Promise<AddTakeResp> {
-    return http.post(
+    return this.client.post(
       { path: 'takes', queries: { track_id: trackId } },
       formData,
     );
   }
 
   async delTake(takeId: string): Promise<void> {
-    return http.delete({ path: 'takes/:id', params: [takeId] });
+    return this.client.delete({ path: 'takes/:id', params: [takeId] });
   }
 }

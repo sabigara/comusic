@@ -57,7 +57,7 @@ const handleErr = async (resp: Response) => {
   return resp;
 };
 
-const backendAPI = new BackendAPI();
+const backendAPI = new BackendAPI(false, 'localhost', 1323);
 
 // HTTP Middleware
 
