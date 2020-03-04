@@ -17,6 +17,23 @@ export default class Default implements BackendAPI {
     this.client = new Http(secure, host, port);
   }
 
+  async notifyNewUser(
+    userId: string,
+    nickname: string,
+    email: string,
+  ): Promise<void> {
+    return this.client.post(
+      {
+        path: 'hooks/new-user',
+      },
+      {
+        email: email,
+        nickname: nickname,
+        userId: userId,
+      },
+    );
+  }
+
   async fetchProfile(): Promise<FetchProfileResp> {
     return this.client.get({
       path: 'profile',

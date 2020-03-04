@@ -40,6 +40,7 @@ export default interface BackendAPI {
   afterResponse(
     func: (response: Response) => Response | Promise<Response>,
   ): void;
+  notifyNewUser(userId: string, nickname: string, mail: string): Promise<void>;
   fetchProfile(): Promise<FetchProfileResp>;
   fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;

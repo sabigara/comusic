@@ -4,13 +4,22 @@ import * as firebaseui from 'firebaseui';
 import 'firebaseui/dist/firebaseui.css';
 
 import useFirebase from '../hooks/useFirebase';
+import useBackendAPI from '../hooks/useBackendAPI';
 
 const Auth: React.FC = () => {
   const firebase = useFirebase();
+  const backendAPI = useBackendAPI();
 
-  const uiConfig = {
+  const uiConfig: firebaseui.auth.Config = {
     callbacks: {
-      signInSuccessWithAuthResult: function() {
+      signInSuccessWithAuthResult: (result) => {
+        if (result.additionalUserInfo.isNewUser) {
+          backendAPI.notifyNewUser(
+            result.user.uid,
+            result.user.displayName,
+            result.user.email,
+          );
+        }
         return true;
       },
       uiShown: function() {
