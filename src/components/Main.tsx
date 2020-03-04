@@ -20,7 +20,7 @@ const Main: React.FC = () => {
       setAuthed(true);
     };
     _();
-  });
+  }, []);
   return isAuthed ? (
     <div>
       <KeyBindings />
