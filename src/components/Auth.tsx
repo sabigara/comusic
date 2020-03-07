@@ -3,7 +3,7 @@ import firebaseMod from 'firebase';
 import * as firebaseui from 'firebaseui';
 import 'firebaseui/dist/firebaseui.css';
 
-import useFirebase from '../hooks/useFirebase';
+import { useFirebase } from '../hooks/firebase';
 import useBackendAPI from '../hooks/useBackendAPI';
 
 const Auth: React.FC = () => {

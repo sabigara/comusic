@@ -2,6 +2,7 @@
 import { Track } from '../../common/Domain';
 
 import BackendAPI, {
+  FetchStudiosResp,
   FetchStudioContentsResp,
   FetchVerContentsResp,
   AddTakeResp,
@@ -50,6 +51,13 @@ export default class Default implements BackendAPI {
     this.client.afterResponse(func);
   }
 
+  async fetchStudios(memberId: string): Promise<FetchStudiosResp> {
+    return this.client.get({
+      path: 'studios',
+      queries: { member_id: memberId },
+    });
+  }
+
   async fetchStudioContents(
     studioId: string,
   ): Promise<FetchStudioContentsResp> {
@@ -58,6 +66,7 @@ export default class Default implements BackendAPI {
       params: [studioId],
     });
   }
+
   async fetchVerContents(verId: string): Promise<FetchVerContentsResp> {
     return this.client.get({
       path: 'versions/:id/contents',

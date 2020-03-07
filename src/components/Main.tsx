@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+
 import KeyBindings from './KeyBindings';
 import ToolBar from './ToolBar';
 import Browser from './Browser';
@@ -12,8 +13,9 @@ const Main: React.FC = () => {
   const backendAPI = useBackendAPI();
   useEffect(() => {
     const _ = async () => {
+      // Try to fetch current user's profile to verify token.
       try {
-        const profile = await backendAPI.fetchProfile();
+        await backendAPI.fetchProfile();
       } catch {
         return;
       }
@@ -21,6 +23,7 @@ const Main: React.FC = () => {
     };
     _();
   }, []);
+
   return isAuthed ? (
     <div>
       <KeyBindings />

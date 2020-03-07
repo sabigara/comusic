@@ -13,24 +13,35 @@ import styled from 'styled-components';
 import Color from '../common/Color';
 import { styledScrollRenderer } from '../common/utils';
 import { RootState } from '../reducers';
+import { StudioState } from '../reducers/studios';
 import { SongState } from '../reducers/songs';
 import { VersionState } from '../reducers/versions';
-import { useFetchStudioContents } from '../hooks/studios';
+import { useCurrentUser } from '../hooks/firebase';
+import { useFetchStudios } from '../hooks/studios';
 import { useAddVersion, useDelVersion } from '../hooks/versions';
 
-type NodeData = SongState | VersionState;
+type NodeData = StudioState | SongState | VersionState;
 
 type Node = {
   module: string;
   collapsed: boolean;
-  children?: Node[];
+  children: Node[];
   data: NodeData;
 };
 
-const studioId = '0a39c182-b9ad-4603-9c02-25a858087e2f';
-
 function isFolder(node: Node) {
-  return node.hasOwnProperty('children');
+  return node.children.length > 0;
+}
+
+// Recursively compare every node's id.
+// NOTE: Somehow, annotating `prev: Node, curr: Node` leads to compile error of Typescript.
+function nodeDeepEquals(prev: any, curr: any): boolean {
+  return (
+    prev.data.id === curr.data.id &&
+    prev.children.every((child: any, i: number) =>
+      nodeDeepEquals(child, curr.children[i]),
+    )
+  );
 }
 
 type Props = {
@@ -39,39 +50,51 @@ type Props = {
 
 const Browser: React.FC<Props> = ({ setVerId }) => {
   const [collapsedNodes, setCollapsedNodes] = React.useState<string[]>([]);
-  const treeData = useSelector(
-    (state: RootState) => {
-      const songs: Node[] = state.songs.allIds.map((id) => {
-        const song = state.songs.byId[id];
-        const children: Node[] = state.versions.allIds
-          .map((id) => {
-            const ver = state.versions.byId[id];
-            return {
-              module: ver.name,
-              collapsed: collapsedNodes.includes(ver.id),
-              data: ver,
-            };
-          })
-          .filter((ver) => ver.data.songId === song.id);
-        return {
-          module: song.name,
-          collapsed: collapsedNodes.includes(song.id),
-          children: children,
-          data: song,
-        };
-      });
+  const user = useCurrentUser();
+  const treeData = useSelector((state: RootState) => {
+    const studios: Node[] = state.studios.allIds.map((id) => {
+      const studio = state.studios.byId[id];
+      const songs: Node[] = state.songs.allIds
+        .map((id) => {
+          const song = state.songs.byId[id];
+          const versions: Node[] = state.versions.allIds
+            .map((id) => {
+              const ver = state.versions.byId[id];
+              return {
+                module: ver.name,
+                children: [],
+                // Doc says "selector function should be pure".
+                // Maybe better not to rely on local state?
+                // https://react-redux.js.org/api/hooks#useselector
+                collapsed: collapsedNodes.includes(ver.id),
+                data: ver,
+              };
+            })
+            .filter((ver) => ver.data.songId === song.id);
+          return {
+            module: song.name,
+            collapsed: collapsedNodes.includes(song.id),
+            children: versions,
+            data: song,
+          };
+        })
+        .filter((song) => song.data.studioId === studio.id);
       return {
-        module: 'root',
-        collapsed: false,
+        module: studio.name,
+        collapsed: collapsedNodes.includes(studio.id),
         children: songs,
-        data: { id: 'root' },
+        data: studio,
       };
-    },
-    (prev, curr) =>
-      prev.children.every((node, i) => node.module === curr.children[i].module),
-  );
+    });
+    return {
+      module: 'root',
+      collapsed: false,
+      children: studios,
+      data: { id: 'root' },
+    };
+  }, nodeDeepEquals);
 
-  useFetchStudioContents(studioId);
+  useFetchStudios(user.id);
   const addVersion = useAddVersion();
   const delVersion = useDelVersion();
 

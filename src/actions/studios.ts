@@ -1,13 +1,33 @@
-import { Song, Version } from '../common/Domain';
+import { Studio, Song, Version } from '../common/Domain';
 
+const FETCH_STUDIOS_REQUEST = 'FETCH_STUDIOS_REQUEST' as const;
+const FETCH_STUDIOS_SUCCESS = 'FETCH_STUDIOS_SUCCESS' as const;
+const FETCH_STUDIOS_FAILURE = 'FETCH_STUDIOS_FAILURE' as const;
 const FETCH_STUDIO_CONTENTS_REQUEST = 'FETCH_STUDIO_CONTENTS_REQUEST' as const;
 const FETCH_STUDIO_CONTENTS_SUCCESS = 'FETCH_STUDIO_CONTENTS_SUCCESS' as const;
 const FETCH_STUDIO_CONTENTS_FAILURE = 'FETCH_STUDIO_CONTENTS_FAILURE' as const;
 
 export const StudioActionTypeName = {
+  FETCH_STUDIOS_REQUEST,
+  FETCH_STUDIOS_SUCCESS,
+  FETCH_STUDIOS_FAILURE,
   FETCH_STUDIO_CONTENTS_REQUEST,
   FETCH_STUDIO_CONTENTS_SUCCESS,
   FETCH_STUDIO_CONTENTS_FAILURE,
+};
+
+export const fetchStudiosSuccess = (
+  byId: { [id: string]: Studio },
+  allIds: string[],
+) => {
+  return {
+    type: FETCH_STUDIOS_SUCCESS,
+    id: '',
+    payload: {
+      byId: byId,
+      allIds: allIds,
+    },
+  };
 };
 
 export const fetchStudioContentsSuccess = (
@@ -33,6 +53,6 @@ export const fetchStudioContentsSuccess = (
   };
 };
 
-export type StudioActionUnionType = ReturnType<
-  typeof fetchStudioContentsSuccess
->;
+export type StudioActionUnionType =
+  | ReturnType<typeof fetchStudiosSuccess>
+  | ReturnType<typeof fetchStudioContentsSuccess>;

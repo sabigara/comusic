@@ -18,6 +18,10 @@ export enum TrackParam {
   isSoloed = 'isSoloed',
 }
 
+export type User = {
+  id: string;
+};
+
 type Domain = {
   id: string;
   createdAt: string;
@@ -25,9 +29,15 @@ type Domain = {
 };
 
 export type Profile = {
+  userId: string;
   nickname: string;
   bio: string;
-};
+} & Domain;
+
+export type Studio = {
+  ownerId: string;
+  name: string;
+} & Domain;
 
 export type Song = {
   studioId: string;

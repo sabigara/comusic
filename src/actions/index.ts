@@ -3,6 +3,7 @@ import { TakeActionTypeName, TakeActionUnionType } from './takes';
 import { TrackActionTypeName, TrackActionUnionType } from './tracks';
 import { VersionActionTypeName, VersionActionUnionType } from './versions';
 import { StudioActionTypeName, StudioActionUnionType } from './studios';
+import { ProfileActionTypeName, ProfileActionUnionType } from './profiles';
 import { PlaybackActionTypeName, PlaybackActionUnionType } from './playback';
 
 export const ActionTypeName = {
@@ -11,6 +12,7 @@ export const ActionTypeName = {
   Track: TrackActionTypeName,
   Version: VersionActionTypeName,
   Studio: StudioActionTypeName,
+  Profile: ProfileActionTypeName,
   Playback: PlaybackActionTypeName,
 };
 
@@ -20,6 +22,7 @@ export type ActionUnionType =
   | TrackActionUnionType
   | VersionActionUnionType
   | StudioActionUnionType
+  | ProfileActionUnionType
   | PlaybackActionUnionType;
 
 export const createAction = (type: string, id: string, err?: string) => {
