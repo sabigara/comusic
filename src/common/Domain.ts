@@ -20,6 +20,7 @@ export enum TrackParam {
 
 export type User = {
   id: string;
+  email: string;
 };
 
 type Domain = {

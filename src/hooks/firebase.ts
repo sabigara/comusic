@@ -17,5 +17,6 @@ export const useCurrentUser = (): User => {
   }
   return {
     id: user.uid,
+    email: user.email ? user.email : '',
   };
 };
