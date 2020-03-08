@@ -13,9 +13,6 @@ import styled from 'styled-components';
 import Color from '../common/Color';
 import { styledScrollRenderer } from '../common/utils';
 import { RootState } from '../reducers';
-import { StudioState } from '../reducers/studios';
-import { SongState } from '../reducers/songs';
-import { VersionState } from '../reducers/versions';
 import { useCurrentUser } from '../hooks/firebase';
 import { useFetchStudios } from '../hooks/studios';
 import { useAddVersion, useDelVersion } from '../hooks/versions';
@@ -27,7 +24,9 @@ enum NodeKind {
   Version,
 }
 
-type NodeData = StudioState | SongState | VersionState;
+interface NodeData {
+  id: string;
+}
 
 type Node = {
   module: string;
@@ -42,13 +41,10 @@ function isFolder(node: Node) {
 }
 
 // Recursively compare every node's id.
-// NOTE: Somehow, annotating `prev: Node, curr: Node` leads to compile error of Typescript.
-function nodeDeepEquals(prev: any, curr: any): boolean {
+function nodeDeepEquals(prev: Node, curr: Node): boolean {
   return (
     prev.data.id === curr.data.id &&
-    prev.children.every((child: any, i: number) =>
-      nodeDeepEquals(child, curr.children[i]),
-    )
+    prev.children.every((child, i) => nodeDeepEquals(child, curr.children[i]))
   );
 }
 
