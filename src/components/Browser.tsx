@@ -20,10 +20,18 @@ import { useCurrentUser } from '../hooks/firebase';
 import { useFetchStudios } from '../hooks/studios';
 import { useAddVersion, useDelVersion } from '../hooks/versions';
 
+enum NodeKind {
+  Root,
+  Studio,
+  Song,
+  Version,
+}
+
 type NodeData = StudioState | SongState | VersionState;
 
 type Node = {
   module: string;
+  kind: NodeKind;
   collapsed: boolean;
   children: Node[];
   data: NodeData;
@@ -62,6 +70,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
               const ver = state.versions.byId[id];
               return {
                 module: ver.name,
+                kind: NodeKind.Version,
                 children: [],
                 // Doc says "selector function should be pure".
                 // Maybe better not to rely on local state?
@@ -73,6 +82,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
             .filter((ver) => ver.data.songId === song.id);
           return {
             module: song.name,
+            kind: NodeKind.Song,
             collapsed: collapsedNodes.includes(song.id),
             children: versions,
             data: song,
@@ -81,6 +91,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
         .filter((song) => song.data.studioId === studio.id);
       return {
         module: studio.name,
+        kind: NodeKind.Studio,
         collapsed: collapsedNodes.includes(studio.id),
         children: songs,
         data: studio,
@@ -88,6 +99,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     });
     return {
       module: 'root',
+      kind: NodeKind.Root,
       collapsed: false,
       children: studios,
       data: { id: 'root' },
