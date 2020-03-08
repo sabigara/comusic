@@ -41,6 +41,8 @@ function isFolder(node: Node) {
 }
 
 // Recursively compare every node's id.
+// Currently NOT comparing any other fields than id,
+// so modifying name, e.g., of node's data does not update component.
 function nodeDeepEquals(prev: Node, curr: Node): boolean {
   return (
     prev.data.id === curr.data.id &&
