@@ -7,13 +7,11 @@ export const useFirebase = () => {
   return useContext(firebaseCtx);
 };
 
-export const useCurrentUser = (): User => {
+export const useCurrentUser = (): User | null => {
   const firebase = useFirebase();
   const user = firebase.auth().currentUser;
   if (user === null) {
-    // TODO: Define err class and wrap every components
-    // with Error Boundary to catch that and log the user out.
-    throw Error('Unauthenticated');
+    return null;
   }
   return {
     id: user.uid,

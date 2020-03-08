@@ -48,12 +48,13 @@ export const useFetchStudioContents = () => {
   );
 };
 
-export const useFetchStudios = (userId: string) => {
+export const useFetchStudios = (userId?: string) => {
   const backendAPI = useBackendAPI();
   const dispatch = useDispatch();
   const fetchStudioContents = useFetchStudioContents();
 
   useEffect(() => {
+    if (!userId) return;
     const _ = async () => {
       dispatch(createAction(ATP.Studio.FETCH_STUDIOS_REQUEST, ''));
       let resp: FetchStudiosResp;

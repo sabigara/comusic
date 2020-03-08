@@ -94,7 +94,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     };
   }, nodeDeepEquals);
 
-  useFetchStudios(user.id);
+  useFetchStudios(user?.id);
   const addVersion = useAddVersion();
   const delVersion = useDelVersion();
 
