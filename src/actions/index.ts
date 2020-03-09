@@ -2,6 +2,7 @@ import { FileActionTypeName, FileActionUnionType } from './files';
 import { TakeActionTypeName, TakeActionUnionType } from './takes';
 import { TrackActionTypeName, TrackActionUnionType } from './tracks';
 import { VersionActionTypeName, VersionActionUnionType } from './versions';
+import { SongActionTypeName, SongActionUnionType } from './songs';
 import { StudioActionTypeName, StudioActionUnionType } from './studios';
 import { ProfileActionTypeName, ProfileActionUnionType } from './profiles';
 import { PlaybackActionTypeName, PlaybackActionUnionType } from './playback';
@@ -11,6 +12,7 @@ export const ActionTypeName = {
   Take: TakeActionTypeName,
   Track: TrackActionTypeName,
   Version: VersionActionTypeName,
+  Song: SongActionTypeName,
   Studio: StudioActionTypeName,
   Profile: ProfileActionTypeName,
   Playback: PlaybackActionTypeName,
@@ -21,6 +23,7 @@ export type ActionUnionType =
   | TakeActionUnionType
   | TrackActionUnionType
   | VersionActionUnionType
+  | SongActionUnionType
   | StudioActionUnionType
   | ProfileActionUnionType
   | PlaybackActionUnionType;

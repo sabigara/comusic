@@ -30,6 +30,11 @@ type ByIdState = {
 
 function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
   switch (action.type) {
+    case ActionTypeName.Song.ADD_SONG_SUCCESS:
+      return {
+        ...state,
+        [action.payload.song.id]: action.payload.song,
+      };
     case ActionTypeName.Studio.FETCH_STUDIO_CONTENTS_SUCCESS:
       return {
         ...state,
@@ -42,6 +47,8 @@ function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
 
 function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
+    case ActionTypeName.Song.ADD_SONG_SUCCESS:
+      return uniqueArray(state.concat(action.payload.song.id));
     case ActionTypeName.Studio.FETCH_STUDIO_CONTENTS_SUCCESS:
       return uniqueArray(state.concat(action.payload.songs.allIds));
     default:

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Track } from '../../common/Domain';
+import { Song, Track } from '../../common/Domain';
 
 import BackendAPI, {
   FetchStudiosResp,
@@ -71,6 +71,23 @@ export default class Default implements BackendAPI {
     return this.client.get({
       path: 'versions/:id/contents',
       params: [verId],
+    });
+  }
+
+  async addSong(studioId: string, name: string): Promise<Song> {
+    return this.client.post(
+      {
+        path: 'songs',
+        queries: { studio_id: studioId },
+      },
+      { name },
+    );
+  }
+
+  async delSong(songId: string): Promise<void> {
+    return this.client.post({
+      path: 'songs/:id',
+      params: [songId],
     });
   }
 

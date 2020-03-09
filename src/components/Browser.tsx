@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { Scrollbar } from 'react-scrollbars-custom';
 import NodeUI from 'react-ui-tree/dist/node';
 import Tree from 'react-ui-tree/dist/tree';
@@ -13,8 +13,12 @@ import styled from 'styled-components';
 import Color from '../common/Color';
 import { styledScrollRenderer } from '../common/utils';
 import { RootState } from '../reducers';
+import { StudioState } from '../reducers/studios';
+import { SongState } from '../reducers/songs';
+import { VersionState } from '../reducers/versions';
 import { useCurrentUser } from '../hooks/firebase';
 import { useFetchStudios } from '../hooks/studios';
+import { useAddSong } from '../hooks/songs';
 import { useAddVersion, useDelVersion } from '../hooks/versions';
 
 enum NodeKind {
@@ -24,9 +28,7 @@ enum NodeKind {
   Version,
 }
 
-interface NodeData {
-  id: string;
-}
+type NodeData = StudioState | SongState | VersionState | { id: string };
 
 type Node = {
   module: string;
@@ -37,7 +39,7 @@ type Node = {
 };
 
 function isFolder(node: Node) {
-  return node.children.length > 0;
+  return node.kind !== NodeKind.Version;
 }
 
 // Recursively compare every nodes.
@@ -60,6 +62,8 @@ type Props = {
 const Browser: React.FC<Props> = ({ setVerId }) => {
   const [collapsedNodes, setCollapsedNodes] = React.useState<string[]>([]);
   const user = useCurrentUser();
+  // Construct tree-like data structure for browser.
+  // Root -> Studio -> Song -> Version
   const treeData = useSelector((state: RootState) => {
     const studios: Node[] = state.studios.allIds.map((id) => {
       const studio = state.studios.byId[id];
@@ -108,6 +112,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
   }, nodeDeepEquals);
 
   useFetchStudios(user?.id);
+  const addSong = useAddSong();
   const addVersion = useAddVersion();
   const delVersion = useDelVersion();
 
@@ -123,6 +128,10 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     }
   };
 
+  const handleAddSong = (nodeData: StudioState) => {
+    addSong(nodeData.id, 'new song');
+  };
+
   const handleAddVersion = (node: NodeData) => {
     addVersion(node.id, 'new ver.');
   };
@@ -131,15 +140,26 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     delVersion(node.id);
   };
 
-  const renderNode = (node: any) => {
-    const renderFileFolderToolbar = (isFolder: boolean, caption: string) => (
+  const renderNode = (node: Node) => {
+    const renderFileFolderToolbar = (caption: string) => (
       <Toolbar onClick={() => handleNodeClick(node)}>
         <FloatLeft>
-          <Icon icon={isFolder ? folder : file} />
+          <Icon icon={isFolder(node) ? folder : file} />
           {caption}
         </FloatLeft>
         <ToolbarFileFolder>
-          {isFolder && (
+          {node.kind === NodeKind.Studio && (
+            <React.Fragment>
+              <Icon
+                icon={filePlus}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddSong(node.data as StudioState);
+                }}
+              />
+            </React.Fragment>
+          )}
+          {node.kind === NodeKind.Song && (
             <React.Fragment>
               <Icon
                 icon={filePlus}
@@ -150,7 +170,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
               />
             </React.Fragment>
           )}
-          {!isFolder && (
+          {node.kind === NodeKind.Version && (
             <React.Fragment>
               <Icon
                 icon={filePlus}
@@ -164,7 +184,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
         </ToolbarFileFolder>
       </Toolbar>
     );
-    return <div>{renderFileFolderToolbar(isFolder(node), node.module)}</div>;
+    return <div>{renderFileFolderToolbar(node.module)}</div>;
   };
 
   const tree = new Tree(treeData);
