@@ -32,7 +32,7 @@ const TrackContextMenu: React.FC<Props> = ({ trackId, children }) => {
           Delete
         </MenuItem>
       </ContextMenu>
-      <ContextMenuTrigger id={`track-ctx-${trackId}`}>
+      <ContextMenuTrigger id={`track-ctx-${trackId}`} holdToDisplay={-1}>
         <Wrapper>{children}</Wrapper>
       </ContextMenuTrigger>
     </div>
