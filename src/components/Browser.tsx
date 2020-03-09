@@ -40,13 +40,16 @@ function isFolder(node: Node) {
   return node.children.length > 0;
 }
 
-// Recursively compare every node's id.
-// Currently NOT comparing any other fields than id,
-// so modifying name, e.g., of node's data does not update component.
+// Recursively compare every nodes.
 function nodeDeepEquals(prev: Node, curr: Node): boolean {
+  if (prev.children.length != curr.children.length) {
+    return false;
+  }
   return (
-    prev.data.id === curr.data.id &&
-    prev.children.every((child, i) => nodeDeepEquals(child, curr.children[i]))
+    shallowEqual(prev.data, curr.data) &&
+    prev.children.reduce((acc: boolean, child, i) => {
+      return acc && nodeDeepEquals(child, curr.children[i]);
+    }, true)
   );
 }
 
