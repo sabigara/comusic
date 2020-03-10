@@ -96,7 +96,7 @@ export default class Default implements BackendAPI {
   }
 
   async delSong(songId: string): Promise<void> {
-    return this.client.post({
+    return this.client.delete({
       path: 'songs/:id',
       params: [songId],
     });
