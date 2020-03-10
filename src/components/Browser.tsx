@@ -259,11 +259,26 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     }
   };
 
+  const iconForNodeKind = (
+    nodeKind: NodeKind,
+  ): 'home' | 'music' | 'document' | 'error' => {
+    switch (nodeKind) {
+      case NodeKind.Studio:
+        return 'home';
+      case NodeKind.Song:
+        return 'music';
+      case NodeKind.Version:
+        return 'document';
+      default:
+        return 'error';
+    }
+  };
+
   const renderNode = (node: Node) => {
     const renderFileFolderToolbar = (caption: string) => (
       <Toolbar onClick={(e) => handleNodeClick(e, node)}>
         <FloatLeft>
-          <Icon icon="folder-close" />
+          <Icon icon={iconForNodeKind(node.kind)} />
           {caption}
         </FloatLeft>
         <ToolbarFileFolder id="folder-node">
