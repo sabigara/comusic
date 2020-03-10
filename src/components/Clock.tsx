@@ -59,7 +59,6 @@ const Wrapper = styled.div`
 const TimeLabel = styled(Label)`
   color: #b0cae2;
   font-size: 25px;
-  font-family: sans-serif;
 `;
 
 const MiliSecLabel = styled(TimeLabel)`

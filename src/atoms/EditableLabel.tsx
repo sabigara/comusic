@@ -56,7 +56,6 @@ const StyledLabel = styled.span<{
 }>`
   display: ${(props) => (props.isShown ? 'inline' : 'none')};
   color: ${(props) => props.color || 'white'};
-  font-family: sans-serif;
   font-size: ${(props) => props.fontSize || '14px'};
   cursor: text;
 `;

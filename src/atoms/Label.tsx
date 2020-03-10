@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 const Label = styled.span`
   color: white;
-  font-family: sans-serif;
   font-size: 14px;
   cursor: default;
   overflow-x: hidden;

@@ -346,13 +346,11 @@ const Root = styled.div<{ type: 'volume' | 'pan'; width?: number }>`
         content: 'L';
         margin-right: 4px;
         font-size: 12px;
-        font-family: sans-serif;
       }
       &::after {
         content: 'R';
         margin-left: 4px;
         font-size: 12px;
-        font-family: sans-serif;
       }
     `
       : null;
@@ -380,7 +378,7 @@ const WavePeak = styled.div.attrs((props: { value?: number }) => ({
   style: {
     width: props.value ? props.value.toString() + 'px' : 0,
   },
-})) <{ value?: number }>`
+}))<{ value?: number }>`
   background-color: #4cd964;
   height: 100%;
 `;
@@ -417,7 +415,7 @@ const PanKnob = styled(AbstractKnob)`
   border-style: solid;
   border-width: ${(props) =>
     `${props.height + 'px'} ${props.width / 2 + 'px'} 0 ${props.width / 2 +
-    'px'}`};
+      'px'}`};
   border-color: #ddd transparent transparent transparent;
   opacity: 0.7;
 `;

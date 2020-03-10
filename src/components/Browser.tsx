@@ -3,11 +3,18 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { Scrollbar } from 'react-scrollbars-custom';
 import NodeUI from 'react-ui-tree/dist/node';
 import Tree from 'react-ui-tree/dist/tree';
-import Icon from 'react-icons-kit';
-import { folder } from 'react-icons-kit/feather/folder';
-import { file } from 'react-icons-kit/feather/file';
-import { filePlus } from 'react-icons-kit/feather/filePlus';
 import 'react-ui-tree/dist/react-ui-tree.css';
+import {
+  Button,
+  Dialog,
+  Menu,
+  MenuItem,
+  InputGroup,
+  Popover,
+  Position,
+  Icon,
+} from '@blueprintjs/core';
+import '@blueprintjs/core/lib/css/blueprint.css';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
@@ -16,9 +23,11 @@ import { RootState } from '../reducers';
 import { StudioState } from '../reducers/studios';
 import { SongState } from '../reducers/songs';
 import { VersionState } from '../reducers/versions';
+import useBackendAPI from '../hooks/useBackendAPI';
+import useDispatchWithAPICall from '../hooks/useDispatchWithAPICall';
 import { useCurrentUser } from '../hooks/firebase';
 import { useFetchStudios } from '../hooks/studios';
-import { useAddSong } from '../hooks/songs';
+import { useAddSong, useDelSong } from '../hooks/songs';
 import { useAddVersion, useDelVersion } from '../hooks/versions';
 
 enum NodeKind {
@@ -60,8 +69,11 @@ type Props = {
 };
 
 const Browser: React.FC<Props> = ({ setVerId }) => {
-  const [collapsedNodes, setCollapsedNodes] = React.useState<string[]>([]);
   const user = useCurrentUser();
+  // API call
+  useFetchStudios(user?.id);
+
+  const [collapsedNodes, setCollapsedNodes] = React.useState<string[]>([]);
   // Construct tree-like data structure for browser.
   // Root -> Studio -> Song -> Version
   const treeData = useSelector((state: RootState) => {
@@ -111,12 +123,131 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     };
   }, nodeDeepEquals);
 
-  useFetchStudios(user?.id);
+  const backendAPI = useBackendAPI();
+  const dispatchWithAPICall = useDispatchWithAPICall();
   const addSong = useAddSong();
+  const delSong = useDelSong();
   const addVersion = useAddVersion();
   const delVersion = useDelVersion();
 
-  const handleNodeClick = (node: Node) => {
+  const [isDialogOpen, setDialogOpen] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [groupId, setGroupId] = React.useState<{
+    id: string;
+    type: 'studio' | 'song';
+  } | null>(null);
+
+  const onInviteSubmit = () => {
+    if (groupId === null) return;
+    dispatchWithAPICall(
+      'INVITE',
+      // Since instance method is passed as callback, `this` is
+      // missing without bind.
+      backendAPI.invite.bind(backendAPI),
+      groupId.id,
+      email,
+      groupId.type,
+    );
+    setDialogOpen(false);
+  };
+
+  const inviteDialog = (
+    <Dialog
+      icon="new-person"
+      onClose={() => {
+        setGroupId(null);
+        setDialogOpen(false);
+      }}
+      title="Invite Member to Studio"
+      isOpen={isDialogOpen}
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          margin: '20px 20px 0 20px',
+        }}
+      >
+        <InputGroup
+          large
+          leftIcon="envelope"
+          placeholder="test@example.com"
+          fill
+          style={{ marginBottom: 20 }}
+          onChange={(e: React.FormEvent<HTMLInputElement>) =>
+            setEmail(e.currentTarget.value)
+          }
+        />
+        <Button text="Send Invitation" large onClick={onInviteSubmit} />
+      </div>
+    </Dialog>
+  );
+
+  const genStudioMenu = (data: StudioState) => (
+    <Menu>
+      <MenuItem
+        icon="add"
+        text="Add Song"
+        onClick={() => {
+          addSong(data.id, 'new song');
+        }}
+      />
+      <MenuItem
+        icon="new-person"
+        text="Invite"
+        onClick={() => {
+          setGroupId({ id: data.id, type: 'studio' });
+          setDialogOpen(true);
+        }}
+      />
+      {/* <MenuItem icon="edit" text="Rename" /> */}
+    </Menu>
+  );
+
+  const genSongMenu = (data: SongState) => (
+    <Menu>
+      <MenuItem
+        icon="add"
+        text="Add Version"
+        onClick={() => {
+          addVersion(data.id, 'new version');
+        }}
+      />
+      <MenuItem
+        icon="new-person"
+        text="Invite"
+        onClick={() => {
+          setGroupId({ id: data.id, type: 'song' });
+          setDialogOpen(true);
+        }}
+      />
+      {/* <MenuItem icon="edit" text="Rename" /> */}
+      <MenuItem
+        icon="delete"
+        text="Delete"
+        onClick={() => {
+          delSong(data.id);
+        }}
+      />
+    </Menu>
+  );
+
+  const genVerMenu = (data: VersionState) => (
+    <Menu>
+      {/* <MenuItem icon="edit" text="Rename" /> */}
+      <MenuItem
+        icon="delete"
+        text="Delete"
+        onClick={() => {
+          delVersion(data.id);
+        }}
+      />
+    </Menu>
+  );
+
+  const handleNodeClick = (e: any, node: Node) => {
+    if (e.target.id !== 'folder-node') return;
     if (isFolder(node)) {
       const collapsed = collapsedNodes.includes(node.data.id);
       node.collapsed = !collapsed;
@@ -128,58 +259,31 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     }
   };
 
-  const handleAddSong = (nodeData: StudioState) => {
-    addSong(nodeData.id, 'new song');
-  };
-
-  const handleAddVersion = (node: NodeData) => {
-    addVersion(node.id, 'new ver.');
-  };
-
-  const handleDelVersion = (node: NodeData) => {
-    delVersion(node.id);
-  };
-
   const renderNode = (node: Node) => {
     const renderFileFolderToolbar = (caption: string) => (
-      <Toolbar onClick={() => handleNodeClick(node)}>
+      <Toolbar onClick={(e) => handleNodeClick(e, node)}>
         <FloatLeft>
-          <Icon icon={isFolder(node) ? folder : file} />
+          <Icon icon="folder-close" />
           {caption}
         </FloatLeft>
-        <ToolbarFileFolder>
+        <ToolbarFileFolder id="folder-node">
           {node.kind === NodeKind.Studio && (
-            <React.Fragment>
-              <Icon
-                icon={filePlus}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddSong(node.data as StudioState);
-                }}
-              />
-            </React.Fragment>
+            <Popover minimal position={Position.RIGHT}>
+              <Icon icon="more" style={{ transform: 'rotate(90deg)' }} />
+              {genStudioMenu(node.data as StudioState)}
+            </Popover>
           )}
           {node.kind === NodeKind.Song && (
-            <React.Fragment>
-              <Icon
-                icon={filePlus}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddVersion(node.data);
-                }}
-              />
-            </React.Fragment>
+            <Popover minimal position={Position.RIGHT}>
+              <Icon icon="more" style={{ transform: 'rotate(90deg)' }} />
+              {genSongMenu(node.data as SongState)}
+            </Popover>
           )}
           {node.kind === NodeKind.Version && (
-            <React.Fragment>
-              <Icon
-                icon={filePlus}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelVersion(node.data);
-                }}
-              />
-            </React.Fragment>
+            <Popover minimal position={Position.RIGHT}>
+              <Icon icon="more" style={{ transform: 'rotate(90deg)' }} />
+              {genVerMenu(node.data as VersionState)}
+            </Popover>
           )}
         </ToolbarFileFolder>
       </Toolbar>
@@ -191,21 +295,24 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
   tree.renderNode = renderNode;
   tree.updateNodesPosition();
   return (
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    <Scrollbar style={Scroll} contentProps={styledScrollRenderer(Container)}>
-      <div className="m-tree">
-        <NodeUI
-          paddingLeft={20}
-          tree={tree}
-          index={tree.getIndex(1)}
-          key={1}
-          onChange={(tree: Node) => {
-            console.log(tree);
-          }}
-          renderNode={renderNode}
-        />
-      </div>
-    </Scrollbar>
+    <div>
+      {inviteDialog}
+      {/* eslint-disable-next-line @typescript-eslint/no-use-before-define */}
+      <Scrollbar style={Scroll} contentProps={styledScrollRenderer(Container)}>
+        <div className="m-tree">
+          <NodeUI
+            paddingLeft={20}
+            tree={tree}
+            index={tree.getIndex(1)}
+            key={1}
+            onChange={(tree: Node) => {
+              console.log(tree);
+            }}
+            renderNode={renderNode}
+          />
+        </div>
+      </Scrollbar>
+    </div>
   );
 };
 

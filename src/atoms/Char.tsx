@@ -7,7 +7,6 @@ const Char: React.FC = ({ children }) => {
 
 const StyledChar = styled.span`
   color: white;
-  font-family: sans-serif;
   font-size: 12px;
   cursor: default;
   -webkit-touch-callout: none; /* iOS Safari */

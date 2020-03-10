@@ -4,6 +4,7 @@ import { TrackActionTypeName, TrackActionUnionType } from './tracks';
 import { VersionActionTypeName, VersionActionUnionType } from './versions';
 import { SongActionTypeName, SongActionUnionType } from './songs';
 import { StudioActionTypeName, StudioActionUnionType } from './studios';
+import { InvitationActionTypeName } from './invitations';
 import { ProfileActionTypeName, ProfileActionUnionType } from './profiles';
 import { PlaybackActionTypeName, PlaybackActionUnionType } from './playback';
 
@@ -14,6 +15,7 @@ export const ActionTypeName = {
   Version: VersionActionTypeName,
   Song: SongActionTypeName,
   Studio: StudioActionTypeName,
+  Invitation: InvitationActionTypeName,
   Profile: ProfileActionTypeName,
   Playback: PlaybackActionTypeName,
 };
