@@ -60,6 +60,11 @@ export default interface BackendAPI {
   fetchStudios(memberId: string): Promise<FetchStudiosResp>;
   fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
+  invite(
+    groupId: string,
+    email: string,
+    groupType: 'studio' | 'song',
+  ): Promise<void>;
   addSong(studioId: string, name: string): Promise<Song>;
   delSong(songId: string): Promise<void>;
   addVersion(songId: string, verName: string): Promise<Version>;

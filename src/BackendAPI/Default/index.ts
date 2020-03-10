@@ -74,6 +74,17 @@ export default class Default implements BackendAPI {
     });
   }
 
+  async invite(
+    groupId: string,
+    email: string,
+    groupType: 'studio' | 'song',
+  ): Promise<void> {
+    return this.client.put({
+      path: 'invitations',
+      queries: { group_id: groupId, email: email, group_type: groupType },
+    });
+  }
+
   async addSong(studioId: string, name: string): Promise<Song> {
     return this.client.post(
       {
