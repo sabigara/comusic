@@ -1,7 +1,6 @@
 import React, { ReactElement, useCallback, useMemo } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { Scrollbar } from 'react-scrollbars-custom';
-import 'react-ui-tree/dist/react-ui-tree.css';
 import {
   Classes,
   Intent,
@@ -142,25 +141,26 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
         isOpen={isDialogOpen}
         usePortal={false}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            margin: '20px 20px 0 20px',
-          }}
-        >
+        <div className={Classes.DIALOG_BODY}>
           <InputGroup
             large
             leftIcon="envelope"
             placeholder="test@example.com"
             fill
-            style={{ marginBottom: 20 }}
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
               setEmail(e.currentTarget.value)
             }
           />
-          <Button text="Send Invitation" large onClick={onInviteSubmit} />
+        </div>
+        <div className={Classes.DIALOG_FOOTER}>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+            <Button
+              intent={Intent.PRIMARY}
+              text="Send Invitation"
+              large
+              onClick={onInviteSubmit}
+            />
+          </div>
         </div>
       </Dialog>
     ),
@@ -238,27 +238,57 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     [delVersion],
   );
 
-  const confirmDelDialog = (
+  const genConfirmDialog = (
+    title: string,
+    message: string,
+    onConfirm: (e: React.MouseEvent) => void,
+    onDismiss?: (e: React.MouseEvent) => void,
+  ) => (
     <div>
-      <H5>Confirm deletion</H5>
-      <p>
-        Are you sure you want to delete these items? You won't be able to
-        recover them.
-      </p>
+      <H5>{title}</H5>
+      <p>{message}</p>
       <div
         style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 15 }}
       >
-        <Button className={Classes.POPOVER_DISMISS} style={{ marginRight: 10 }}>
+        <Button
+          className={Classes.POPOVER_DISMISS}
+          style={{ marginRight: 10 }}
+          onClick={onDismiss}
+        >
           Cancel
         </Button>
-        <Button intent={Intent.DANGER} className={Classes.POPOVER_DISMISS}>
-          Delete
+        <Button
+          intent={Intent.PRIMARY}
+          className={Classes.POPOVER_DISMISS}
+          onClick={onConfirm}
+        >
+          OK
         </Button>
       </div>
     </div>
   );
 
+  const genVerNodeLabel = (data: VersionState) => (
+    <Popover
+      popoverClassName={Classes.POPOVER_CONTENT_SIZING}
+      position={Position.BOTTOM}
+      modifiers={{
+        preventOverflow: { enabled: false },
+        hide: { enabled: false },
+      }}
+    >
+      {/* Somehow, using block element as popover target here causes misplaced popover issue. 
+      (Pops up remote location) */}
+      <div style={{ cursor: 'pointer', display: 'inline-flex', width: '100%' }}>
+        {data.name}
+      </div>
+      {genConfirmDialog('Open This Version?', '', () => setVerId(data.id))}
+    </Popover>
+  );
+
   const [collapsedNodes, setCollapsedNodes] = React.useState<string[]>([]);
+  const [visibleMoreBtn, setVisibleMoreBtn] = React.useState('');
+  const [openingMoreMenu, setOpeningMoreMenu] = React.useState('');
 
   const genNode = <T extends NodeData>(
     data: T,
@@ -279,10 +309,16 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
       default:
         menu = <span />;
     }
+    const label: JSX.Element =
+      kind === NodeKind.Version ? (
+        genVerNodeLabel(data as VersionState)
+      ) : (
+        <span>{data.name}</span>
+      );
     return {
       id: data.id,
       icon: iconForNodeKind(kind),
-      label: data.name,
+      label: label,
       kind: kind,
       // Doc says "selector function should be pure".
       // Maybe better not to rely on local state?
@@ -291,8 +327,24 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
       secondaryLabel: (
         // Prevent click events from bubbling up to node component,
         // which fire `onNodeClick` event handler.
-        <span onClick={(e) => e.stopPropagation()}>
-          <Popover minimal position={Position.RIGHT}>
+        <span
+          style={{ display: visibleMoreBtn === data.id ? 'inline' : 'none' }}
+          onClick={(e) => e.stopPropagation()}
+          onMouseEnter={() => setVisibleMoreBtn(data.id)}
+          onMouseLeave={() => setVisibleMoreBtn(data.id)}
+        >
+          <Popover
+            position={Position.RIGHT}
+            modifiers={{
+              preventOverflow: { enabled: false },
+              hide: { enabled: false },
+            }}
+            onOpening={() => setOpeningMoreMenu(data.id)}
+            onClosed={() => {
+              setOpeningMoreMenu('');
+              setVisibleMoreBtn('');
+            }}
+          >
             <Icon
               icon="more"
               style={{ transform: 'rotate(90deg)', cursor: 'pointer' }}
@@ -337,14 +389,15 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
     setCollapsedNodes(collapsedNodes.concat([node.id.toString()]));
   };
 
-  const handleNodeClick = (iTreeNode: ITreeNode) => {
-    const node = iTreeNode as Node;
-    switch (node.kind) {
-      case NodeKind.Version:
-        setVerId(node.id);
-        break;
-      default:
-        break;
+  const handleNodeMouseEnter = (node: ITreeNode) => {
+    if (openingMoreMenu == '') {
+      setVisibleMoreBtn(node.id.toString());
+    }
+  };
+
+  const handleNodeMouseLeave = () => {
+    if (openingMoreMenu == '') {
+      setVisibleMoreBtn('');
     }
   };
 
@@ -357,7 +410,8 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
           contents={treeData}
           onNodeExpand={handleNodeExpand}
           onNodeCollapse={handleNodeCollapse}
-          onNodeClick={handleNodeClick}
+          onNodeMouseEnter={handleNodeMouseEnter}
+          onNodeMouseLeave={handleNodeMouseLeave}
         />
       </Scrollbar>
     </div>
