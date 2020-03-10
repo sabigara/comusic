@@ -25,7 +25,7 @@ const Main: React.FC = () => {
   }, []);
 
   return isAuthed ? (
-    <div>
+    <div className="bp3-dark">
       <KeyBindings />
       <ToolBar />
       <FixedHeightContainer>
