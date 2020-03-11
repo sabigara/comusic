@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-
+import tinycolor from 'tinycolor2';
 import Color from '../common/Color';
 
 type Props = {
@@ -23,9 +23,12 @@ const ToolBarItem: React.FC<Props> = (props) => {
     isRightMost,
   } = props;
 
+  const [mouseDown, setMouseDown] = useState(false);
+
   return (
     <Wrapper
       id={id}
+      mouseDown={mouseDown}
       isActive={isActive}
       isLeftMost={isLeftMost}
       isRightMost={isRightMost}
@@ -33,6 +36,9 @@ const ToolBarItem: React.FC<Props> = (props) => {
         onClick && onClick();
         setActive && setActive(!isActive);
       }}
+      onMouseDown={() => setMouseDown(true)}
+      onMouseUp={() => setMouseDown(false)}
+      onMouseLeave={() => setMouseDown(false)}
     >
       {children}
     </Wrapper>
@@ -40,6 +46,7 @@ const ToolBarItem: React.FC<Props> = (props) => {
 };
 
 const Wrapper = styled.div<{
+  mouseDown: boolean;
   isActive: boolean;
   isLeftMost?: boolean;
   isRightMost?: boolean;
@@ -59,9 +66,14 @@ const Wrapper = styled.div<{
     }
   }};
   background-color: ${(props) => {
-    return props.isActive
+    const base = props.isActive
       ? Color.ToolBarItem.Active
       : Color.ToolBarItem.InActive;
+    return props.mouseDown
+      ? tinycolor(base)
+          .darken(8)
+          .toHexString()
+      : base;
   }};
 `;
 

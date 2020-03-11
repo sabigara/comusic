@@ -13,7 +13,7 @@ export default {
     },
   },
   ToolBarItem: {
-    Active: '#6F6F6F',
+    Active: '#606060',
     InActive: '#8F8F8F',
   },
   Button: {
