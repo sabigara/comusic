@@ -212,6 +212,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
         {/* <MenuItem icon="edit" text="Rename" /> */}
         <MenuItem
           icon="delete"
+          intent={Intent.DANGER}
           text="Delete"
           onClick={() => {
             delSong(data.id);
@@ -228,6 +229,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
         {/* <MenuItem icon="edit" text="Rename" /> */}
         <MenuItem
           icon="delete"
+          intent={Intent.DANGER}
           text="Delete"
           onClick={() => {
             delVersion(data.id);
@@ -335,10 +337,6 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
         >
           <Popover
             position={Position.RIGHT}
-            modifiers={{
-              preventOverflow: { enabled: false },
-              hide: { enabled: false },
-            }}
             onOpening={() => setOpeningMoreMenu(data.id)}
             onClosed={() => {
               setOpeningMoreMenu('');
