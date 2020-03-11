@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { Icon } from '@blueprintjs/core';
+import { IconNames } from '@blueprintjs/icons';
 
 import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
@@ -9,9 +11,6 @@ import { play, pause, stop, updateTime } from '../actions/playback';
 import Img from '../atoms/Img';
 import ToolBarItem from '../atoms/ToolBarItem';
 import ToolBackItemContainer from '../atoms/ToolBarItemContainer';
-import PlayIcon from '../icons/Play.png';
-import StopIcon from '../icons/Stop.png';
-import PauseIcon from '../icons/Pause.png';
 
 const PlaybackControls: React.FC = () => {
   const playback = useSelector(
@@ -64,21 +63,21 @@ const PlaybackControls: React.FC = () => {
         isActive={playback.status === PlaybackStatus.Stopping}
         onClick={onStopClick}
       >
-        <IconImg src={StopIcon} alt="stop" />
+        <Icon icon={IconNames.STOP} iconSize={Icon.SIZE_LARGE} />
       </ToolBarItem>
       <ToolBarItem
         id="pause-button"
         isActive={playback.status === PlaybackStatus.Pausing}
         onClick={onPauseClick}
       >
-        <IconImg src={PauseIcon} alt="pause" />
+        <Icon icon={IconNames.PAUSE} iconSize={Icon.SIZE_LARGE} />
       </ToolBarItem>
       <ToolBarItem
         id="play-button"
         isActive={playback.status === PlaybackStatus.Playing}
         onClick={onPlayClick}
       >
-        <IconImg src={PlayIcon} alt="play" />
+        <Icon icon={IconNames.PLAY} iconSize={Icon.SIZE_LARGE} />
       </ToolBarItem>
     </ToolBackItemContainer>
   );
