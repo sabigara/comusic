@@ -52,13 +52,14 @@ const InvitationNotification: React.FC<InvitationNotificationProps> = ({
   invitation,
 }) => {
   const backendAPI = useBackendAPI();
-  const [acceptInvitation, _, loading, err] = useAsyncCallback(
+  const [accept, resp, err, loading] = useAsyncCallback(
     backendAPI.acceptInvitation.bind(backendAPI),
   );
 
   React.useEffect(() => {
-    if (err !== '') toaster.showErr('Sorry, something went wrong.');
-  }, [err]);
+    if (resp !== null) toaster.success('Success');
+    if (err !== '') toaster.error('Sorry, something went wrong.');
+  }, [resp, err]);
 
   return (
     <>
@@ -75,7 +76,7 @@ const InvitationNotification: React.FC<InvitationNotificationProps> = ({
             </Button>
             <Button
               intent={Intent.PRIMARY}
-              onClick={() => acceptInvitation(invitation.groupId)}
+              onClick={() => accept(invitation.groupId)}
             >
               Accept
             </Button>
@@ -88,7 +89,7 @@ const InvitationNotification: React.FC<InvitationNotificationProps> = ({
 
 const Notification: React.FC = () => {
   const user = useCurrentUser();
-  const [invitations, loading, err] = useInvitations(user?.email);
+  const [invitations, resp, loading] = useInvitations(user?.email);
 
   const [isActive, setActive] = useState(false);
 

@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 
 export default <T>(
   callback: (...args: string[]) => Promise<T>,
-): [(...args: string[]) => Promise<T | null>, T | null, boolean, string] => {
+): [(...args: string[]) => Promise<T | null>, T | null, string, boolean] => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [resp, setResp] = useState<T | null>(null);
@@ -22,5 +22,5 @@ export default <T>(
     },
     [setResp, setLoading, setError, callback],
   );
-  return [fn, resp, loading, error];
+  return [fn, resp, error, loading];
 };

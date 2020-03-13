@@ -5,7 +5,7 @@ import useAsyncCallback from './useAsyncCallback';
 
 export const useInvitations = (email?: string) => {
   const backendAPI = useBackendAPI();
-  const [callback, value, loading, error] = useAsyncCallback(
+  const [callback, value, error, loading] = useAsyncCallback(
     backendAPI.fetchInvitations.bind(backendAPI),
   );
 
@@ -17,5 +17,5 @@ export const useInvitations = (email?: string) => {
   const resp = value
     ? value.invitations.allIds.map((id: string) => value.invitations.byId[id])
     : [];
-  return [resp, loading, error];
+  return [resp, error, loading];
 };
