@@ -65,6 +65,8 @@ export default interface BackendAPI {
     email: string,
     groupType: 'studio' | 'song',
   ): Promise<void>;
+  fetchInvitations(email: string): Promise<any>;
+  acceptInvitation(groupId: string): Promise<void>;
   addSong(studioId: string, name: string): Promise<Song>;
   delSong(songId: string): Promise<void>;
   addVersion(songId: string, verName: string): Promise<Version>;

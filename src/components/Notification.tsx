@@ -12,8 +12,13 @@ import {
 import { IconNames } from '@blueprintjs/icons';
 import styled from 'styled-components';
 
+import toaster from '../common/toaster';
 import ToolBarItem from '../atoms/ToolBarItem';
 import ToolBackItemContainer from '../atoms/ToolBarItemContainer';
+import useBackendAPI from '../hooks/useBackendAPI';
+import useAsyncCallback from '../hooks/useAsyncCallback';
+import { useInvitations } from '../hooks/invitations';
+import { useCurrentUser } from '../hooks/firebase';
 
 type ItemProps = {
   title: string;
@@ -39,8 +44,54 @@ const ActionList = styled.div`
   justify-content: space-evenly;
 `;
 
+type InvitationNotificationProps = {
+  invitation: any;
+};
+
+const InvitationNotification: React.FC<InvitationNotificationProps> = ({
+  invitation,
+}) => {
+  const backendAPI = useBackendAPI();
+  const [acceptInvitation, _, loading, err] = useAsyncCallback(
+    backendAPI.acceptInvitation.bind(backendAPI),
+  );
+
+  React.useEffect(() => {
+    if (err !== '') toaster.showErr('Sorry, something went wrong.');
+  }, [err]);
+
+  return (
+    <>
+      <NotificationItem
+        title="Invitation from Studio"
+        message="You are invited. Press Accept to join them!"
+      >
+        {loading ? (
+          <span>sending...</span>
+        ) : (
+          <>
+            <Button intent={Intent.DANGER} onClick={() => {}}>
+              Decline
+            </Button>
+            <Button
+              intent={Intent.PRIMARY}
+              onClick={() => acceptInvitation(invitation.groupId)}
+            >
+              Accept
+            </Button>
+          </>
+        )}
+      </NotificationItem>
+    </>
+  );
+};
+
 const Notification: React.FC = () => {
+  const user = useCurrentUser();
+  const [invitations, loading, err] = useInvitations(user?.email);
+
   const [isActive, setActive] = useState(false);
+
   return (
     <ToolBackItemContainer>
       <Popover
@@ -53,48 +104,9 @@ const Notification: React.FC = () => {
           <Icon icon={IconNames.NOTIFICATIONS} iconSize={Icon.SIZE_LARGE} />
         </ToolBarItem>
         <div style={{ width: 300, maxHeight: 500, overflowY: 'auto' }}>
-          <NotificationItem
-            title="Invitation from Studio"
-            message="You are invited. Press Accept to join them!"
-          >
-            <Button intent={Intent.DANGER}>Decline</Button>
-            <Button intent={Intent.PRIMARY}>Accept</Button>
-          </NotificationItem>
-          <NotificationItem
-            title="Invitation from Studio"
-            message="You are invited. Press Accept to join them!"
-          >
-            <Button intent={Intent.DANGER}>Decline</Button>
-            <Button intent={Intent.PRIMARY}>Accept</Button>
-          </NotificationItem>
-          <NotificationItem
-            title="Invitation from Studio"
-            message="You are invited. Press Accept to join them!"
-          >
-            <Button intent={Intent.DANGER}>Decline</Button>
-            <Button intent={Intent.PRIMARY}>Accept</Button>
-          </NotificationItem>
-          <NotificationItem
-            title="Invitation from Studio"
-            message="You are invited. Press Accept to join them!"
-          >
-            <Button intent={Intent.DANGER}>Decline</Button>
-            <Button intent={Intent.PRIMARY}>Accept</Button>
-          </NotificationItem>
-          <NotificationItem
-            title="Invitation from Studio"
-            message="You are invited. Press Accept to join them!"
-          >
-            <Button intent={Intent.DANGER}>Decline</Button>
-            <Button intent={Intent.PRIMARY}>Accept</Button>
-          </NotificationItem>
-          <NotificationItem
-            title="Invitation from Studio"
-            message="You are invited. Press Accept to join them!"
-          >
-            <Button intent={Intent.DANGER}>Decline</Button>
-            <Button intent={Intent.PRIMARY}>Accept</Button>
-          </NotificationItem>
+          {invitations.map((inv: any) => (
+            <InvitationNotification key={inv.id} invitation={inv} />
+          ))}
         </div>
       </Popover>
     </ToolBackItemContainer>
