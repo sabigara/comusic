@@ -35,7 +35,11 @@ function isFormData(arg?: JSONBody | FormData): arg is FormData {
 
 function constructPath(path: Path): string {
   path.params?.map((param) => {
-    path.path = path.path.replace(/(?<=\/):.[^/]/g, param);
+    const match = /\/(:.*?)\//g.exec(path.path);
+    if (match?.length !== 2) {
+      throw Error('Invalid URL parameter format');
+    }
+    path.path = path.path.replace(match[1], param);
   });
   const url = new URL(path.path);
   url.search = new URLSearchParams(path.queries).toString();
