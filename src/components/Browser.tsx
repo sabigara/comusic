@@ -146,6 +146,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
             leftIcon="envelope"
             placeholder="test@example.com"
             fill
+            autoFocus
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
               setEmail(e.currentTarget.value)
             }
