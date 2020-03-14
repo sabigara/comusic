@@ -9,39 +9,32 @@ import {
   GroupType,
 } from '../common/Domain';
 
+type Resource<T> = {
+  byId: {
+    [id: string]: T;
+  };
+  allIds: string[];
+};
+
 export type FetchProfileResp = Profile;
 
 export type FetchStudiosResp = {
-  studios: {
-    byId: { [id: string]: Studio };
-    allIds: string[];
-  };
+  studios: Resource<Studio>;
 };
 
 export type FetchStudioContentsResp = {
-  songs: {
-    byId: { [id: string]: Song };
-    allIds: string[];
-  };
-  versions: {
-    byId: { [id: string]: Version };
-    allIds: string[];
-  };
+  songs: Resource<Song>;
+  versions: Resource<Version>;
+};
+
+export type FetchStudioMembersResp = {
+  members: Resource<Profile>;
 };
 
 export type FetchVerContentsResp = {
-  tracks: {
-    byId: { [id: string]: Track };
-    allIds: string[];
-  };
-  takes: {
-    byId: { [id: string]: Take };
-    allIds: string[];
-  };
-  files: {
-    byId: { [id: string]: File };
-    allIds: string[];
-  };
+  tracks: Resource<Track>;
+  takes: Resource<Take>;
+  files: Resource<File>;
 };
 
 export type AddTakeResp = {
