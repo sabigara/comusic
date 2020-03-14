@@ -16,6 +16,7 @@ import {
   Tree,
   ITreeNode,
 } from '@blueprintjs/core';
+import { IconNames } from '@blueprintjs/icons';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import styled from 'styled-components';
 
@@ -25,6 +26,7 @@ import toaster from '../common/toaster';
 import { styledScrollRenderer } from '../common/utils';
 import { RootState } from '../reducers';
 import { StudioState } from '../reducers/studios';
+import { ProfileState } from '../reducers/profiles';
 import { SongState } from '../reducers/songs';
 import { VersionState } from '../reducers/versions';
 import useBackendAPI from '../hooks/useBackendAPI';
@@ -36,11 +38,16 @@ import { useAddVersion, useDelVersion } from '../hooks/versions';
 
 enum NodeKind {
   Studio,
+  Member,
   Song,
   Version,
 }
 
-type NodeData = StudioState | SongState | VersionState;
+type ProfileNodeData = {
+  name: string;
+} & ProfileState;
+
+type NodeData = StudioState | ProfileNodeData | SongState | VersionState;
 
 type Node = {
   kind: NodeKind;
@@ -81,16 +88,18 @@ function nodeListDeepEquals(prev: Node[], curr: Node[]): boolean {
 
 function iconForNodeKind(
   nodeKind: NodeKind,
-): 'home' | 'music' | 'document' | 'error' {
+): 'home' | 'person' | 'music' | 'document' | 'error' {
   switch (nodeKind) {
     case NodeKind.Studio:
-      return 'home';
+      return IconNames.HOME;
+    case NodeKind.Member:
+      return IconNames.PERSON;
     case NodeKind.Song:
-      return 'music';
+      return IconNames.MUSIC;
     case NodeKind.Version:
-      return 'document';
+      return IconNames.DOCUMENT;
     default:
-      return 'error';
+      return IconNames.ERROR;
   }
 }
 
@@ -365,10 +374,14 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
   const treeData: Node[] = useSelector((state: RootState) => {
     return state.studios.allIds.map((id) => {
       const studio = state.studios.byId[id];
+      const members: Node[] = state.profiles.allIds.map((id) => {
+        const member = state.profiles.byId[id];
+        return genNode({ ...member, name: member.nickname }, NodeKind.Member);
+      });
       const songs: Node[] = state.songs.allIds
         .map((id) => {
           const song = state.songs.byId[id];
-          const versions: Node[] = state.versions.allIds
+          const versions = state.versions.allIds
             .map((id) => {
               const ver = state.versions.byId[id];
               return genNode(ver, NodeKind.Version);
@@ -377,7 +390,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
           return genNode(song, NodeKind.Song, versions);
         })
         .filter((song) => song.data.studioId === studio.id);
-      return genNode(studio, NodeKind.Studio, songs);
+      return genNode(studio, NodeKind.Studio, members.concat(songs));
     });
   }, nodeListDeepEquals);
 

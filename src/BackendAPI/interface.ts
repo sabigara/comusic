@@ -54,6 +54,7 @@ export default interface BackendAPI {
   fetchProfile(): Promise<FetchProfileResp>;
   fetchStudios(memberId: string): Promise<FetchStudiosResp>;
   fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
+  fetchStudioMembers(studioId: string): Promise<FetchStudioMembersResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
   invite(groupId: string, email: string, groupType: GroupType): Promise<void>;
   fetchInvitations(email: string): Promise<any>;

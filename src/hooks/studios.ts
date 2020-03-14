@@ -10,7 +10,9 @@ import {
   fetchStudioContentsSuccess,
   fetchStudiosSuccess,
 } from '../actions/studios';
+import { fetchStudioMembers } from '../actions/profiles';
 import useBackendAPI from './useBackendAPI';
+import useAsyncCallback from '../hooks/useAsyncCallback';
 
 export const useFetchStudioContents = () => {
   const backendAPI = useBackendAPI();
@@ -48,10 +50,21 @@ export const useFetchStudioContents = () => {
   );
 };
 
+export const useFetchStudioMembers = () => {
+  const backendAPI = useBackendAPI();
+  const dispatch = useDispatch();
+  const { callback } = useAsyncCallback(
+    backendAPI.fetchStudioMembers.bind(backendAPI),
+    (resp) => dispatch(fetchStudioMembers(resp.members)),
+  );
+  return callback;
+};
+
 export const useFetchStudios = (userId?: string) => {
   const backendAPI = useBackendAPI();
   const dispatch = useDispatch();
   const fetchStudioContents = useFetchStudioContents();
+  const fetchStudioMembers = useFetchStudioMembers();
 
   useEffect(() => {
     if (!userId) return;
@@ -60,6 +73,7 @@ export const useFetchStudios = (userId?: string) => {
       let resp: FetchStudiosResp;
       try {
         resp = await backendAPI.fetchStudios(userId);
+
         dispatch(fetchStudiosSuccess(resp.studios.byId, resp.studios.allIds));
       } catch (err) {
         dispatch(
@@ -69,6 +83,7 @@ export const useFetchStudios = (userId?: string) => {
       }
       resp.studios.allIds.map((studioId) => {
         fetchStudioContents(studioId);
+        fetchStudioMembers(studioId);
       });
     };
     _();

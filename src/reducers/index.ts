@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import loading, { LoadingState } from './loading';
 import playback, { PlaybackState } from './playback';
-import profile, { ProfileState } from './profiles';
+import profiles, { ProfileCombinedState } from './profiles';
 import invitations, { InvitationCombinedState } from './invitations';
 import studios, { StudioCombinedState } from './studios';
 import songs, { SongCombinedState } from './songs';
@@ -14,7 +14,7 @@ import files, { FileCombinedState } from './files';
 export type RootState = {
   loading: LoadingState;
   playback: PlaybackState;
-  profile: ProfileState;
+  profiles: ProfileCombinedState;
   invitations: InvitationCombinedState;
   studios: StudioCombinedState;
   songs: SongCombinedState;
@@ -28,7 +28,7 @@ const getReducers = () => {
   const reducers = combineReducers({
     loading,
     playback,
-    profile,
+    profiles,
     invitations,
     studios,
     songs,

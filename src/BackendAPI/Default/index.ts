@@ -4,6 +4,7 @@ import { Song, Track, GroupType } from '../../common/Domain';
 import BackendAPI, {
   FetchStudiosResp,
   FetchStudioContentsResp,
+  FetchStudioMembersResp,
   FetchVerContentsResp,
   AddTakeResp,
   AddVersionResp,
@@ -69,6 +70,13 @@ export default class Default implements BackendAPI {
   ): Promise<FetchStudioContentsResp> {
     return this.client.get({
       path: 'studios/:id/contents',
+      params: [studioId],
+    });
+  }
+
+  async fetchStudioMembers(studioId: string): Promise<FetchStudioMembersResp> {
+    return this.client.get({
+      path: 'studios/:id/members',
       params: [studioId],
     });
   }

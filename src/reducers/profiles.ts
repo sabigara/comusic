@@ -35,6 +35,11 @@ function byId(state: ByIdState = {}, action: ActionUnionType): ByIdState {
         ...state,
         [action.payload.profile.id]: action.payload.profile,
       };
+    case ActionTypeName.Profile.FETCH_STUDIO_MEMBERS:
+      return {
+        ...state,
+        ...action.payload.profiles.byId,
+      };
     default:
       return state;
   }
@@ -44,6 +49,8 @@ function allIds(state: string[] = [], action: ActionUnionType): string[] {
   switch (action.type) {
     case ActionTypeName.Profile.FETCH_PROFILE_SUCCESS:
       return uniqueArray(state.concat(action.payload.profile.id));
+    case ActionTypeName.Profile.FETCH_STUDIO_MEMBERS:
+      return uniqueArray(state.concat(action.payload.profiles.allIds));
     default:
       return state;
   }
