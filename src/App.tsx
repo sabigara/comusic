@@ -75,6 +75,7 @@ const webAudioAPI = new WebAudioAPI(async (src, ac) => {
 });
 
 const centrifuge = new Centrifuge('ws://localhost:8888/connection/websocket');
+
 // Inject dependencies (Delivered by hooks API).
 export const backendAPICtx = createContext(backendAPI);
 export const webAudioAPICtx = createContext(webAudioAPI);
