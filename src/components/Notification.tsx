@@ -95,7 +95,7 @@ const Notification: React.FC = () => {
   const dispatch = useDispatch();
   const user = useCurrentUser();
   const centrifuge = useCentrifuge();
-  const { callback, items, loading } = useFetchInvitations();
+  const { callback, items: invitations, loading } = useFetchInvitations();
 
   const [isActive, setActive] = useState(false);
 
@@ -116,6 +116,8 @@ const Notification: React.FC = () => {
     };
   }, []);
 
+  const items = invitations.filter((inv) => !inv.isAccepted);
+
   return (
     <ToolBackItemContainer>
       <Popover
@@ -128,9 +130,13 @@ const Notification: React.FC = () => {
           <Icon icon={IconNames.NOTIFICATIONS} iconSize={Icon.SIZE_LARGE} />
         </ToolBarItem>
         <div style={{ width: 300, maxHeight: 500, overflowY: 'auto' }}>
-          {items.map((inv: any) => (
-            <InvitationNotification key={inv.id} invitation={inv} />
-          ))}
+          {items.length > 0 ? (
+            items.map((inv: any) => (
+              <InvitationNotification key={inv.id} invitation={inv} />
+            ))
+          ) : (
+            <span>Nothing to notify...</span>
+          )}
         </div>
       </Popover>
     </ToolBackItemContainer>
