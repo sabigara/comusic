@@ -104,9 +104,12 @@ const Notification: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const subscription = centrifuge.subscribe('invitation', function(message) {
-      dispatch(addInvitation(message.data.data));
-    });
+    const subscription = centrifuge.subscribe(
+      'invitation#' + user?.id,
+      function(message) {
+        dispatch(addInvitation(message.data.data));
+      },
+    );
     return () => {
       subscription.unsubscribe();
       subscription.removeAllListeners();
