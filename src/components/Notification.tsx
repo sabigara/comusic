@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   Classes,
   Card,
@@ -15,10 +16,12 @@ import styled from 'styled-components';
 import toaster from '../common/toaster';
 import ToolBarItem from '../atoms/ToolBarItem';
 import ToolBackItemContainer from '../atoms/ToolBarItemContainer';
+import { addInvitation, acceptInvitation } from '../actions/invitations';
 import useBackendAPI from '../hooks/useBackendAPI';
 import useAsyncCallback from '../hooks/useAsyncCallback';
-import { useInvitations } from '../hooks/invitations';
+import { useFetchInvitations } from '../hooks/invitations';
 import { useCurrentUser } from '../hooks/firebase';
+import useCentrifuge from '../hooks/useCentrifuge';
 
 type ItemProps = {
   title: string;
@@ -51,17 +54,18 @@ type InvitationNotificationProps = {
 const InvitationNotification: React.FC<InvitationNotificationProps> = ({
   invitation,
 }) => {
+  const dispatch = useDispatch();
   const backendAPI = useBackendAPI();
-  const [accept, resp, err, loading] = useAsyncCallback(
+  const { callback: accept, loading } = useAsyncCallback(
     backendAPI.acceptInvitation.bind(backendAPI),
+    () => {
+      dispatch(acceptInvitation(invitation.id));
+      toaster.success('success');
+    },
+    () => toaster.error('error'),
   );
 
-  React.useEffect(() => {
-    if (resp !== null) toaster.success('Success');
-    if (err !== '') toaster.error('Sorry, something went wrong.');
-  }, [resp, err]);
-
-  return (
+  return invitation.isAccepted ? null : (
     <>
       <NotificationItem
         title="Invitation from Studio"
@@ -88,10 +92,26 @@ const InvitationNotification: React.FC<InvitationNotificationProps> = ({
 };
 
 const Notification: React.FC = () => {
+  const dispatch = useDispatch();
   const user = useCurrentUser();
-  const [invitations, resp, loading] = useInvitations(user?.email);
+  const centrifuge = useCentrifuge();
+  const { callback, items, loading } = useFetchInvitations();
 
   const [isActive, setActive] = useState(false);
+
+  useEffect(() => {
+    callback(user?.email);
+  }, []);
+
+  useEffect(() => {
+    const subscription = centrifuge.subscribe('invitation', function(message) {
+      dispatch(addInvitation(message.data.data));
+    });
+    return () => {
+      subscription.unsubscribe();
+      subscription.removeAllListeners();
+    };
+  }, []);
 
   return (
     <ToolBackItemContainer>
@@ -105,7 +125,7 @@ const Notification: React.FC = () => {
           <Icon icon={IconNames.NOTIFICATIONS} iconSize={Icon.SIZE_LARGE} />
         </ToolBarItem>
         <div style={{ width: 300, maxHeight: 500, overflowY: 'auto' }}>
-          {invitations.map((inv: any) => (
+          {items.map((inv: any) => (
             <InvitationNotification key={inv.id} invitation={inv} />
           ))}
         </div>

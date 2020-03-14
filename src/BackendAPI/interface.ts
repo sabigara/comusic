@@ -6,6 +6,7 @@ import {
   Track,
   Take,
   File,
+  GroupType,
 } from '../common/Domain';
 
 export type FetchProfileResp = Profile;
@@ -56,15 +57,12 @@ export default interface BackendAPI {
     func: (response: Response) => Response | Promise<Response>,
   ): void;
   notifyNewUser(userId: string, nickname: string, mail: string): Promise<void>;
+  getPubSubToken(): Promise<{ pubsubToken: string }>;
   fetchProfile(): Promise<FetchProfileResp>;
   fetchStudios(memberId: string): Promise<FetchStudiosResp>;
   fetchStudioContents(studioId: string): Promise<FetchStudioContentsResp>;
   fetchVerContents(verId: string): Promise<FetchVerContentsResp>;
-  invite(
-    groupId: string,
-    email: string,
-    groupType: 'studio' | 'song',
-  ): Promise<void>;
+  invite(groupId: string, email: string, groupType: GroupType): Promise<void>;
   fetchInvitations(email: string): Promise<any>;
   acceptInvitation(groupId: string): Promise<void>;
   addSong(studioId: string, name: string): Promise<Song>;

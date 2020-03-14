@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Song, Track } from '../../common/Domain';
+import { Song, Track, GroupType } from '../../common/Domain';
 
 import BackendAPI, {
   FetchStudiosResp,
@@ -33,6 +33,12 @@ export default class Default implements BackendAPI {
         userId: userId,
       },
     );
+  }
+
+  async getPubSubToken(): Promise<any> {
+    return this.client.get({
+      path: 'pubsub/token',
+    });
   }
 
   async fetchProfile(): Promise<FetchProfileResp> {
@@ -77,8 +83,9 @@ export default class Default implements BackendAPI {
   async invite(
     groupId: string,
     email: string,
-    groupType: 'studio' | 'song',
+    groupType: GroupType,
   ): Promise<void> {
+    console.log(groupId, email, groupType);
     return this.client.put({
       path: 'invitations',
       queries: { group_id: groupId, email: email, group_type: groupType },

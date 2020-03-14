@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import * as Sentry from '@sentry/browser';
 import * as fbApp from 'firebase/app';
 import 'firebase/auth';
+import Centrifuge from 'centrifuge';
 
 import WebAudioAPI from './AudioAPI/WebAudioAPI';
 import BackendAPI from './BackendAPI/Default';
@@ -73,10 +74,12 @@ const webAudioAPI = new WebAudioAPI(async (src, ac) => {
   return ac.decodeAudioData(arrayBuffer);
 });
 
+const centrifuge = new Centrifuge('ws://localhost:8888/connection/websocket');
 // Inject dependencies (Delivered by hooks API).
 export const backendAPICtx = createContext(backendAPI);
 export const webAudioAPICtx = createContext(webAudioAPI);
 export const firebaseCtx = createContext(firebase);
+export const centrifugeCtx = createContext(centrifuge);
 
 const App: React.FC = () => {
   return (

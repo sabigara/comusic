@@ -1,26 +1,33 @@
 import { useState, useCallback } from 'react';
 
 export default <T>(
-  callback: (...args: string[]) => Promise<T>,
-): [(...args: string[]) => Promise<T | null>, T | null, string, boolean] => {
+  callback: (...args: any[]) => Promise<T>,
+  onSuccess?: ((val: T) => void) | (() => void),
+  onError?: ((err: string) => void) | (() => void),
+  onFinally?: () => void,
+) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
-  const [resp, setResp] = useState<T | null>(null);
+  const [value, setValue] = useState<T | null>(null);
   const fn = useCallback(
-    async (...args: string[]) => {
+    async (...args) => {
+      setValue(null);
       setError('');
-      setResp(null);
       setLoading(true);
       try {
-        setResp(await callback(...args));
+        const resp = await callback(...args);
+        setValue(resp);
+        onSuccess && onSuccess(resp);
+        return resp;
       } catch (err) {
         setError(err.toString());
+        onError && onError(err.toString());
       } finally {
         setLoading(false);
-        return resp;
+        onFinally && onFinally();
       }
     },
-    [setResp, setLoading, setError, callback],
+    [setValue, setLoading, setError, callback],
   );
-  return [fn, resp, error, loading];
+  return { callback: fn, value, setValue, error, loading };
 };

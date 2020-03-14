@@ -6,11 +6,14 @@ import ToolBar from './ToolBar';
 import Browser from './Browser';
 import Editor from './Editor';
 import useBackendAPI from '../hooks/useBackendAPI';
+import useCentrifuge from '../hooks/useCentrifuge';
 
 const Main: React.FC = () => {
   const [openingVer, setOpeningVer] = useState<string>('');
   const [isAuthed, setAuthed] = useState(false);
   const backendAPI = useBackendAPI();
+  const centrifuge = useCentrifuge();
+
   useEffect(() => {
     const _ = async () => {
       // Try to fetch current user's profile to verify token.
@@ -19,9 +22,24 @@ const Main: React.FC = () => {
       } catch {
         return;
       }
+      let pubsubToken = localStorage.getItem('pubsubToken');
+      if (!pubsubToken) {
+        try {
+          const resp = await backendAPI.getPubSubToken();
+          pubsubToken = resp.pubsubToken;
+          localStorage.setItem('pubsubToken', resp.pubsubToken);
+        } catch (err) {
+          throw Error('Cannot acquire pubsubToken');
+        }
+      }
+      centrifuge.setToken(pubsubToken);
+      centrifuge.connect();
       setAuthed(true);
     };
     _();
+    return () => {
+      centrifuge.disconnect();
+    };
   }, []);
 
   return isAuthed ? (

@@ -70,3 +70,16 @@ export type Take = {
 export type File = {
   url: string;
 } & Domain;
+
+export enum GroupType {
+  Err = 'err',
+  Studio = 'studio',
+  Song = 'song',
+}
+
+export type Invitation = {
+  email: string;
+  groupId: string;
+  isAccepted: boolean;
+  groupType: GroupType;
+} & Domain;

@@ -20,13 +20,15 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 import styled from 'styled-components';
 
 import Color from '../common/Color';
+import { GroupType } from '../common/Domain';
+import toaster from '../common/toaster';
 import { styledScrollRenderer } from '../common/utils';
 import { RootState } from '../reducers';
 import { StudioState } from '../reducers/studios';
 import { SongState } from '../reducers/songs';
 import { VersionState } from '../reducers/versions';
 import useBackendAPI from '../hooks/useBackendAPI';
-import useDispatchWithAPICall from '../hooks/useDispatchWithAPICall';
+import useAsyncCallback from '../hooks/useAsyncCallback';
 import { useCurrentUser } from '../hooks/firebase';
 import { useFetchStudios } from '../hooks/studios';
 import { useAddSong, useDelSong } from '../hooks/songs';
@@ -102,7 +104,6 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
   useFetchStudios(user?.id);
 
   const backendAPI = useBackendAPI();
-  const dispatchWithAPICall = useDispatchWithAPICall();
   const addSong = useAddSong();
   const delSong = useDelSong();
   const addVersion = useAddVersion();
@@ -112,21 +113,19 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
   const [email, setEmail] = React.useState('');
   const [groupId, setGroupId] = React.useState<{
     id: string;
-    type: 'studio' | 'song';
+    type: GroupType;
   } | null>(null);
 
-  const onInviteSubmit = () => {
+  const { callback, loading } = useAsyncCallback(
+    backendAPI.invite.bind(backendAPI),
+    () => toaster.success('success'),
+    (err) => toaster.error(err),
+    () => setDialogOpen(false),
+  );
+
+  const onInviteSubmit = async () => {
     if (groupId === null) return;
-    dispatchWithAPICall(
-      'INVITE',
-      // Since instance method is passed as callback, `this` is
-      // missing without bind.
-      backendAPI.invite.bind(backendAPI),
-      groupId.id,
-      email,
-      groupId.type,
-    );
-    setDialogOpen(false);
+    callback(groupId.id, email, groupId.type);
   };
 
   const inviteDialog = useMemo(
@@ -152,16 +151,20 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
             }
           />
         </div>
-        <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button
-              intent={Intent.PRIMARY}
-              text="Send Invitation"
-              large
-              onClick={onInviteSubmit}
-            />
+        {loading ? (
+          <span>sending</span>
+        ) : (
+          <div className={Classes.DIALOG_FOOTER}>
+            <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+              <Button
+                intent={Intent.PRIMARY}
+                text="Send Invitation"
+                large
+                onClick={onInviteSubmit}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </Dialog>
     ),
     [setGroupId, setDialogOpen, setEmail, onInviteSubmit],
@@ -181,7 +184,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
           icon="new-person"
           text="Invite"
           onClick={() => {
-            setGroupId({ id: data.id, type: 'studio' });
+            setGroupId({ id: data.id, type: GroupType.Studio });
             setDialogOpen(true);
           }}
         />
@@ -205,7 +208,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
           icon="new-person"
           text="Invite"
           onClick={() => {
-            setGroupId({ id: data.id, type: 'song' });
+            setGroupId({ id: data.id, type: GroupType.Song });
             setDialogOpen(true);
           }}
         />

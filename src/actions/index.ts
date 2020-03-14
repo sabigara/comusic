@@ -4,7 +4,10 @@ import { TrackActionTypeName, TrackActionUnionType } from './tracks';
 import { VersionActionTypeName, VersionActionUnionType } from './versions';
 import { SongActionTypeName, SongActionUnionType } from './songs';
 import { StudioActionTypeName, StudioActionUnionType } from './studios';
-import { InvitationActionTypeName } from './invitations';
+import {
+  InvitationActionTypeName,
+  InvitationActionUnionType,
+} from './invitations';
 import { ProfileActionTypeName, ProfileActionUnionType } from './profiles';
 import { PlaybackActionTypeName, PlaybackActionUnionType } from './playback';
 
@@ -27,6 +30,7 @@ export type ActionUnionType =
   | VersionActionUnionType
   | SongActionUnionType
   | StudioActionUnionType
+  | InvitationActionUnionType
   | ProfileActionUnionType
   | PlaybackActionUnionType;
 
@@ -36,4 +40,11 @@ export const createAction = (type: string, id: string, err?: string) => {
     id: id,
     err: err,
   };
+};
+
+export type Resource<T> = {
+  byId: {
+    [id: string]: T;
+  };
+  allIds: string[];
 };

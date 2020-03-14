@@ -1,21 +1,23 @@
-import { useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import useBackendAPI from './useBackendAPI';
+import { fetchInvitations } from '../actions/invitations';
+import { RootState } from '../reducers';
 import useAsyncCallback from './useAsyncCallback';
 
-export const useInvitations = (email?: string) => {
+export const useFetchInvitations = () => {
+  const dispatch = useDispatch();
   const backendAPI = useBackendAPI();
-  const [callback, value, error, loading] = useAsyncCallback(
-    backendAPI.fetchInvitations.bind(backendAPI),
+  const items = useSelector((state: RootState) =>
+    state.invitations.allIds.map((id) => state.invitations.byId[id]),
+  );
+  const {
+    callback,
+    loading,
+  } = useAsyncCallback(backendAPI.fetchInvitations.bind(backendAPI), (resp) =>
+    dispatch(fetchInvitations(resp.invitations)),
   );
 
-  useEffect(() => {
-    if (email === undefined) return;
-    callback(email);
-  }, []);
-
-  const resp = value
-    ? value.invitations.allIds.map((id: string) => value.invitations.byId[id])
-    : [];
-  return [resp, error, loading];
+  return { callback, items, loading };
 };
