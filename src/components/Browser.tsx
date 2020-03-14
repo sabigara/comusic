@@ -342,7 +342,7 @@ const Browser: React.FC<Props> = ({ setVerId }) => {
           <Popover
             position={Position.RIGHT}
             onOpening={() => setOpeningMoreMenu(data.id)}
-            onClosed={() => {
+            onClosing={() => {
               setOpeningMoreMenu('');
               setVisibleMoreBtn('');
             }}
