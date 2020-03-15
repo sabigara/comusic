@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { Icon } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
@@ -8,7 +7,6 @@ import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { PlaybackStatus } from '../common/Domain';
 import { play, pause, stop, updateTime } from '../actions/playback';
-import Img from '../atoms/Img';
 import ToolBarItem from '../atoms/ToolBarItem';
 import ToolBackItemContainer from '../atoms/ToolBarItemContainer';
 
@@ -82,10 +80,5 @@ const PlaybackControls: React.FC = () => {
     </ToolBackItemContainer>
   );
 };
-
-const IconImg = styled(Img)`
-  width: 16px;
-  height: 16px;
-`;
 
 export default PlaybackControls;
