@@ -1,9 +1,8 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { RootState } from '../reducers';
 import Label from '../atoms/Label';
+import useAudioAPI from '../hooks/useAudioAPI';
 
 function formatTime(timeInSeconds: number) {
   let miliSecs = timeInSeconds % 1;
@@ -23,9 +22,16 @@ function padStr(numStr: string, pad: string, length: number, right = false) {
 }
 
 const Clock: React.FC = () => {
-  const time = useSelector((state: RootState) => state.playback.time);
+  const audioAPI = useAudioAPI();
+  const [time, setTime] = useState(0);
   const { minutes, seconds, miliSecs } = formatTime(time);
   const strMiliSecs = miliSecs.toString().slice(2);
+
+  useEffect(() => {
+    audioAPI.onTimeUpdate((t) => {
+      setTime(t);
+    });
+  });
 
   return (
     <Wrapper>

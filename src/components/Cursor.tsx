@@ -1,8 +1,6 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { RootState } from '../reducers';
 import { secondsToPixels } from '../common/conversions';
 import useAudioAPI from '../hooks/useAudioAPI';
 
@@ -11,8 +9,14 @@ type Props = {
 };
 
 const Cursor: React.FC<Props> = ({ offset = 0 }) => {
-  const time = useSelector((state: RootState) => state.playback.time);
   const audioAPI = useAudioAPI();
+  const [time, setTime] = React.useState(0);
+
+  useEffect(() => {
+    audioAPI.onTimeUpdate((t) => {
+      setTime(t);
+    });
+  }, []);
   const left = secondsToPixels(time, 1000, audioAPI.sampleRate) + offset;
 
   return <Wrapper style={{ left: left.toString() + 'px' }}></Wrapper>;

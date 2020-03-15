@@ -63,10 +63,10 @@ const WaveformList = React.forwardRef(
         audioAPI.resolution,
         audioAPI.sampleRate,
       );
-      dispatch(updateTime(time));
+      audioAPI.time = time;
       if (playback.status === PlaybackStatus.Playing) {
         audioAPI.stop();
-        audioAPI.play(time);
+        audioAPI.play();
       }
     };
 

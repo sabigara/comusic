@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { createContext, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import * as Sentry from '@sentry/browser';
@@ -83,6 +83,11 @@ export const firebaseCtx = createContext(firebase);
 export const centrifugeCtx = createContext(centrifuge);
 
 const App: React.FC = () => {
+  useEffect(() => {
+    return () => {
+      webAudioAPI.release();
+    };
+  });
   return (
     <Provider store={store}>
       <Router>

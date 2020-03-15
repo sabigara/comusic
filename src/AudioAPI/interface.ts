@@ -24,10 +24,14 @@ export default interface IAudioAPI {
   readonly resolution: number;
   readonly secondsElapsed: number;
   readonly masterPeak: number;
+  time: number;
   loadTrack(id: string): ITrack;
   getTrack(id: string): ITrack | null;
   // Return Promise that indicates all tracks has ended.
-  play(offset: number): Promise<void[]>;
+  play(): Promise<void[]>;
   stop(): void;
   setMasterVolume(value: number): void;
+  onTimeUpdate(callback: (time: number) => void): void;
+  removeListeners(): void;
+  release(): void;
 }

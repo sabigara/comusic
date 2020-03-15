@@ -125,13 +125,18 @@ export const useRestartTrack = (trackId: string) => {
     if (loadingTake) return;
     const trackAPI = audioAPI.tracks[trackId];
     if (!trackAPI) return;
-    trackAPI.stop();
     if (playback.status === PlaybackStatus.Playing) {
       if (!trackAPI.isPlaying) {
-        trackAPI.play(playback.time);
+        trackAPI.play(audioAPI.secondsElapsed);
       }
     }
-  }, [audioAPI.tracks, loadingTake, playback.status, playback.time, trackId]);
+  }, [
+    audioAPI.tracks,
+    loadingTake,
+    playback.status,
+    trackId,
+    audioAPI.secondsElapsed,
+  ]);
 };
 
 export const useLoadActiveTake = () => {

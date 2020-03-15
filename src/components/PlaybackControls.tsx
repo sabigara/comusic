@@ -6,7 +6,7 @@ import { IconNames } from '@blueprintjs/icons';
 import { RootState } from '../reducers';
 import useAudioAPI from '../hooks/useAudioAPI';
 import { PlaybackStatus } from '../common/Domain';
-import { play, pause, stop, updateTime } from '../actions/playback';
+import { play, pause, stop } from '../actions/playback';
 import ToolBarItem from '../atoms/ToolBarItem';
 import ToolBackItemContainer from '../atoms/ToolBarItemContainer';
 
@@ -22,7 +22,7 @@ const PlaybackControls: React.FC = () => {
   useEffect(() => {
     switch (playback.status) {
       case PlaybackStatus.Playing:
-        audioAPI.play(playback.time);
+        audioAPI.play();
         break;
       case PlaybackStatus.Pausing:
         audioAPI.stop();
@@ -33,22 +33,7 @@ const PlaybackControls: React.FC = () => {
       default:
         break;
     }
-  }, [audioAPI, playback.status, playback.time]);
-
-  useEffect(() => {
-    switch (playback.status) {
-      case PlaybackStatus.Playing:
-        const interval = setInterval(() => {
-          dispatch(updateTime(audioAPI.secondsElapsed));
-        }, 20);
-        return () => clearInterval(interval);
-      case PlaybackStatus.Stopping:
-        dispatch(updateTime(0));
-        break;
-      default:
-        break;
-    }
-  }, [audioAPI, dispatch, playback]);
+  }, [audioAPI, playback.status]);
 
   const onStopClick = () => dispatch(stop());
   const onPauseClick = () => dispatch(pause());

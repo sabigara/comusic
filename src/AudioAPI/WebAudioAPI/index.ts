@@ -9,13 +9,17 @@ export default class implements IAudioAPI {
   public readonly tracks: TrackMap;
   public readonly sampleRate: number;
   public readonly resolution: number;
-  public startTime: number;
+  private startTime: number | null;
+  private offset: number;
+  private updatePerSec = 20;
+  private updateCallbacks: ((time: number) => void)[] = [];
   private ac: AudioContext;
   private masterGain: GainNode;
   private masterAnalyzer: AnalyserNode;
   private masterTmpArray: Uint8Array;
-  private offset: number;
   private load: LoadFunc;
+  private interval?: number;
+  private isPlaying: boolean;
 
   constructor(load: LoadFunc) {
     this.ac = new AudioContext();
@@ -27,13 +31,36 @@ export default class implements IAudioAPI {
     this.tracks = {};
     this.resolution = 1000;
     this.sampleRate = this.ac.sampleRate;
-    this.startTime = 0;
     this.offset = 0;
+    this.startTime = null;
     this.load = load;
+    this.isPlaying = false;
+
+    this.interval = setInterval(() => {
+      this.updateCallbacks.forEach((callback) => callback(this.time));
+    }, this.updatePerSec);
   }
 
-  public get secondsElapsed() {
-    return this.ac.currentTime - this.startTime + this.offset;
+  set time(n: number) {
+    this.offset = n;
+  }
+
+  get time() {
+    if (this.isPlaying) {
+      return this.secondsElapsed;
+    } else {
+      return this.offset;
+    }
+  }
+
+  get secondsElapsed() {
+    return this.startTime
+      ? this.ac.currentTime - this.startTime + this.offset
+      : 0 + this.offset;
+  }
+
+  onTimeUpdate(callback: (time: number) => void) {
+    this.updateCallbacks.push(callback);
   }
 
   loadTrack(id: string) {
@@ -56,15 +83,18 @@ export default class implements IAudioAPI {
     return this.tracks[id] || null;
   }
 
-  play(offset: number) {
+  play() {
     this.startTime = this.ac.currentTime;
-    this.offset = offset;
+    this.isPlaying = true;
+
     return Promise.all(
-      Object.values(this.tracks).map((track) => track.play(offset)),
+      Object.values(this.tracks).map((track) => track.play(this.offset)),
     );
   }
 
   stop() {
+    this.startTime = null;
+    this.isPlaying = false;
     Object.values(this.tracks).forEach((track) => {
       track.stop();
     });
@@ -77,5 +107,13 @@ export default class implements IAudioAPI {
   public get masterPeak(): number {
     this.masterAnalyzer.getByteFrequencyData(this.masterTmpArray);
     return Math.max.apply(null, Array.from(this.masterTmpArray));
+  }
+
+  removeListeners() {
+    this.updateCallbacks = [];
+  }
+
+  release() {
+    clearInterval(this.interval);
   }
 }

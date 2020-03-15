@@ -4,7 +4,6 @@ import { PlaybackStatus } from '../common/Domain';
 
 const initialState = {
   status: PlaybackStatus.Stopping,
-  time: 0,
   masterVolume: 0.7,
 };
 
@@ -21,8 +20,6 @@ const playback: Reducer = (
       return { ...state, status: PlaybackStatus.Pausing };
     case ActionTypeName.Playback.STOP:
       return { ...state, status: PlaybackStatus.Stopping };
-    case ActionTypeName.Playback.UPDATE_TIME:
-      return { ...state, time: action.payload.secondsElapsed };
     case ActionTypeName.Playback.CHANGE_MASTER_VOLUME:
       return { ...state, masterVolume: action.payload.masterVolume };
     default:
