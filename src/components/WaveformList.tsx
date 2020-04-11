@@ -72,41 +72,43 @@ const WaveformList = React.forwardRef(
 
     return (
       <Wrapper>
-        <Scrollbar
-          ref={refLoc as any}
-          // https://github.com/xobotyi/react-scrollbars-custom/issues/109
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onScroll={onScrollLoc as any}
-          style={scrollLoc}
-          wrapperProps={styledScrollRenderer(scrollWrapperLoc)}
-          trackXProps={disabledScrollRenderer()}
-        >
-          <Locator />
-        </Scrollbar>
-        <Scrollbar
-          ref={refWav}
-          onScroll={onScrollWav as any}
-          scrollerProps={{
-            ...styledScrollRenderer(scrollScrollerWav),
-            onClick: onSomewhereClick,
-          }}
-          trackXProps={styledScrollRenderer(scrollTrackXWav)}
-          wrapperProps={styledScrollRenderer(scrollWrapperWav)}
-          contentProps={styledScrollRenderer(scrollContentWav(paddingBottom))}
-          thumbXProps={styledScrollRenderer(scrollThumbWav)}
-          thumbYProps={styledScrollRenderer(scrollThumbWav)}
-        >
+        <CursorArea>
+          <Scrollbar
+            ref={refLoc as any}
+            // https://github.com/xobotyi/react-scrollbars-custom/issues/109
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onScroll={onScrollLoc as any}
+            style={scrollLoc}
+            wrapperProps={styledScrollRenderer(scrollWrapperLoc)}
+            trackXProps={disabledScrollRenderer()}
+          >
+            <Locator />
+          </Scrollbar>
+          <Scrollbar
+            ref={refWav}
+            onScroll={onScrollWav as any}
+            scrollerProps={{
+              ...styledScrollRenderer(scrollScrollerWav),
+              onClick: onSomewhereClick,
+            }}
+            trackXProps={styledScrollRenderer(scrollTrackXWav)}
+            wrapperProps={styledScrollRenderer(scrollWrapperWav)}
+            contentProps={styledScrollRenderer(scrollContentWav(paddingBottom))}
+            thumbXProps={styledScrollRenderer(scrollThumbWav)}
+            thumbYProps={styledScrollRenderer(scrollThumbWav)}
+          >
+            <div id="waveform-parent" ref={refDiv}>
+              {trackIds.map((trackId) => {
+                return (
+                  <WaveformWrapper key={`wf-${trackId}`}>
+                    <Waveform trackId={trackId} />
+                  </WaveformWrapper>
+                );
+              })}
+            </div>
+          </Scrollbar>
           <Cursor offset={0} />
-          <div id="waveform-parent" ref={refDiv}>
-            {trackIds.map((trackId) => {
-              return (
-                <WaveformWrapper key={`wf-${trackId}`}>
-                  <Waveform trackId={trackId} />
-                </WaveformWrapper>
-              );
-            })}
-          </div>
-        </Scrollbar>
+        </CursorArea>
       </Wrapper>
     );
   },
@@ -133,10 +135,16 @@ const Wrapper = styled.div`
   position: relative;
   flex-grow: 1;
   display: flex;
-  flex-direction: column;
   background-color: ${Color.Waveform.Background};
   overflow: hidden;
   padding-left: 20px;
+`;
+
+const CursorArea = styled.div`
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 const WaveformWrapper = styled.div`
