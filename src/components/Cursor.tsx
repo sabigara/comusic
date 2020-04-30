@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { secondsToPixels } from '../common/conversions';
 import useAudioAPI from '../hooks/useAudioAPI';
+import { ReactComponent as Knob } from '../knob.svg';
 
 type Props = {
   offset?: number;
@@ -19,10 +20,15 @@ const Cursor: React.FC<Props> = ({ offset = 0 }) => {
   }, []);
   const left = secondsToPixels(time, 1000, audioAPI.sampleRate) + offset;
 
-  return <Wrapper style={{ left: left.toString() + 'px' }}></Wrapper>;
+  return (
+    <>
+      <Knob style={{ left: (left - 7).toString() + 'px', position: 'absolute', top: 0, width: 15, filter: 'drop-shadow(0px 0px 2px #000)' }}></Knob>
+      <Line style={{ left: left.toString() + 'px' }}></Line>
+    </>
+  )
 };
 
-const Wrapper = styled.div`
+const Line = styled.div`
   position: absolute;
   top: 0;
   width: 1px;
